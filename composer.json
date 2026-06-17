@@ -1,12 +1,14 @@
 {
-    "name": "nelson/static",
+    "name": "nelsonrojasn/parina-framework",
     "type": "project",
+    "license": "MIT",
+    "version": "1.0.0",
     "require": {
         "php": "^8.2"
     },
     "autoload": {
         "psr-4": {
-            "Static\\": "src/"
+            "Parina\\": "src/"
         }
     },
     "autoload-dev": {
