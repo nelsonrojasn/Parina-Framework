@@ -1,58 +1,73 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Static\Core\HandlerInterface;
+use Parina\Core\Request;
+use Parina\Core\Interfaces\Handler;
+use Parina\Core\Interfaces\Response;
 use Tests\Handlers\TestHandler;
 use Tests\Handlers\ParamHandler;
+use Parina\Core\Responses\PlainTextResponse;
+
 
 class HandlerTest extends TestCase
 {
     public function testSimpleHandlerReturnsHtml()
     {
         $handler = new TestHandler();
+        $request = Request::capture();
 
-        $response = $handler->handle();
+        $response = $handler->handle($request);
 
-        $this->assertEquals("<h1>TEST OK</h1>", $response);
+        $this->assertEquals("<h1>TEST OK</h1>", $response->getContent());
     }
 
     public function testParamHandlerReceivesParameter()
     {
         $handler = new ParamHandler();
+        $request = Request::capture();
+        $request->params['hash'] = 'abc999';
+        
+        $response = $handler->handle($request);
 
-        $response = $handler->handle("abc999");
-
-        $this->assertEquals("HASH: abc999", $response);
+        $this->assertEquals("<h1>abc999</h1>", $response->getContent());
     }
 
     public function testParamHandlerReceivesMultipleParams()
     {
-        // Creamos un handler anónimo que use múltiples params
-        $handler = new class implements HandlerInterface {
-            public function handle(...$params): mixed
+        // Create an anonymous handler that uses multiple params
+        $request = Request::capture();
+        $handler = new class implements Handler {
+            public function handle(Request $request): Response
             {
-                [$a, $b, $c] = $params;
-                return "$a-$b-$c";
+                $a = $request->params['a'];
+                $b = $request->params['b'];
+                $c = $request->params['c'];
+
+                return (new PlainTextResponse("$a-$b-$c"));
             }
         };
 
-        $response = $handler->handle("uno", "dos", "tres");
+        $request->params['a'] = 'uno';
+        $request->params['b'] = 'dos';
+        $request->params['c'] = 'tres';
 
-        $this->assertEquals("uno-dos-tres", $response);
+        $response = $handler->handle($request);
+
+        $this->assertEquals("uno-dos-tres", $response->getContent());
     }
 
     public function testHandlerMustImplementInterface()
     {
         $this->assertInstanceOf(
-            HandlerInterface::class,
+            Handler::class,
             new TestHandler()
         );
     }
 
     public function testHandlerThrowsExceptionIfNeeded()
     {
-        $handler = new class implements HandlerInterface {
-            public function handle(...$params): mixed
+        $handler = new class implements Handler {
+            public function handle(Request $request): Response
             {
                 throw new \RuntimeException("boom");
             }
@@ -61,6 +76,6 @@ class HandlerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("boom");
 
-        $handler->handle();
+        $handler->handle(Request::capture());
     }
 }

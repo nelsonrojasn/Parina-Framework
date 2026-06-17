@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Static\Core\Router;
-use Static\Core\Kernel;
+use Parina\Core\Router;
+use Parina\Core\Kernel;
 
 class KernelTest extends TestCase
 {

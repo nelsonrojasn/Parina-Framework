@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Static\Core\Router;
+use Parina\Core\Router;
 
 class RouterTest extends TestCase
 {
