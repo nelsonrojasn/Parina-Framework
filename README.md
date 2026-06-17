@@ -1,4 +1,6 @@
 # Parina Framework
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
+[![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 ### *Altiplano Edition: Less is more. The web framework for clear thinking.*
 
 Parina is a micro-framework for web applications written in modern PHP.
