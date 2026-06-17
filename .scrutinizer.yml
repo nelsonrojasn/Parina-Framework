@@ -1,0 +1,15 @@
+build:
+    nodes:
+        analysis:
+            project_setup:
+                override:
+                    # 1. Forzamos a Scrutinizer a instalar las dependencias
+                    - composer install --no-dev --prefer-dist --optimize-autoloader
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    
+filter:
+    excluded_paths:
+        - 'vendor/*'  # 2. Le prohibimos perder el tiempo analizando Composer
+        - 'src/Db/*'   # Excluye tu base de datos SQLite si está en el repo
