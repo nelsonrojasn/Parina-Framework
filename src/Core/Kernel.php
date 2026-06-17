@@ -1,75 +1,79 @@
 <?php
-namespace Static\Core;
+namespace Parina\Core;
 
-use Static\Core\Response;
+use Parina\Core\Router;
+use Parina\Core\Interfaces\Handler;
+use Parina\Core\Responses\NotFoundResponse;
+
 
 class Kernel
 {
+
     public function __construct(private Router $router) {}
 
     public function run(): void
     {
-        // Obtener método y URI real
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $request = Request::capture();
+        $method  = $request->method();
+        $uri     = $request->path();
 
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        $uri = parse_url($uri, PHP_URL_PATH) ?: '/';
-
-        // Normalizar "/" y "/index.php"
-        if ($uri === '' || $uri === '/index.php') {
-            $uri = '/';
-        }
-
-        // Buscar ruta
+        // Find a defined route
         $match = $this->router->match($method, $uri);
 
         if (!$match) {
-            http_response_code(404);
-            echo "404 Not Found";
+            $this->send((new NotFoundResponse()));
             return;
         }
 
         $route  = $match['route'];
-        $params = array_values($match['params']);
+        $request->params = $match['params'];
 
-        // Ejecutar middlewares
+        // Execute middlewares if available
         foreach ($route['middleware'] as $mw) {
-
-            // Caso especial: ACL, recibe roles permitidos
-            if ($mw === \Static\Middle\AclMiddleware::class) {
-                (new $mw($route['acl']))->handle();
-            } else {
-                // Middlewares sin parámetros
-                (new $mw())->handle();
+            $response = (new $mw())->handle($request, $route);
+            // if middleware doesn't return null, we break the execution
+            if ($response !== null) {
+                $this->send($response);
+                return;
             }
         }
 
-        // Instanciar handler
-        $handler = new $route['handler']();
+        // Instantiate handler
+        $handler = $route['handler'];
 
-        if (!$handler instanceof HandlerInterface) {
-            throw new \RuntimeException("Handler debe implementar HandlerInterface.");
+        if (is_string($handler)) {
+            $handler = new $handler();
+        }
+
+        if (!$handler instanceof Handler) {
+            throw new \RuntimeException("Handler debe implementar HandlerInterface.", 401);
         }
 
         // Ejecutar handler con parámetros
-        $result = $handler->handle(...$params);
+        $result = $handler->handle($request);
+        $this->send($result);
+    }
 
-        // Interpretación automática del resultado
-        if (is_string($result)) {
-            echo Response::html($result);
-            return;
-        }
-
-        if (is_array($result)) {
-            echo Response::json($result);
-            return;
-        }
-
-        // Si el handler ya manejó la salida → null
+    private function send(mixed $result): void
+    {
         if ($result === null) {
             return;
         }
 
-        echo Response::text("Tipo de respuesta no soportado.");
+        // Send Status Code
+        http_response_code($result->getStatus());
+
+        // Send Headers
+        foreach ($result->getHeaders() as $name => $value) {
+            header("$name: $value");
+        }
+
+        // Send body
+        echo $result->getContent();
+        
+        // it is a redirection, breaks the flow right here, right now
+        if ($result->getStatus() >= 300 && $result->getStatus() < 400) {
+            exit;
+        }
     }
 }

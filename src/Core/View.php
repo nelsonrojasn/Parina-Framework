@@ -1,9 +1,29 @@
 <?php
-namespace Static\Core;
+namespace Parina\Core;
 
 class View
 {
-    private static string $basePath = __DIR__ . '/../../views/';
+    private static array $basePaths = [
+        __DIR__ . '/../Shared/Layouts/',     // Path for templates
+        __DIR__ . '/../Shared/Partials/',     // Path for partials
+        __DIR__ . '/../Modules/'     // Path for modules
+    ];
+
+    /**
+     * Allows dynamically adding new search paths
+     */
+    public static function addPath(string $path): void
+    {
+        self::$basePaths[] = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Useful for clearing state between tests
+     */
+    public static function setPaths(array $paths): void
+    {
+        self::$basePaths = $paths;
+    }
 
     public static function render(string $path, array $data = []): void
     {
@@ -11,31 +31,53 @@ class View
         echo $content;
     }
 
+    /**
+     * Renders a partial directly to the output stream.
+     * Ideal for being called inside other views: View::partial('navbar');
+     */
+    public static function partial(string $path, array $data = []): void
+    {
+        echo self::capture($path, $data);
+    }
+
     public static function renderWithLayout(
         string $path,
         string $layout,
         array $data = []
-    ): void {
+    ): string {
         $content = self::capture($path, $data);
 
-        // Pasamos el contenido como variable especial $content
+        // Pass content as a special variable $content
         $data['content'] = $content;
 
-        echo self::capture("layouts/$layout", $data);
+        // Search for the layout directly in basePaths. 
+        // Si el usuario quiere subcarpetas, las puede pasar en el string: "admin/main"
+        return self::capture($layout, $data);
     }
 
     private static function capture(string $path, array $data = []): string
     {
-        $fullPath = self::$basePath . $path . '.php';
+        $resolvedPath = null;
+        $triedPaths = [];
 
-        if (!file_exists($fullPath)) {
-            throw new \RuntimeException("Vista no encontrada: $path");
+        foreach (self::$basePaths as $base) {
+            $candidate = $base . $path . '.php';
+            $triedPaths[] = $candidate;
+            if (file_exists($candidate)) {
+                $resolvedPath = $candidate;
+                break;
+            }
+        }
+
+        if (!$resolvedPath) {
+            $list = implode("\n - ", $triedPaths);
+            throw new \RuntimeException("View not found: '$path'.\nTried in:\n - $list");
         }
 
         extract($data, EXTR_SKIP);
 
         ob_start();
-        include $fullPath;
+        include $resolvedPath;
         return ob_get_clean();
     }
 }

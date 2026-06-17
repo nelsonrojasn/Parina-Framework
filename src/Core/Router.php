@@ -1,5 +1,5 @@
 <?php
-namespace Static\Core;
+namespace Parina\Core;
 
 class Router
 {
@@ -8,7 +8,7 @@ class Router
     public function add(
         string $method,
         string $path,
-        string $handler,
+        string|object $handler,
         array $middleware = [],
         array $acl = []
     ): void
