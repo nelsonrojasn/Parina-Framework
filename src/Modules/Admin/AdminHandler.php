@@ -12,7 +12,7 @@ class AdminHandler implements Handler
 {
     public function handle(Request $request): Response
     {
-        $content = View::renderWithLayout("Admin/views/admin/home", "default");
+        $content = View::renderWithLayout("Admin/Views/admin/home", "default");
         return (new HtmlResponse($content, 200));        
     }
 }

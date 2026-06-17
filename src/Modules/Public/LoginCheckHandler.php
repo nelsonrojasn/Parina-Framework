@@ -11,7 +11,6 @@ use Parina\Core\View;
 use Parina\Shared\Models\User;
 use Parina\Core\Session;
 
-
 class LoginCheckHandler implements Handler
 {
     public function handle(Request $request): Response

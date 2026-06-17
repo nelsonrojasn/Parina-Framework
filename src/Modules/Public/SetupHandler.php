@@ -9,7 +9,6 @@ use Parina\Core\Responses\ErrorResponse;
 use Parina\Core\Responses\RedirectResponse;
 use Parina\Core\Config;
 use Parina\Core\FileLogger;
-use Parina\Core\View;
 use Parina\Shared\Infrastructure\Db;
 
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
