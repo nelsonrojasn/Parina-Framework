@@ -20,14 +20,7 @@ class LoginCheckHandler implements Handler
 
         $userModel = new User();
 
-        $user = $userModel->findByLoginName($user);
-
-        if ($user && password_verify($user['salt'] . $password, $user['password'])) {
-            Session::set('is_logged_in', true);
-            Session::set('user_id', $user['id']);
-            Session::set('active', true);            
-            Session::set('company_id', $user['company_id']);
-            Session::set('flash', 'Welcome back, ' . $user['username'] . '!');
+        if ($userModel->checkAuth($user, $password)) {
             return (new RedirectResponse('/', 302));
         }
 
