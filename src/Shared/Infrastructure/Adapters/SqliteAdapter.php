@@ -23,7 +23,8 @@ class SqliteAdapter implements DatabaseAdapter
         $this->pdo->exec('PRAGMA temp_store = MEMORY');          // Use RAM for temp
         $this->pdo->exec('PRAGMA mmap_size = 30000000');         // Memory-mapped I/O
         $this->pdo->exec('PRAGMA page_size = 4096');             // Page size
-        $this->pdo->exec('PRAGMA busy_timeout = 5000');          // 5s timeout
+        $this->pdo->exec('PRAGMA busy_timeout = 5000');         // 5s timeout  
+        $this->pdo->exec('PRAGMA foreign_keys = ON');           // Enable foreign key support   
     }
 
     public function query(string $sql, array $params = []): \PDOStatement
