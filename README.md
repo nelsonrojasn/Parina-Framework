@@ -131,6 +131,10 @@ To run it, simply execute:
 php -S localhost:8000 -t public
 ```
 
+## ⚙️ Deployment
+
+For production deployment and recommended directory layout, permissions and Composer usage, see the deployment guide: [DEPLOY.md](DEPLOY.md)
+
 ## 📦 Installation
 
 Packagist Soon.
