@@ -28,7 +28,7 @@ class User extends BaseModel
     public function checkAuth(string $login, string $pass ): bool 
     {
         $user = $this->findByLoginName($login);
-        if ($user && password_verify($user['salt'] . $pass, $user['password'])) {
+        if ($user && password_verify($pass, $user['password'])) {
             Session::set('is_logged_in', true);
             Session::set('user_id', $user['id']);
             Session::set('active', true);            
