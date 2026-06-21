@@ -1,6 +1,12 @@
 <?php
 
-namespace Tests\Middlewares;
+namespace Parina\Shared\Middlewares {
+    function header(string $string, bool $replace = true, ?int $http_response_code = null): void {
+        $GLOBALS['sent_headers'][] = $string;
+    }
+}
+
+namespace Tests\Middlewares {
 
 use PHPUnit\Framework\TestCase;
 use Parina\Core\Request;
@@ -9,6 +15,16 @@ use Parina\Core\Responses\PlainTextResponse;
 
 class CorsTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        $GLOBALS['sent_headers'] = [];
+    }
+
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['sent_headers']);
+    }
+
     /**
      * @runInSeparateProcess
      */
@@ -28,6 +44,13 @@ class CorsTest extends TestCase
         $this->assertInstanceOf(PlainTextResponse::class, $response);
         $this->assertEquals(204, $response->getStatus());
         $this->assertEquals('', $response->getContent());
+
+        // Verificar cabeceras CORS interceptadas
+        $headers = $GLOBALS['sent_headers'] ?? [];
+        $this->assertContains('Access-Control-Allow-Origin: *', $headers);
+        $this->assertContains('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS', $headers);
+        $this->assertContains('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With', $headers);
+        $this->assertContains('Access-Control-Allow-Credentials: true', $headers);
     }
 
     /**
@@ -47,5 +70,13 @@ class CorsTest extends TestCase
         $response = $middleware->handle($request);
 
         $this->assertNull($response);
+
+        // Verificar cabeceras CORS interceptadas
+        $headers = $GLOBALS['sent_headers'] ?? [];
+        $this->assertContains('Access-Control-Allow-Origin: *', $headers);
+        $this->assertContains('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS', $headers);
+        $this->assertContains('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With', $headers);
+        $this->assertContains('Access-Control-Allow-Credentials: true', $headers);
     }
+}
 }

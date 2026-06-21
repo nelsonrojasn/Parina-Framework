@@ -70,4 +70,78 @@ class CsrfTest extends TestCase
 
         $this->assertNull($response);
     }
+
+    public function test_put_request_without_token_fails()
+    {
+        $_SESSION['csrf_token'] = 'valid_token_123';
+
+        $request = new Request(
+            query: [],
+            post: [],
+            server: ['REQUEST_METHOD' => 'PUT'],
+            files: [],
+            cookies: []
+        );
+
+        $middleware = new Csrf();
+        $response = $middleware->handle($request);
+
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertEquals(403, $response->getStatus());
+    }
+
+    public function test_put_request_with_correct_token_passes()
+    {
+        $_SESSION['csrf_token'] = 'valid_token_123';
+
+        $request = new Request(
+            query: [],
+            post: ['_csrf' => 'valid_token_123'],
+            server: ['REQUEST_METHOD' => 'PUT'],
+            files: [],
+            cookies: []
+        );
+
+        $middleware = new Csrf();
+        $response = $middleware->handle($request);
+
+        $this->assertNull($response);
+    }
+
+    public function test_delete_request_without_token_fails()
+    {
+        $_SESSION['csrf_token'] = 'valid_token_123';
+
+        $request = new Request(
+            query: [],
+            post: [],
+            server: ['REQUEST_METHOD' => 'DELETE'],
+            files: [],
+            cookies: []
+        );
+
+        $middleware = new Csrf();
+        $response = $middleware->handle($request);
+
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertEquals(403, $response->getStatus());
+    }
+
+    public function test_delete_request_with_correct_token_passes()
+    {
+        $_SESSION['csrf_token'] = 'valid_token_123';
+
+        $request = new Request(
+            query: [],
+            post: ['_csrf' => 'valid_token_123'],
+            server: ['REQUEST_METHOD' => 'DELETE'],
+            files: [],
+            cookies: []
+        );
+
+        $middleware = new Csrf();
+        $response = $middleware->handle($request);
+
+        $this->assertNull($response);
+    }
 }

@@ -6,7 +6,9 @@ class Session
 {
     public static function start():void
     {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         session_regenerate_id(true);
     }
 

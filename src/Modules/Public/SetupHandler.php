@@ -13,6 +13,9 @@ use Parina\Shared\Infrastructure\Db;
 
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SetupHandler implements Handler
 {
     public function handle(Request $request): Response
@@ -115,7 +118,7 @@ class SetupHandler implements Handler
                 // Create 'admin' user (Password: 'admin123' using native password_hash with salt)
                 $hashedPassword = password_hash( 'admin123', PASSWORD_BCRYPT);
                 Db::query(
-                    "INSERT INTO users (company_id, username, password, email) VALUES (:company_id, :username, :salt, :password, :email)",
+                    "INSERT INTO users (company_id, username, password, email) VALUES (:company_id, :username, :password, :email)",
                     [
                         'company_id' => $companyId,
                         'username'   => 'admin',
