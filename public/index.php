@@ -27,7 +27,7 @@ $driver = $dbConfig['driver'] ?? 'sqlite';
 $adapter = match ($driver) {
     'mysql' => new MySqlAdapter($dbConfig),
     'pgsql', 'postgres', 'postgresql' => new PostgreSqlAdapter($dbConfig),
-    'sqlite', default => new SqliteAdapter($dbConfig),
+    'sqlite', 'default' => new SqliteAdapter($dbConfig)
 };
 Db::init($adapter);
 
