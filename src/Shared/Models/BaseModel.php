@@ -19,7 +19,7 @@ abstract class BaseModel
     {
         $sql = "SELECT * FROM " . static::$table . 
                " WHERE " . static::$primaryKey . 
-               " = :id LIMIT 1";
+               " = :id" . Db::limit(1);
         $stmt = Db::query($sql, ['id' => $id]);
         $result = $stmt->fetch();
         return $result ?: null;
