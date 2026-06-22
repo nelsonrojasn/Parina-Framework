@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
+use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 
 class DbTest extends TestCase
 {
@@ -43,6 +44,31 @@ class DbTest extends TestCase
 
         $adapter = new MySqlAdapter($config);
         $this->assertEquals(" LIMIT 30, 10", $adapter->getLimitSql(10, 30));
+    }
+
+    public function test_postgresql_adapter_lifecycle()
+    {
+        // Instanciar usando sqlite::memory: para evitar lanzar error de conexión de PostgreSQL
+        $config = [
+            'dsn' => 'sqlite::memory:',
+            'user' => null,
+            'pass' => null
+        ];
+
+        $adapter = new PostgreSqlAdapter($config);
+
+        // Crear una tabla temporal
+        $adapter->exec("CREATE TABLE IF NOT EXISTS test_table_pg (id INTEGER PRIMARY KEY, val TEXT)");
+
+        // Insertar dato
+        $adapter->query("INSERT INTO test_table_pg (val) VALUES (:val)", ['val' => 'hello_pg']);
+
+        // Consultar dato
+        $stmt = $adapter->query("SELECT * FROM test_table_pg WHERE val = :val", ['val' => 'hello_pg']);
+        $result = $stmt->fetch();
+
+        $this->assertEquals('hello_pg', $result['val']);
+        $this->assertEquals(" LIMIT 10 OFFSET 20", $adapter->getLimitSql(10, 20));
     }
 
     public function test_db_facade_delegation()
