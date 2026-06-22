@@ -27,8 +27,10 @@ class JwtAuthServiceTest extends TestCase
         $payload = ['sub' => 123];
         $token = JwtAuth::createToken($payload);
 
-        // Alterar el último carácter del token (que es la firma)
-        $tampered = substr($token, 0, -1) . 'A';
+        // Alterar el último carácter del token garantizando que sea diferente
+        $lastChar = substr($token, -1);
+        $newChar = ($lastChar === 'A') ? 'B' : 'A';
+        $tampered = substr($token, 0, -1) . $newChar;
 
         $decoded = JwtAuth::validateToken($tampered);
         $this->assertNull($decoded);
