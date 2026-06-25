@@ -174,7 +174,7 @@ Parina ist nicht aus Mangel minimal. Es ist mit Absicht minimal. Es entfernt all
 ## 📦 Bereitstellung & Installation
 
 ### Bereitstellung in der Produktion
-Für Verzeichnislayout, Berechtigungen und Produktionstipps siehe [DEPLOY.md](DEPLOY.md).
+Für Verzeichnislayout, Berechtigungen und Produktionstipps siehe [DEPLOY.de.md](DEPLOY.de.md).
 
 ### Schnellstart / Lokale Installation
 

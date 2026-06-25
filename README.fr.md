@@ -174,7 +174,7 @@ Parina n'est pas minimaliste par limitation. Il est minimaliste par intention. I
 ## 📦 Déploiement & Installation
 
 ### Déploiement en production
-Pour la disposition des répertoires, les permissions et les conseils de production, voir [DEPLOY.md](DEPLOY.md).
+Pour la disposition des répertoires, les permissions et les conseils de production, voir [DEPLOY.fr.md](DEPLOY.fr.md).
 
 ### Démarrage rapide / Installation locale
 

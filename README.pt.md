@@ -174,7 +174,7 @@ O Parina não é minimalista por limitação. É minimalista por intenção. Ele
 ## 📦 Implantação & Instalação
 
 ### Implantação em Produção
-Para layout de diretórios, permissões e dicas de produção, consulte [DEPLOY.md](DEPLOY.md).
+Para layout de diretórios, permissões e dicas de produção, consulte [DEPLOY.pt.md](DEPLOY.pt.md).
 
 ### Início Rápido / Instalação Local
 

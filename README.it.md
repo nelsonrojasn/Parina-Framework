@@ -174,7 +174,7 @@ Parina non è minimalista per limitazione. È minimalista per intenzione. Rimuov
 ## 📦 Distribuzione & Installazione
 
 ### Distribuzione in Produzione
-Per la struttura delle directory, i permessi e i consigli di produzione, vedi [DEPLOY.md](DEPLOY.md).
+Per la struttura delle directory, i permessi e i consigli di produzione, vedi [DEPLOY.it.md](DEPLOY.it.md).
 
 ### Avvio Rapido / Installazione Locale
 

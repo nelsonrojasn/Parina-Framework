@@ -10,6 +10,12 @@ Keep public-facing files separated from application code to ensure a safe instal
 cp -R public/* /var/www/html/
 ```
 
+*Note: Make sure to copy the hidden `.htaccess` file as well. In some operating systems or shell configurations, wildcard copies like `public/*` might miss hidden files. You can copy it explicitly:*
+
+```bash
+cp public/.htaccess /var/www/html/
+```
+
 2. Copy the rest of the project files outside the public site (example: `/var/www/parina`):
 
 ```bash
