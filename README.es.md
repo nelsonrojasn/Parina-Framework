@@ -2,6 +2,8 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
+🇺🇸 [English](README.md) | 🇪🇸 **Español** | 🇫🇷 [Français](README.fr.md) | 🇵🇹 [Português](README.pt.md)
+
 ### *Altiplano Edition: Menos es más. El framework web para pensar claro.*
 
 ---
