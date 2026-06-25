@@ -197,7 +197,7 @@ Parinaqa janiw juk'akiti pisichawitaki. Amtapuni phiskhu uñch'ukita. Mayjt'ayi 
 ## 📦 Deployment & Installation
 
 ### Production Deployment
-Yaqha thakhinaka, uñachayirinaka, uñt'asna [DEPLOY.md](DEPLOY.md).
+Yaqha thakhinaka, uñachayirinaka, uñt'asna [DEPLOY.md](../DEPLOY.md).
 
 ### Quick Start / Local Installation
 

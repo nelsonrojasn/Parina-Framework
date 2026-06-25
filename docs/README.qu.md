@@ -197,7 +197,7 @@ Parinaqa manam huch'uyllachu pisillapaq. Amtapuni k'apak allichasqa. Churaqkuna 
 ## 📦 Deployment & Installation
 
 ### Production Deployment
-Allichaymanta, permisokunamanta, uñachay [DEPLOY.md](DEPLOY.md).
+Allichaymanta, permisokunamanta, uñachay [DEPLOY.md](../DEPLOY.md).
 
 ### Quick Start / Local Installation
 
