@@ -2,7 +2,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
-🇺🇸 **English** | 🇪🇸 [Español](docs/README.es.md) | 🇫🇷 [Français](docs/README.fr.md) | 🇵🇹 [Português](docs/README.pt.md) | 🇮🇹 [Italiano](docs/README.it.md) | 🇩🇪 [Deutsch](docs/README.de.md)
+🇺🇸 **English** | 🇪🇸 [Español](docs/README.es.md) | 🇫🇷 [Français](docs/README.fr.md) | 🇵🇹 [Português](docs/README.pt.md) | 🇮🇹 [Italiano](docs/README.it.md) | 🇩🇪 [Deutsch](docs/README.de.md) | 🇦ym [Aymara](docs/README.ay.md) | 🦙 [Quechua](docs/README.qu.md) | 🇨🇳 [简体中文](docs/README.zh.md) | 🇯🇵 [日本語](docs/README.ja.md)
 
 ### *Altiplano Edition: Less is more. The web framework for clear thinking.*
 
