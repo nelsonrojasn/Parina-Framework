@@ -1,91 +1,153 @@
 # Parina Framework
-### *Altiplano Edition: Menos es más. El web framework para pensar claro.*
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
+[![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
-Parina es un micro–framework para aplicaciones web escrito en PHP moderno.
-No intenta hacerlo todo. No trae magia. No oculta decisiones.
+### *Altiplano Edition: Menos es más. El framework web para pensar claro.*
 
-Su objetivo es simple:
+---
 
-> **Dar solo las piezas esenciales para que cada desarrollador construya el resto con claridad.**
+## 💡 ¿Qué es Parina?
+
+Parina es un micro-framework minimalista para aplicaciones PHP modernas. Proporciona la estructura justa y necesaria para construir aplicaciones con claridad, control y el máximo rendimiento.
+
+---
 
 ## 🌄 Filosofía
 
-Parina propone lo contrario al exceso:
+**Claridad sobre abstracción. Control sobre conveniencia.**
 
-- **Una entrada única (Front Controller)**
-- **Un router explícito**
-- **Un kernel simple que despacha**
-- **Handlers como unidades mínimas de acción**
-- **Vistas livianas**
-- **Responses claras**
-- **Infraestructura opcional**
+Parina se enfoca en:
+* **Diseño explícito:** Sin magia, sin ciclos de vida ocultos.
+* **Sobrecarga mínima:** Cada byte y milisegundo cuenta.
+* **Flujo predecible:** Lo que ves es exactamente lo que se ejecuta.
 
-Cuando hay menos, **se ve mejor**.
+---
 
-## 🧱 Arquitectura
+## 🧱 Arquitectura en 10 Líneas
 
-Parina se compone de elementos desacoplados:
+1. Una petición entra a través de un controlador frontal (Front Controller).
+2. Pasa a través del pipeline de middlewares.
+3. Los middlewares pueden bloquear la petición o permitirle continuar.
+4. Llega al controlador (Handler) registrado.
+5. El Handler ejecuta la lógica de negocio.
+6. Retorna una respuesta estándar (Response).
+7. Sin magia pesada.
+8. Sin ciclos de vida ocultos del framework.
+9. Sin abstracciones innecesarias.
+10. Solo una ejecución clara y lineal.
+
+---
+
+## 🔄 Ciclo de Vida de la Petición
 
 ```
-Handler           → contrato único
-Router            → mapa URL → handler
-Kernel            → ejecuta el flujo
-Response          → representación de la salida
-View              → helper para plantillas PHP
-Session           → control explícito de sesión
+[ Request ] ───> [ Pipeline de Middlewares ] ───> [ Handler ]
+                            │                          │
+                            │ (Retorna Response)       │ (Retorna Response)
+                            ▼                          ▼
+                      [ Response ] <───────────────────┘
 ```
 
-Additional infrastructure (like database access) lives outside the core.
+### Modelo de Middleware
+Cada capa de middleware sigue una regla binaria simple:
+* **Retorna `Response`** → Detiene la ejecución y emite la respuesta.
+* **Retorna `null`** → Continúa a la siguiente capa.
 
-## 🚀 Minimum Example
+#### Ejemplo de Middleware
+```php
+namespace Parina\Shared\Middlewares;
+
+use Parina\Core\Request;
+use Parina\Core\Interfaces\Middleware;
+use Parina\Core\Interfaces\Response;
+use Parina\Core\Responses\ErrorResponse;
+
+class SimpleAuth implements Middleware
+{
+    public function handle(Request $request): ?Response
+    {
+        if (!isset($_SESSION['user'])) {
+            return new ErrorResponse("No autorizado", 401);
+        }
+        return null; // Continúa a la siguiente capa
+    }
+}
+```
+
+---
+
+## 🔒 Seguridad
+
+La seguridad es primordial y vive exactamente donde debe: en el pipeline de middlewares.
+
+* Limitación de tasa de peticiones (Rate limiting)
+* Validación del tamaño de la petición
+* Protección CSRF
+* Política del mismo origen (CORS)
+* Autenticación (Basic / JWT)
+* Autorización (ACL)
+
+---
+
+## ⚡ Rendimiento
+
+Diseñado para una sobrecarga mínima y precisión de microsegundos:
+
+* **~0.0007 segundos** por ejecución de petición.
+* **~0.05 MB** de huella de memoria RAM.
+* Totalmente amigable con Opcache.
+
+---
+
+## 🚀 Ejemplo (Punto de Entrada / Bootstrapping)
 
 ```php
 // public/index.php
 use Parina\Core\Router;
 use Parina\Core\Kernel;
+use Parina\Modules\Public\HomeHandler;
 
-require 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 $router = new Router();
-
-// Rutas públicas
-$router->add('GET', '/', Parina\Modules\Public\HomeHandler::class);
+$router->add('GET', '/', HomeHandler::class);
 
 $kernel = new Kernel($router);
 $kernel->run();
 ```
 
-## 🏠 Handler
-
+## 🏠 Ejemplo de Handler Mínimo
 ```php
 namespace Parina\Modules\Public;
 
-use Parina\Core\View;
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
+use Parina\Core\Request;
 use Parina\Core\Responses\HtmlResponse;
+use Parina\Core\View;
 
 class HomeHandler implements Handler
 {
     public function handle(Request $request): Response
     {
         $content = View::renderWithLayout("Public/Views/home", "default", ['title' => 'Parina']);
-        return (new HtmlResponse($content, 200));
+        return new HtmlResponse($content, 200);
     }
 }
 ```
 
-## 🖼 Vista
-
+## 🖼 Ejemplo de Vista Mínima
 ```php
 <!-- Modules/Public/Views/home.php -->
 <h1><?= $title ?></h1>
 <p>Bienvenido a Parina Framework.</p>
 ```
 
-## 🧪 Tests incluidos
+---
 
-Parina está desarrollado con PHPUnit y pensado para coverage completo.
+## 🧪 Pruebas Incluidas
+
+Parina está desarrollado con PHPUnit, enfocado en una cobertura completa.
 
 ```
 tests/
@@ -95,44 +157,39 @@ tests/
  └── Handlers/FakeHandler.php
 ```
 
-## 🔒 Seguridad
+---
 
-Incluye protección opcional mediante:
+## 🧘 Por qué existe Parina
 
-- CSRF tokens
-- Same-Origin defense
-- Middlewares aplicables al kernel
+La mayor parte de la complejidad en el software es accidental. Parina se pregunta:
 
-## 🗄 Infraestructura (opcional)
+¿Cuál es la estructura más pequeña que sigue funcionando de manera correcta, segura y rápida?
 
-En `Infrastructure/Db.php` se ofrece una capa simple para:
+Parina no es minimalista por limitación. Es minimalista por intención. Elimina todo lo que realmente no necesitas.
 
-- conectar
-- preparar queries
-- ejecutar comandos
+---
 
-## 🧘 Por qué Parina Framework
+## 📦 Despliegue e Instalación
 
-Porque programar no es juntar librerías.  
-Programar es **pensar claro**.
+### Despliegue en Producción
+Para conocer la estructura de directorios, permisos y consejos de producción, consulta [DEPLOY.md](DEPLOY.md).
 
-Parina Framework existe para recordarnos que:
+### Inicio Rápido / Instalación Local
 
-> **Una aplicación web no necesita complicarse para ser potente.**
-
-## 🏃 Ejecutar el servidor
-
-Parina Framework funciona con el servidor embebido de PHP.  
-Para ponerlo a correr, solo ejecuta:
+Para ejecutar el framework localmente usando el servidor de desarrollo integrado de PHP:
 
 ```bash
+git clone https://github.com/nelsonrojasn/Parina-Framework.git
+cd Parina-Framework
+composer install
 php -S localhost:8000 -t public
 ```
 
-## 📦 Instalación
-
+### Gestor de Dependencias
 Pronto en Packagist.
+
+---
 
 ## 🪶 Licencia
 
-MIT.
+Licencia MIT.

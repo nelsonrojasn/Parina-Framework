@@ -6,13 +6,13 @@
 
 ---
 
-## What is Parina?
+## 💡 What is Parina?
 
 Parina is a minimal micro-framework for modern PHP applications. It provides just enough structure to build applications with clarity, control, and peak performance.
 
 ---
 
-## Philosophy
+## 🌄 Philosophy
 
 **Clarity over abstraction. Control over convenience.**
 
@@ -23,7 +23,7 @@ Parina focuses on:
 
 ---
 
-## Architecture in 10 Lines
+## 🧱 Architecture in 10 Lines
 
 1. A request enters through a front controller.
 2. It goes through the middleware pipeline.
@@ -38,19 +38,45 @@ Parina focuses on:
 
 ---
 
-## Request Lifecycle
+## 🔄 Request Lifecycle
 
-[ Request ] ──> [ Middleware ] ──> [ Handler ] ──> [ Response ]
-
+```
+[ Request ] ───> [ Middleware Pipeline ] ───> [ Handler ]
+                          │                       │
+                          │ (Returns Response)    │ (Returns Response)
+                          ▼                       ▼
+                    [ Response ] <────────────────┘
+```
 
 ### Middleware Model
 Each middleware layer follows a simple binary rule:
-* **Returns `Response`** → Stop execution and emit.
+* **Returns `Response`** → Stop execution and emit response.
 * **Returns `null`** → Continue to the next layer.
+
+#### Middleware Example
+```php
+namespace Parina\Shared\Middlewares;
+
+use Parina\Core\Request;
+use Parina\Core\Interfaces\Middleware;
+use Parina\Core\Interfaces\Response;
+use Parina\Core\Responses\ErrorResponse;
+
+class SimpleAuth implements Middleware
+{
+    public function handle(Request $request): ?Response
+    {
+        if (!isset($_SESSION['user'])) {
+            return new ErrorResponse("Unauthorized", 401);
+        }
+        return null; // Move to the next layer
+    }
+}
+```
 
 ---
 
-## Security
+## 🔒 Security
 
 Security is first-class and lives exactly where it belongs: in the middleware pipeline.
 
@@ -63,7 +89,7 @@ Security is first-class and lives exactly where it belongs: in the middleware pi
 
 ---
 
-## Performance
+## ⚡ Performance
 
 Designed for minimal overhead and microsecond-accuracy:
 
@@ -73,11 +99,15 @@ Designed for minimal overhead and microsecond-accuracy:
 
 ---
 
-## Example
+## 🚀 Example (Bootstrapping)
 
 ```php
-use Parina\Router;
-use Parina\Kernel;
+// public/index.php
+use Parina\Core\Router;
+use Parina\Core\Kernel;
+use Parina\Modules\Public\HomeHandler;
+
+require_once '../vendor/autoload.php';
 
 $router = new Router();
 $router->add('GET', '/', HomeHandler::class);
@@ -86,27 +116,50 @@ $kernel = new Kernel($router);
 $kernel->run();
 ```
 
-## Minimal Handler Example
+## 🏠 Minimal Handler Example
 ```php
-
 namespace Parina\Modules\Public;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Request;
 use Parina\Core\Responses\HtmlResponse;
+use Parina\Core\View;
 
 class HomeHandler implements Handler
 {
     public function handle(Request $request): Response
     {
-        return (new HtmlResponse("Hello world", 200));
+        $content = View::renderWithLayout("Public/Views/home", "default", ['title' => 'Parina']);
+        return new HtmlResponse($content, 200);
     }
 }
-
 ```
 
-## Why Parina Exists
+## 🖼 Minimal View Example
+```php
+<!-- Modules/Public/Views/home.php -->
+<h1><?= $title ?></h1>
+<p>Welcome to Parina Framework.</p>
+```
+
+---
+
+## 🧪 Included Tests
+
+Parina is developed with PHPUnit, focusing on complete coverage.
+
+```
+tests/
+ ├── KernelTest.php
+ ├── RouterTest.php
+ ├── HandlerTest.php
+ └── Handlers/FakeHandler.php
+```
+
+---
+
+## 🧘 Why Parina Exists
 
 Most complexity in software is accidental. Parina asks:
 
@@ -114,13 +167,28 @@ What is the smallest structure that still works correctly, securely, and fast?
 
 Parina is not minimal by limitation. It is minimal by intention. It removes everything you do not actually need.
 
-## Deployment & Installation
+---
 
-Production Deployment: For directory layout, permissions, and production tips, see DEPLOY.md.
+## 📦 Deployment & Installation
 
-## Installation: 
+### Production Deployment
+For directory layout, permissions, and production tips, see [DEPLOY.md](DEPLOY.md).
 
+### Quick Start / Local Installation
+
+To run the framework locally using PHP's built-in development server:
+
+```bash
+git clone https://github.com/nelsonrojasn/Parina-Framework.git
+cd Parina-Framework
+composer install
+php -S localhost:8000 -t public
+```
+
+### Dependency Manager
 Packagist Soon.
+
+---
 
 ## 🪶 License
 
