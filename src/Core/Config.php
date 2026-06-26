@@ -6,6 +6,17 @@ class Config
 {
     private static string $cryptoKey = '';
     private static string $dbPath = '';
+    private static int $rateLimitMs = 500;
+
+    public static function getRateLimitMs(): int
+    {
+        return self::$rateLimitMs;
+    }
+
+    public static function setRateLimitMs(int $ms): void
+    {
+        self::$rateLimitMs = $ms;
+    }
 
     public static function getCryptoKey(): string
     {

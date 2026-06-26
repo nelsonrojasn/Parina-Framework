@@ -3,10 +3,7 @@
 define('PIN_START_TIME', microtime(true));
 define('PIN_START_MEM', memory_get_usage());
 
-// Tiempo mínimo entre peticiones en milisegundos (0 para desactivar)
-define('RATE_LIMIT_MS', 500);
-
-//cargar la sesion de php
+//start php session
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -21,21 +18,22 @@ use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 
 require_once '../vendor/autoload.php';
 
-// Initialize Database connection globally
+//database connection
 $dbConfig = Config::getDbConfig();
 $driver = $dbConfig['driver'] ?? 'sqlite';
 $adapter = match ($driver) {
     'mysql' => new MySqlAdapter($dbConfig),
     'pgsql', 'postgres', 'postgresql' => new PostgreSqlAdapter($dbConfig),
-    'sqlite', 'default' => new SqliteAdapter($dbConfig)
+    'sqlite', 'default' => new SqliteAdapter($dbConfig),
+    default => throw new \InvalidArgumentException("Database driver not supported: {$driver}")
 };
 Db::init($adapter);
 
 $router = new Router();
 
-// Public Routes (Loaded dynamically from config/routes.php)
-$publicRoutes = require '../config/routes.php';
-foreach ($publicRoutes as $route) {
+//routes definition
+$routes = require '../config/routes.php';
+foreach ($routes as $route) {
     $router->add(
         $route['method'],
         $route['path'],
@@ -43,23 +41,6 @@ foreach ($publicRoutes as $route) {
         $route['middleware'] ?? []
     );
 }
-
-// Encrypted routes resolver based on (/do?=...)
-$hashResolver = new Parina\Core\HashResolver([
-    'admin/home' => Parina\Modules\Admin\AdminHandler::class,
-    'admin/users' => Parina\Modules\Admin\UsersListHandler::class,
-    'logout' => Parina\Modules\Private\LogoutHandler::class
-]);
-
-// Private Routes
-$router->add('GET', '/do', $hashResolver, [
-    Parina\Shared\Middlewares\RateLimit::class,
-    Parina\Shared\Middlewares\RequestSize::class, 
-    Parina\Shared\Middlewares\SameOrigin::class,
-    Parina\Shared\Middlewares\Csrf::class,
-    Parina\Shared\Middlewares\Auth::class,
-    Parina\Shared\Middlewares\Acl::class,
-]);
 
 
 //Kernel dispatcher
