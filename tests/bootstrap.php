@@ -12,3 +12,14 @@ if (!defined('PIN_START_MEM')) {
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+
+// Initialize database connection for tests
+$dbConfig = \Parina\Core\Config::getDbConfig();
+$driver = $dbConfig['driver'] ?? 'sqlite';
+$adapter = match ($driver) {
+    'mysql' => new \Parina\Shared\Infrastructure\Adapters\MySqlAdapter($dbConfig),
+    'pgsql', 'postgres', 'postgresql' => new \Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter($dbConfig),
+    'sqlite', 'default' => new \Parina\Shared\Infrastructure\Adapters\SqliteAdapter($dbConfig),
+    default => throw new \InvalidArgumentException("Database driver not supported: {$driver}")
+};
+\Parina\Shared\Infrastructure\Db::init($adapter);

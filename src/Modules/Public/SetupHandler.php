@@ -11,95 +11,33 @@ use Parina\Core\Config;
 use Parina\Core\FileLogger;
 use Parina\Shared\Infrastructure\Db;
 
-use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
-
-/**
- * @codeCoverageIgnore
- */
 class SetupHandler implements Handler
 {
     public function handle(Request $request): Response
     {
         try {
-            // Check if Db folder exists. If not, create it!
-            $dbFile = Config::getDbPath();
-            $dbDir = dirname($dbFile);
-            if (!is_dir($dbDir)) {
-                mkdir($dbDir, 0755, true);
+            $dbConfig = Config::getDbConfig();
+            $driver = $dbConfig['driver'] ?? 'sqlite';
+
+            // If using SQLite, ensure target directory exists
+            if ($driver === 'sqlite') {
+                $dbFile = Config::getDbPath();
+                $dbDir = dirname($dbFile);
+                if (!is_dir($dbDir)) {
+                    mkdir($dbDir, 0755, true);
+                }
             }
 
-            $sqliteAdapter = new SqliteAdapter(Config::getDbConfig());
-            Db::init($sqliteAdapter);
+            // Determine schema file path
+            $projectRoot = dirname(dirname(dirname(__DIR__)));
+            $schemaFile = $projectRoot . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . "schema.{$driver}.sql";
 
-            // Creating tables
-            $sqlTables = "
-            CREATE TABLE IF NOT EXISTS company (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                dni TEXT NOT NULL UNIQUE,
-                name TEXT NOT NULL,
-                activity TEXT,
-                address TEXT,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-            );
+            if (!file_exists($schemaFile)) {
+                throw new \Exception("Schema file not found for driver '{$driver}' at: {$schemaFile}");
+            }
 
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                company_id INTEGER NOT NULL,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                email TEXT NOT NULL,
-                is_active INTEGER DEFAULT 1,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE IF NOT EXISTS profiles (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                description TEXT,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS profile_user (
-                profile_id INTEGER NOT NULL,
-                user_id INTEGER NOT NULL,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (profile_id, user_id),
-                FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE IF NOT EXISTS resources (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                slug TEXT NOT NULL UNIQUE,
-                description TEXT,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS resource_user (
-                resource_id INTEGER NOT NULL,
-                user_id INTEGER NOT NULL,
-                is_allowed INTEGER DEFAULT 1,
-                deleted INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (resource_id, user_id),
-                FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            );
-        ";
-            
-            // Bulk table creation
+            // Load and execute schema SQL
+            $sqlTables = file_get_contents($schemaFile);
             Db::exec($sqlTables);
 
             // Seeding tables with basic content
