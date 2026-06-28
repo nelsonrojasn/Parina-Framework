@@ -30,9 +30,9 @@ rsync -a --exclude='public' ./ /var/www/parina/
 # passa alla directory radice del progetto (dove si trova composer.json)
 cd /var/www/parina
 # sviluppo: installa tutte le dipendenze
-composer install
+# No composer needed
 # produzione: salta i pacchetti di sviluppo e ottimizza l'autoloader
-composer install --no-dev --optimize-autoloader
+# No composer needed --no-dev --optimize-autoloader
 ```
 
 4. Assegna al gruppo di Apache (server web) la proprietà della cartella del database in modo che il server possa leggere/scrivere come richiesto (esempio per Debian/Ubuntu):

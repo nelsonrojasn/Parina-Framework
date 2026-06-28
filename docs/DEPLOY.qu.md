@@ -24,16 +24,7 @@ mkdir -p /var/www/parina
 rsync -a --exclude='public' ./ /var/www/parina/
 ```
 
-3. PHP dependenciakunata Composerwan qallariypi churay. Composer churasqa kanantapuni qhaway, hinaspa rurayta apay llikachapa dueñon hina (ama `root` hinaqa). Production lluqsinanpaq kay recomendación flag nisqakunata churay, mana allin dev packages nisqakunata saqinapaq hinaspa autoloader allinyachinapaq:
-
-```bash
-# Llikachapa qallariyninman yaykuy (maypichus `composer.json` kachkan)
-cd /var/www/parina
-# development: tukuy dependenciakunata churay
-composer install
-# production: dev packages nisqakunata saqiy hinaspa autoloader allinyachiy
-composer install --no-dev --optimize-autoloader
-```
+3. Parina Frameworkqa manam dependenciakunayuqchu hinaspa manam Composerta necesitanchu. Custom `src/autoload.php` autoloaderqa kikinmantam clasekunata load-anqa.
 
 4. Apache (webserver) qutupaman Database ukhupa dueñon kayta quy, server leeyta utaq qillqaytapas atinanpaq (ejemplo Debian/Ubuntu pachapaq):
 

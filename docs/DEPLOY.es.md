@@ -24,16 +24,7 @@ mkdir -p /var/www/parina
 rsync -a --exclude='public' ./ /var/www/parina/
 ```
 
-3. Instala las dependencias de PHP con Composer en la raíz del proyecto. Asegúrate de que Composer esté instalado y ejecuta el comando como el propietario del proyecto (no como `root`). Para producción, utiliza las opciones recomendadas que se muestran a continuación para omitir paquetes de desarrollo y optimizar el cargador automático.
-
-```bash
-# cambia a la raíz del proyecto (donde se encuentra composer.json)
-cd /var/www/parina
-# desarrollo: instala todas las dependencias
-composer install
-# producción: omite paquetes de desarrollo y optimiza el cargador automático
-composer install --no-dev --optimize-autoloader
-```
+3. Parina Framework no tiene dependencias de producción y no requiere Composer. El cargador de clases personalizado `src/autoload.php` se encarga de la carga de clases automáticamente desde el primer momento.
 
 4. Otorga al grupo de Apache (servidor web) la propiedad de la carpeta de la base de datos para que el servidor pueda leer/escribir según sea necesario (ejemplo para Debian/Ubuntu):
 

@@ -24,16 +24,7 @@ mkdir -p /var/www/parina
 rsync -a --exclude='public' ./ /var/www/parina/
 ```
 
-3. Install PHP dependencies with Composer in the project root. Make sure Composer is installed and run the command as the project owner (not `root`). For production use the recommended flags shown below to skip dev packages and optimize the autoloader.
-
-```bash
-# change to the project root (where `composer.json` is located)
-cd /var/www/parina
-# development: install all dependencies
-composer install
-# production: skip dev packages and optimize the autoloader
-composer install --no-dev --optimize-autoloader
-```
+3. Parina Framework has zero production dependencies and does not require Composer. The custom `src/autoload.php` handles class loading automatically out-of-the-box.
 
 4. Give the Apache (webserver) group ownership of the database folder so the server can read/write as needed (example for Debian/Ubuntu):
 

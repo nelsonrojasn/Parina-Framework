@@ -109,7 +109,7 @@ use Parina\Core\Router;
 use Parina\Core\Kernel;
 use Parina\Modules\Public\HomeHandler;
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
 
 $router = new Router();
 $router->add('GET', '/', HomeHandler::class);
@@ -209,12 +209,8 @@ To run the framework locally using PHP's built-in development server:
 ```bash
 git clone https://github.com/nelsonrojasn/Parina-Framework.git
 cd Parina-Framework
-composer install
 php -S localhost:8000 -t public
 ```
-
-### Dependency Manager
-Packagist Soon.
 
 ---
 

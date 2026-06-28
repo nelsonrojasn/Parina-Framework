@@ -30,9 +30,9 @@ rsync -a --exclude='public' ./ /var/www/parina/
 # accédez à la racine du projet (là où se trouve composer.json)
 cd /var/www/parina
 # développement : installez toutes les dépendances
-composer install
+# No composer needed
 # production : ignorez les packages de développement et optimisez l'autoloader
-composer install --no-dev --optimize-autoloader
+# No composer needed --no-dev --optimize-autoloader
 ```
 
 4. Donnez au groupe d'Apache (serveur web) la propriété du dossier de base de données afin que le serveur puisse lire/écrire selon les besoins (exemple pour Debian/Ubuntu) :

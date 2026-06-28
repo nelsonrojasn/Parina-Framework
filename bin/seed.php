@@ -8,7 +8,7 @@ use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Services\CsvSeeder;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/src/autoload.php';
 
 if ($argc < 3) {
     echo "Usage: php bin/seed.php <table_name> <csv_file> [delimiter]\n";

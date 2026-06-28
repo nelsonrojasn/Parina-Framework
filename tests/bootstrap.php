@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__) . '/src/autoload.php';
+
 // Define constants needed by the views/handlers during CLI tests
 if (!defined('PIN_START_TIME')) {
     define('PIN_START_TIME', microtime(true));

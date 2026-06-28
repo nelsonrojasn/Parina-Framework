@@ -16,7 +16,7 @@ use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
 use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
 
 //database connection
 $dbConfig = Config::getDbConfig();

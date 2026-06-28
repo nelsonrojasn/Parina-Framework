@@ -30,9 +30,9 @@ rsync -a --exclude='public' ./ /var/www/parina/
 # wechseln Sie in das Projekt-Stammverzeichnis (in dem sich composer.json befindet)
 cd /var/www/parina
 # Entwicklung: installieren Sie alle Abhängigkeiten
-composer install
+# No composer needed
 # Produktion: Entwicklungspakete überspringen und Autoloader optimieren
-composer install --no-dev --optimize-autoloader
+# No composer needed --no-dev --optimize-autoloader
 ```
 
 4. Übertragen Sie dem Apache- (Webserver-) Gruppe die Eigentumsrechte am Datenbankordner, damit der Server nach Bedarf lesen/schreiben kann (Beispiel für Debian/Ubuntu):
