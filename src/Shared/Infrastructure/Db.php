@@ -7,9 +7,13 @@ class Db
     private static ?DatabaseAdapter $adapter = null;
     private static ?array $config = null;
 
-    public static function init(DatabaseAdapter $adapter): void
+    public static function init(?DatabaseAdapter $adapter = null): void
     {
-        self::$adapter = $adapter;
+        if ($adapter !== null) {
+            self::$adapter = $adapter;
+        } else {
+            self::getAdapter();
+        }
     }
 
     public static function setConfig(array $config): void

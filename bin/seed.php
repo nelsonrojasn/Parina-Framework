@@ -2,9 +2,6 @@
 <?php
 
 use Parina\Core\Config;
-use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
-use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
-use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Services\CsvSeeder;
 
@@ -25,17 +22,8 @@ if (!file_exists($csvFile)) {
     exit(1);
 }
 
-$dbConfig = Config::getDbConfig();
-$driver = $dbConfig['driver'] ?? 'sqlite';
-
-$adapter = match ($driver) {
-    'mysql' => new MySqlAdapter($dbConfig),
-    'pgsql', 'postgres', 'postgresql' => new PostgreSqlAdapter($dbConfig),
-    'sqlite', 'default' => new SqliteAdapter($dbConfig),
-    default => throw new InvalidArgumentException("Database driver not supported: {$driver}")
-};
-
-Db::init($adapter);
+Db::setConfig(Config::getDbConfig());
+Db::init();
 
 $seeder = new CsvSeeder();
 $inserted = $seeder->seedFromCsv($table, $csvFile, ['delimiter' => $delimiter]);

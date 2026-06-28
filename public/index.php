@@ -12,9 +12,6 @@ use Parina\Core\Router;
 use Parina\Core\Kernel;
 use Parina\Core\Config;
 use Parina\Shared\Infrastructure\Db;
-use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
-use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
-use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 
 require_once __DIR__ . '/../src/autoload.php';
 
