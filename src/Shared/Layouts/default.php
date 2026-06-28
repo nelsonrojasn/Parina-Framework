@@ -8,7 +8,7 @@ use Parina\Core\View;
 <html>
 <head>
     <title>Parina Framework - The Silence of the Altiplano</title>
-    <link rel="stylesheet" href="./assets/css/simple.css">
+    <link rel="stylesheet" href="./assets/css/parina.css">
 </head>
 <body>
 

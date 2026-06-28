@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Parina Framework - Custom Retro-Modern Classless CSS (parina.css)
+   Designed with Progressive Enhancement:
+   - Full style & layout compatibility for 2003+ browsers (e.g. IE6)
+   - Premium flex/grid design & automatic dark theme for modern browsers
+   - Colors: Dark Slate Gray & Flamingo Pink
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. RETRO-COMPATIBLE STYLES (Supports all legacy browsers from 2003)
+   -------------------------------------------------------------------------- */
+
+/* Box sizing reset for browsers that support it */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Page Layout */
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background-color: #fdf8f7;
+  color: #2d3748;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 20px;
+}
+
+/* Navigation Headers & footers */
+body > header {
+  background-color: #f5e6e8;
+  border-bottom: 1px solid #d8b4bc;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+body > header h1 {
+  margin: 10px 0;
+  font-size: 2.2em;
+}
+
+body > header p {
+  margin: 10px 0;
+  color: #5a6a85;
+}
+
+/* Navigation Links Styled as Buttons */
+header nav {
+  margin-top: 15px;
+}
+
+header nav a {
+  display: inline-block;
+  margin: 5px;
+  padding: 5px 15px;
+  border: 1px solid #d8b4bc;
+  text-decoration: none;
+  color: #2d3748;
+  font-weight: bold;
+  background-color: #fdf8f7;
+}
+
+header nav a:hover {
+  border-color: #d81b60;
+  color: #d81b60;
+}
+
+/* Content Area */
+main {
+  padding: 10px 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: #2d3748;
+  line-height: 1.2;
+}
+
+a {
+  color: #d81b60;
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* Code & Preformatted text */
+code, pre {
+  font-family: Consolas, Monaco, monospace;
+  color: #c2185b;
+}
+
+pre {
+  background-color: #f5e6e8;
+  border: 1px solid #d8b4bc;
+  padding: 15px;
+  overflow: auto;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  border: 1px solid #d8b4bc;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f5e6e8;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f5e6e8;
+}
+
+/* Forms & Inputs */
+input, select, textarea, button, .button {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #d8b4bc;
+  background-color: #ffffff;
+  color: #2d3748;
+}
+
+button, input[type="submit"], input[type="button"], .button {
+  background-color: #d81b60;
+  color: #ffffff;
+  border: 1px solid #d81b60;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+button:hover, input[type="submit"]:hover, input[type="button"]:hover, .button:hover {
+  background-color: #c2185b;
+  border-color: #c2185b;
+}
+
+/* Footer styling */
+body > footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #d8b4bc;
+  text-align: center;
+  font-size: 0.9em;
+  color: #5a6a85;
+}
+
+/* --------------------------------------------------------------------------
+   2. MODERN RE-STYLES (Supports Grid, Flexbox, Custom Variables, Dark Mode)
+   -------------------------------------------------------------------------- */
+
+@supports (display: flex) or (display: grid) {
+  
+  :root {
+    --sans-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono-font: ui-monospace, SFMono-Regular, SF Pro Mono, Menlo, Monaco, Consolas, monospace;
+    --standard-border-radius: 6px;
+    --border-width: 1px;
+
+    /* Light Theme Palette */
+    --bg: #fdf8f7;
+    --accent-bg: #f5e6e8;
+    --text: #2d3748;
+    --text-light: #5a6a85;
+    --border: #d8b4bc;
+    --accent: #d81b60;
+    --accent-hover: #c2185b;
+    --accent-text: #ffffff;
+    --code: #c2185b;
+  }
+
+  /* Automatic Dark Mode Colors */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #1a1617;
+      --accent-bg: #2a2123;
+      --text: #f5e6e8;
+      --text-light: #c4b3b6;
+      --border: #5a4548;
+      --accent: #ff7597;
+      --accent-hover: #ff9ebb;
+      --accent-text: #1a1617;
+      --code: #ff7597;
+    }
+  }
+
+  /* Apply modern typography and background */
+  body {
+    font-family: var(--sans-font);
+    background-color: var(--bg);
+    color: var(--text);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr min(48rem, 90%) 1fr;
+  }
+
+  body > * {
+    grid-column: 2;
+  }
+
+  /* Full-width header, centering inner children */
+  body > header {
+    grid-column: 1 / -1;
+    background-color: var(--accent-bg);
+    border-bottom: var(--border-width) solid var(--border);
+    padding: 2.5rem 1rem 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  body > header h1 {
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+  }
+
+  body > header p {
+    color: var(--text-light);
+    max-width: 36rem;
+    margin: 0;
+  }
+
+  /* Header navigation layout using flexbox */
+  header nav {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  header nav a {
+    margin: 0;
+    padding: 0.4rem 1.2rem;
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--standard-border-radius);
+    background-color: var(--bg);
+    color: var(--text);
+    transition: all 0.2s ease;
+  }
+
+  header nav a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  main {
+    padding-top: 2rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  code, pre {
+    font-family: var(--mono-font);
+    color: var(--code);
+  }
+
+  pre {
+    background-color: var(--accent-bg);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--standard-border-radius);
+    padding: 1.2rem;
+  }
+
+  table {
+    margin: 2rem 0;
+  }
+
+  th, td {
+    border: var(--border-width) solid var(--border);
+  }
+
+  th {
+    background-color: var(--accent-bg);
+  }
+
+  tr:nth-child(even) {
+    background-color: var(--accent-bg);
+  }
+
+  /* Smooth interactive inputs & buttons */
+  input, select, textarea, button, .button {
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--standard-border-radius);
+    background-color: var(--bg);
+    color: var(--text);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
+  }
+
+  button, input[type="submit"], input[type="button"], .button {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  }
+
+  button:hover, input[type="submit"]:hover, input[type="button"]:hover, .button:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+
+  button:active, input[type="submit"]:active, input[type="button"]:active, .button:active {
+    transform: scale(0.98);
+  }
+
+  body > footer {
+    border-top: var(--border-width) solid var(--border);
+    color: var(--text-light);
+    padding: 2rem 1rem;
+    margin-top: 4rem;
+  }
+}
