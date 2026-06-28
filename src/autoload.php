@@ -5,25 +5,15 @@
  * Implements PSR-4 class loading standard.
  */
 spl_autoload_register(static function (string $class) {
-    // Map namespace prefixes to base directories
-    $prefixes = [
-        'Parina\\' => __DIR__ . '/',
-        'Tests\\' => dirname(__DIR__) . '/tests/',
-    ];
-
-    foreach ($prefixes as $prefix => $baseDir) {
-        $len = strlen($prefix);
-        if (strncmp($prefix, $class, $len) !== 0) {
-            continue;
-        }
-
-        // Get relative class name and convert to path
-        $relativeClass = substr($class, $len);
-        $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
+    if (str_starts_with($class, 'Parina\\')) {
+        $file = __DIR__ . '/' . str_replace('\\', '/', substr($class, 7)) . '.php';
         if (file_exists($file)) {
-            require_once $file;
-            return;
+            require $file;
+        }
+    } elseif (str_starts_with($class, 'Tests\\')) {
+        $file = dirname(__DIR__) . '/tests/' . str_replace('\\', '/', substr($class, 6)) . '.php';
+        if (file_exists($file)) {
+            require $file;
         }
     }
 });
