@@ -47,6 +47,15 @@ abstract class BaseModel
         return (bool)Db::query($sql, $data);
     }
 
+    public static function createIntoTable(string $table, array $data): bool
+    {
+        $columns = implode(', ', array_keys($data));
+        $placeholders = ':' . implode(', :', array_keys($data));
+
+        $sql = "INSERT INTO {$table} ($columns) VALUES ($placeholders)";
+        return (bool) Db::query($sql, $data);
+    }
+
     /**
      * Update a record based on his primary key
      */
