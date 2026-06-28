@@ -19,15 +19,7 @@ use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 require_once __DIR__ . '/../src/autoload.php';
 
 //database connection
-$dbConfig = Config::getDbConfig();
-$driver = $dbConfig['driver'] ?? 'sqlite';
-$adapter = match ($driver) {
-    'mysql' => new MySqlAdapter($dbConfig),
-    'pgsql', 'postgres', 'postgresql' => new PostgreSqlAdapter($dbConfig),
-    'sqlite', 'default' => new SqliteAdapter($dbConfig),
-    default => throw new \InvalidArgumentException("Database driver not supported: {$driver}")
-};
-Db::init($adapter);
+Db::setConfig(Config::getDbConfig());
 
 $router = new Router();
 
