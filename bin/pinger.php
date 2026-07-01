@@ -18,7 +18,7 @@ if (!file_exists($csvFile)) {
 }
 
 $file = fopen($csvFile, 'r');
-if (!$file) {
+if ($file === false) {
     fwrite(STDERR, "\e[31mError: No se pudo abrir el archivo CSV: {$csvFile}\e[0m\n");
     exit(1);
 }
