@@ -25,7 +25,7 @@ if ($file === false) {
 
 $headers = fgetcsv($file);
 // Verificar si la primera línea es el encabezado real
-if ($headers && strtolower($headers[0]) !== 'method') {
+if (is_array($headers) && strtolower($headers[0]) !== 'method') {
     // Si no es un encabezado (no empieza por 'method'), regresar el puntero al inicio
     rewind($file);
 }
