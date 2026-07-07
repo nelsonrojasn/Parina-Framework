@@ -3,6 +3,9 @@ namespace Parina\Core;
 
 class Request
 {
+    private array $attributes = [];
+    private ?array $parsedJson = null;
+
     public function __construct(
         public readonly array $query,
         public readonly array $post,
@@ -49,5 +52,70 @@ class Request
     public function server(string $key, mixed $default = null): mixed
     {
         return $this->server[$key] ?? $default;
+    }
+
+    /**
+     * Retrieve standard HTTP header
+     */
+    public function header(string $name, ?string $default = null): ?string
+    {
+        $normalized = strtoupper(str_replace('-', '_', $name));
+        
+        if (in_array($normalized, ['CONTENT_TYPE', 'CONTENT_LENGTH'])) {
+            $formatted = $normalized;
+        } else {
+            $formatted = 'HTTP_' . $normalized;
+        }
+        
+        return $this->server[$formatted] ?? $default;
+    }
+
+    /**
+     * Retrieve input value uniformly from JSON payloads, POST, or GET
+     */
+    public function input(string $key, mixed $default = null): mixed
+    {
+        $contentType = $this->header('Content-Type', '');
+        if (str_contains($contentType, 'application/json')) {
+            if ($this->parsedJson === null) {
+                $body = file_get_contents('php://input');
+                $this->parsedJson = json_decode($body, true) ?? [];
+            }
+            return $this->parsedJson[$key] ?? $default;
+        }
+        return $this->post[$key] ?? $this->query[$key] ?? $default;
+    }
+
+    /**
+     * Get or set request-scoped context attributes
+     */
+    public function setAttribute(string $key, mixed $value): void
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    public function getAttribute(string $key, mixed $default = null): mixed
+    {
+        return $this->attributes[$key] ?? $default;
+    }
+
+    /**
+     * Retrieve Bearer token from authorization header
+     */
+    public function bearerToken(): ?string
+    {
+        $header = $this->header('Authorization', '');
+        if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
+
+    /**
+     * Check if request was sent via AJAX (XMLHttpRequest)
+     */
+    public function isAjax(): bool
+    {
+        return $this->header('X-Requested-With') === 'XMLHttpRequest';
     }
 }

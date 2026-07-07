@@ -60,4 +60,59 @@ class RequestTest extends TestCase
         // Limpiar
         unset($_GET['test_get'], $_POST['test_post'], $_SERVER['REQUEST_METHOD']);
     }
+
+    public function test_headers_and_bearer_token()
+    {
+        $request = new Request(
+            query: [],
+            post: [],
+            server: [
+                'HTTP_AUTHORIZATION' => 'Bearer my_jwt_token',
+                'CONTENT_TYPE' => 'application/json'
+            ],
+            files: [],
+            cookies: []
+        );
+
+        $this->assertEquals('Bearer my_jwt_token', $request->header('Authorization'));
+        $this->assertEquals('application/json', $request->header('Content-Type'));
+        $this->assertEquals('my_jwt_token', $request->bearerToken());
+    }
+
+    public function test_attributes_bag()
+    {
+        $request = new Request([], [], [], [], []);
+        $request->setAttribute('userId', 99);
+        
+        $this->assertEquals(99, $request->getAttribute('userId'));
+        $this->assertNull($request->getAttribute('missing'));
+        $this->assertEquals('default', $request->getAttribute('missing', 'default'));
+    }
+
+    public function test_is_ajax()
+    {
+        $request = new Request(
+            query: [],
+            post: [],
+            server: ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'],
+            files: [],
+            cookies: []
+        );
+
+        $this->assertTrue($request->isAjax());
+    }
+
+    public function test_input_fallback_to_post_and_query()
+    {
+        $request = new Request(
+            query: ['foo' => 'bar_query'],
+            post: ['foo' => 'bar_post'],
+            server: [],
+            files: [],
+            cookies: []
+        );
+
+        $this->assertEquals('bar_post', $request->input('foo'));
+        $this->assertEquals('default', $request->input('missing', 'default'));
+    }
 }
