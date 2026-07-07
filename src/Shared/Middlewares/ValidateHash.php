@@ -5,11 +5,18 @@ namespace Parina\Shared\Middlewares;
 use Parina\Core\Request;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
-use Parina\Shared\Security\Cipher;
+use Parina\Shared\Security\CipherInterface;
 use Parina\Core\Responses\NotFoundResponse;
 
 class ValidateHash implements Middleware
 {
+    private CipherInterface $cipher;
+
+    public function __construct(?CipherInterface $cipher = null)
+    {
+        $this->cipher = $cipher ?? new \Parina\Shared\Security\AesCipherService();
+    }
+
     /**
      * Handle middleware execution
      *
@@ -27,7 +34,7 @@ class ValidateHash implements Middleware
 
         try {
             // Decrypt and parse the URL hash (verifies signature and TTL)
-            [$action, $extraParams] = Cipher::parseUrlHash($hash);
+            [$action, $extraParams] = $this->cipher->parseUrlHash($hash);
 
             // Verify the encrypted action matches the current route path
             if ($route && isset($route['path'])) {
