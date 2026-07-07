@@ -8,24 +8,38 @@ use Parina\Core\Request;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\Responses\RedirectResponse;
 use Parina\Core\View;
-use Parina\Shared\Models\User;
+use Parina\Shared\Services\UserQueryRepositoryInterface;
+use Parina\Shared\Services\AuthInterface;
 use Parina\Core\Session;
 
 class LoginCheckHandler implements Handler
 {
+    private UserQueryRepositoryInterface $userRepository;
+    private AuthInterface $auth;
+
+    public function __construct(
+        ?UserQueryRepositoryInterface $userRepository = null,
+        ?AuthInterface $auth = null
+    ) {
+        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserRepository();
+        $this->auth = $auth ?? new \Parina\Shared\Services\SessionAuth();
+    }
+
     public function handle(Request $request): Response
     {    
-        $user = $request->post('user');
+        $username = $request->post('user');
         $password = $request->post('password');
 
-        $userModel = new User();
+        $user = $this->userRepository->checkCredentials($username, $password);
 
-        if ($userModel->checkAuth($user, $password)) {
-            return (new RedirectResponse('/', 302));
+        if ($user) {
+            $this->auth->login($user);
+            Session::set('flash', 'Welcome back, ' . $user['username'] . '!');
+            return new RedirectResponse('/', 302);
         }
 
         Session::set('flash', 'Credentials are not valid. Please check and try again!');
         $content = View::renderWithLayout("Public/Views/login", "default");
-        return (new HtmlResponse($content, 200));
+        return new HtmlResponse($content, 200);
     }
 }
