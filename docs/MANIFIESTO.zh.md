@@ -1,7 +1,7 @@
 # Parina 框架宣言  
 ## *阿尔蒂普拉诺版 —— 极简即是极致 (Where less is more)*
 
-🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 [Italiano](MANIFIESTO.it.md) | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇦ym [Aymara](MANIFIESTO.ay.md) | 🦙 [Quechua](MANIFIESTO.qu.md) | 🇨🇳 **简体中文** | 🇯🇵 [日本語](MANIFIESTO.ja.md)
+🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 [Italiano](MANIFIESTO.it.md) | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇨🇳 **简体中文** | 🇯🇵 [日本語](MANIFIESTO.ja.md)
 
 Parina 不是一个全栈框架。  
 它不想成为，  

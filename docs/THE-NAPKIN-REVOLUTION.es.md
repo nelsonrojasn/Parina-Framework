@@ -3,7 +3,7 @@
 
 Por Nelson Rojas Nuñez
 
-🇺🇸 [English](../THE-NAPKIN-REVOLUTION.md) | 🇪🇸 **Español** | 🇫🇷 [Français](THE-NAPKIN-REVOLUTION.fr.md) | 🇵🇹 [Português](THE-NAPKIN-REVOLUTION.pt.md) | 🇮🇹 [Italiano](THE-NAPKIN-REVOLUTION.it.md) | 🇩🇪 [Deutsch](THE-NAPKIN-REVOLUTION.de.md) | 🇦ym [Aymara](THE-NAPKIN-REVOLUTION.ay.md) | 🦙 [Quechua](THE-NAPKIN-REVOLUTION.qu.md) | 🇨🇳 [简体中文](THE-NAPKIN-REVOLUTION.zh.md) | 🇯🇵 [日本語](THE-NAPKIN-REVOLUTION.ja.md)
+🇺🇸 [English](../THE-NAPKIN-REVOLUTION.md) | 🇪🇸 **Español** | 🇫🇷 [Français](THE-NAPKIN-REVOLUTION.fr.md) | 🇵🇹 [Português](THE-NAPKIN-REVOLUTION.pt.md) | 🇮🇹 [Italiano](THE-NAPKIN-REVOLUTION.it.md) | 🇩🇪 [Deutsch](THE-NAPKIN-REVOLUTION.de.md) | 🇨🇳 [简体中文](THE-NAPKIN-REVOLUTION.zh.md) | 🇯🇵 [日本語](THE-NAPKIN-REVOLUTION.ja.md)
 
 ---
 

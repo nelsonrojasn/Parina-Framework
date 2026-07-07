@@ -2,7 +2,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
-🇺🇸 [English](../README.md) | 🇪🇸 [Español](README.es.md) | 🇫🇷 [Français](README.fr.md) | 🇵🇹 [Português](README.pt.md) | 🇮🇹 **Italiano** | 🇩🇪 [Deutsch](README.de.md) | 🇦ym [Aymara](README.ay.md) | 🦙 [Quechua](README.qu.md) | 🇨🇳 [简体中文](README.zh.md) | 🇯🇵 [日本語](README.ja.md)
+🇺🇸 [English](../README.md) | 🇪🇸 [Español](README.es.md) | 🇫🇷 [Français](README.fr.md) | 🇵🇹 [Português](README.pt.md) | 🇮🇹 **Italiano** | 🇩🇪 [Deutsch](README.de.md) | 🇨🇳 [简体中文](README.zh.md) | 🇯🇵 [日本語](README.ja.md)
 
 ### *Edizione Altiplano: Meno è meglio. Il framework web per pensare con chiarezza.*
 
@@ -11,6 +11,15 @@
 ## 💡 Cos'è Parina?
 
 Parina è un micro-framework minimalista per moderne applicazioni PHP. Fornisce la struttura strettamente necessaria per creare applicazioni con chiarezza, controllo e massime prestazioni.
+
+---
+
+## 🛠️ Funzionalità Chiave
+
+* **Contenitore DI con Reflection**: Risoluzione automatica e iniezione delle dipendenze nel costruttore per Handler e Middleware.
+* **Richiesta HTTP senza stato (`Request`)**: Input unificato dei dati (`input()`), lettura semplice degli header (`header()`) e attributi di contesto locali (`setAttribute()`) per la condivisione dei dati.
+* **Pattern CQS e Adapter**: Separazione di query di lettura e comandi di scrittura nei Repository, insieme ad adattatori per database (SQLite, MySQL, PostgreSQL) conformi al principio Aperto/Chiuso.
+* **Protezione XSS**: Escape sicuro delle variabili nei template utilizzando la funzione di aiuto globale `h()`.
 
 ---
 
@@ -107,14 +116,29 @@ Progettato per un sovraccarico minimo e una precisione al microsecondo:
 // public/index.php
 use Parina\Core\Router;
 use Parina\Core\Kernel;
-use Parina\Modules\Public\HomeHandler;
+use Parina\Core\Container;
+use Parina\Core\Config;
+use Parina\Shared\Infrastructure\Db;
 
-require_once '../src/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
+
+// Instantiate DI container & load dynamic dependencies
+$container = new Container();
+if (file_exists(__DIR__ . '/../config/dependencies.php')) {
+    $container->load(require __DIR__ . '/../config/dependencies.php');
+}
+
+// Initialize database with dynamically resolved adapter (OCP)
+Db::setConfig(Config::getDbConfig());
+Db::init($container->get(\Parina\Shared\Infrastructure\DatabaseAdapter::class));
 
 $router = new Router();
-$router->add('GET', '/', HomeHandler::class);
+$routes = require '../config/routes.php';
+foreach ($routes as $route) {
+    $router->add($route['method'], $route['path'], $route['handler'], $route['middleware'] ?? []);
+}
 
-$kernel = new Kernel($router);
+$kernel = new Kernel($router, $container);
 $kernel->run();
 ```
 
@@ -127,12 +151,18 @@ use Parina\Core\Interfaces\Response;
 use Parina\Core\Request;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
+use Parina\Shared\Services\UserQueryRepositoryInterface;
 
-class HomeHandler implements Handler
+class UsersListHandler implements Handler
 {
+    // Resolved and injected automatically by the DI Container via Reflection
+    public function __construct(private UserQueryRepositoryInterface $userRepo) {}
+
     public function handle(Request $request): Response
     {
-        $content = View::renderWithLayout("Public/Views/home", "default", ['title' => 'Parina']);
+        $users = $this->userRepo->getActiveUsersList();
+        // Secure HTML output using the global h() helper to prevent XSS
+        $content = View::renderWithLayout("Admin/Views/users/list", "default", ['users' => $users]);
         return new HtmlResponse($content, 200);
     }
 }
@@ -140,9 +170,13 @@ class HomeHandler implements Handler
 
 ## 🖼 Esempio di Vista Minima
 ```php
-<!-- Modules/Public/Views/home.php -->
-<h1><?= $title ?></h1>
-<p>Benvenuto in Parina Framework.</p>
+<!-- Modules/Admin/Views/users/list.php -->
+<h1>Users List</h1>
+<ul>
+  <?php foreach ($users as $user): ?>
+    <li><?= h($user['username']) ?></li>
+  <?php endforeach; ?>
+</ul>
 ```
 
 ---

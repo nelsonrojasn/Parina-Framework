@@ -1,7 +1,7 @@
 # Manifesto di Parina Framework  
 ## *Edizione Altiplano — Dove meno è più*
 
-🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 **Italiano** | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇦ym [Aymara](MANIFIESTO.ay.md) | 🦙 [Quechua](MANIFIESTO.qu.md) | 🇨🇳 [简体中文](MANIFIESTO.zh.md) | 🇯🇵 [日本語](MANIFIESTO.ja.md)
+🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 **Italiano** | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇨🇳 [简体中文](MANIFIESTO.zh.md) | 🇯🇵 [日本語](MANIFIESTO.ja.md)
 
 Parina non è un framework full-stack.  
 Non vuole esserlo.  

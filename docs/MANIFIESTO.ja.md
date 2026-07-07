@@ -1,7 +1,7 @@
 # Parina Framework 宣言  
 ## *アルティプラーノ版 —— 最小限こそが豊かさ (Where less is more)*
 
-🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 [Italiano](MANIFIESTO.it.md) | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇦ym [Aymara](MANIFIESTO.ay.md) | 🦙 [Quechua](MANIFIESTO.qu.md) | 🇨🇳 [简体中文](MANIFIESTO.zh.md) | 🇯🇵 **日本語**
+🇺🇸 [English](../MANIFIESTO.md) | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 [Italiano](MANIFIESTO.it.md) | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇨🇳 [简体中文](MANIFIESTO.zh.md) | 🇯🇵 **日本語**
 
 Parina はフルスタックフレームワークではありません。  
 それを望んでもいませんし、  

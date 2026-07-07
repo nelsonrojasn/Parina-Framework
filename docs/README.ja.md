@@ -2,7 +2,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
-🇺🇸 [English](../README.md) | 🇪🇸 [Español](README.es.md) | 🇫🇷 [Français](README.fr.md) | 🇵🇹 [Português](README.pt.md) | 🇮🇹 [Italiano](README.it.md) | 🇩🇪 [Deutsch](README.de.md) | 🇦ym [Aymara](README.ay.md) | 🦙 [Quechua](README.qu.md) | 🇨🇳 [简体中文](README.zh.md) | 🇯🇵 **日本語**
+🇺🇸 [English](../README.md) | 🇪🇸 [Español](README.es.md) | 🇫🇷 [Français](README.fr.md) | 🇵🇹 [Português](README.pt.md) | 🇮🇹 [Italiano](README.it.md) | 🇩🇪 [Deutsch](README.de.md) | 🇨🇳 [简体中文](README.zh.md) | 🇯🇵 **日本語**
 
 ### *アルティプラーノ版：最小限こそが豊かさ。クリアな思考のための Web マイクロフレームワーク。*
 
@@ -11,6 +11,15 @@
 ## 💡 Parina とは？
 
 Parina は、モダンな PHP アプリケーションのための极限までシンプルなマイクロフレームワークです。アプリケーションを明快さ、制御、そして最高のパフォーマンスで構築するために必要十分な構造のみを提供します。
+
+---
+
+## 🛠️ 主な機能
+
+* **リフレクションによるDIコンテナ**: ハンドラーおよびミドルウェアの依存関係を自動解決し、コンストラクタインジェクションを実行します。
+* **ステートレスなHTTPリクエスト (`Request`)**: 統一された入力メソッド (`input()`)、シンプルなHTTPヘッダー取得 (`header()`)、およびミドルウェアからハンドラーへコンテキストを共有するリクエスト属性 (`setAttribute()`)。
+* **CQSとアダプターパターン**: リポジトリ内での読み取りクエリと書き込みコマンドの分離、およびオープン・クローズドの原則に準拠した動的データベースドライバーアダプター（SQLite、MySQL、PostgreSQL）。
+* **XSS保護**: グローバルヘルパー関数 `h()` を使用した、テンプレート内変数の安全なエスケープ。
 
 ---
 
@@ -107,14 +116,29 @@ class SimpleAuth implements Middleware
 // public/index.php
 use Parina\Core\Router;
 use Parina\Core\Kernel;
-use Parina\Modules\Public\HomeHandler;
+use Parina\Core\Container;
+use Parina\Core\Config;
+use Parina\Shared\Infrastructure\Db;
 
-require_once '../src/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
+
+// Instantiate DI container & load dynamic dependencies
+$container = new Container();
+if (file_exists(__DIR__ . '/../config/dependencies.php')) {
+    $container->load(require __DIR__ . '/../config/dependencies.php');
+}
+
+// Initialize database with dynamically resolved adapter (OCP)
+Db::setConfig(Config::getDbConfig());
+Db::init($container->get(\Parina\Shared\Infrastructure\DatabaseAdapter::class));
 
 $router = new Router();
-$router->add('GET', '/', HomeHandler::class);
+$routes = require '../config/routes.php';
+foreach ($routes as $route) {
+    $router->add($route['method'], $route['path'], $route['handler'], $route['middleware'] ?? []);
+}
 
-$kernel = new Kernel($router);
+$kernel = new Kernel($router, $container);
 $kernel->run();
 ```
 
@@ -127,12 +151,18 @@ use Parina\Core\Interfaces\Response;
 use Parina\Core\Request;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
+use Parina\Shared\Services\UserQueryRepositoryInterface;
 
-class HomeHandler implements Handler
+class UsersListHandler implements Handler
 {
+    // Resolved and injected automatically by the DI Container via Reflection
+    public function __construct(private UserQueryRepositoryInterface $userRepo) {}
+
     public function handle(Request $request): Response
     {
-        $content = View::renderWithLayout("Public/Views/home", "default", ['title' => 'Parina']);
+        $users = $this->userRepo->getActiveUsersList();
+        // Secure HTML output using the global h() helper to prevent XSS
+        $content = View::renderWithLayout("Admin/Views/users/list", "default", ['users' => $users]);
         return new HtmlResponse($content, 200);
     }
 }
@@ -140,9 +170,13 @@ class HomeHandler implements Handler
 
 ## 🖼 最小限のビュー例
 ```php
-<!-- Modules/Public/Views/home.php -->
-<h1><?= $title ?></h1>
-<p>Parina Framework へようこそ。</p>
+<!-- Modules/Admin/Views/users/list.php -->
+<h1>Users List</h1>
+<ul>
+  <?php foreach ($users as $user): ?>
+    <li><?= h($user['username']) ?></li>
+  <?php endforeach; ?>
+</ul>
 ```
 
 ---
