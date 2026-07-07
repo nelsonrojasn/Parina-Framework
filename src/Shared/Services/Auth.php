@@ -11,6 +11,9 @@ class Auth
         if (self::$instance === null) {
             self::$instance = new SessionAuth();
         }
+        if (self::$instance === null) {
+            throw new \RuntimeException("Auth instance not initialized.");
+        }
         return self::$instance;
     }
 

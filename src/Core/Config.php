@@ -11,6 +11,9 @@ class Config
         if (self::$instance === null) {
             self::$instance = new AppConfig();
         }
+        if (self::$instance === null) {
+            throw new \RuntimeException("Config instance not initialized.");
+        }
         return self::$instance;
     }
 

@@ -102,7 +102,7 @@ class ContainerTest extends TestCase
 
     public function testResolvesFactoryClosure()
     {
-        $this->container->bind(StubInterface::class, function ($c) {
+        $this->container->bind(StubInterface::class, function () {
             return new StubImplementation();
         });
         
