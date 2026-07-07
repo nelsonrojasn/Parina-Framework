@@ -2,26 +2,32 @@
 
 namespace Parina\Shared\Services;
 
-use Parina\Shared\Infrastructure\DB;
-use Parina\Core\Config;
-use Parina\Core\FileLogger;
+use Parina\Core\Interfaces\Logger;
 
-class Acl
+class Acl implements AclInterface
 {
-    private static ?bool $mockHasPermissions = null;
+    private Logger $logger;
 
-    public static function setMockHasPermissions(?bool $value): void
+    public function __construct(?Logger $logger = null)
     {
-        self::$mockHasPermissions = $value;
+        $this->logger = $logger ?? new \Parina\Core\FileLogger();
     }
 
-    public static function hasPermissions(string $action):bool
+    public function hasPermissions(string $action): bool
     {
-        if (self::$mockHasPermissions !== null) {
-            return self::$mockHasPermissions;
-        }
-
-        FileLogger::log("Checking permissions for action: $action");
+        $this->logger->log("Checking permissions for action: $action");
         return true;
+    }
+
+    /**
+     * Facade static call delegation for backward compatibility
+     */
+    public static function __callStatic(string $name, array $arguments)
+    {
+        static $instance = null;
+        if ($instance === null) {
+            $instance = new self();
+        }
+        return call_user_func_array([$instance, $name], $arguments);
     }
 }
