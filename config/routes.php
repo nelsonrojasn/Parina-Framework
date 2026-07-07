@@ -2,16 +2,6 @@
 
 // Dynamically generated routes configuration via CLI Scaffolding tool.
 
-$privateMiddlewares = [
-    \Parina\Shared\Middlewares\RateLimit::class,
-    \Parina\Shared\Middlewares\RequestSize::class, 
-    \Parina\Shared\Middlewares\SameOrigin::class,
-    \Parina\Shared\Middlewares\Csrf::class,
-    \Parina\Shared\Middlewares\Auth::class,
-    \Parina\Shared\Middlewares\Acl::class,
-    \Parina\Shared\Middlewares\ValidateHash::class,
-];
-
 return [
     [
         'method' => 'GET',
@@ -55,18 +45,42 @@ return [
         'method' => 'GET',
         'path' => '/admin/home/{hash}',
         'handler' => \Parina\Modules\Admin\AdminHandler::class,
-        'middleware' => $privateMiddlewares
+        'middleware' => [
+            \Parina\Shared\Middlewares\RateLimit::class,
+            \Parina\Shared\Middlewares\RequestSize::class,
+            \Parina\Shared\Middlewares\SameOrigin::class,
+            \Parina\Shared\Middlewares\Csrf::class,
+            \Parina\Shared\Middlewares\Auth::class,
+            \Parina\Shared\Middlewares\Acl::class,
+            \Parina\Shared\Middlewares\ValidateHash::class
+        ]
     ],
     [
         'method' => 'GET',
         'path' => '/admin/users/{hash}',
         'handler' => \Parina\Modules\Admin\UsersListHandler::class,
-        'middleware' => $privateMiddlewares
+        'middleware' => [
+            \Parina\Shared\Middlewares\RateLimit::class,
+            \Parina\Shared\Middlewares\RequestSize::class,
+            \Parina\Shared\Middlewares\SameOrigin::class,
+            \Parina\Shared\Middlewares\Csrf::class,
+            \Parina\Shared\Middlewares\Auth::class,
+            \Parina\Shared\Middlewares\Acl::class,
+            \Parina\Shared\Middlewares\ValidateHash::class
+        ]
     ],
     [
         'method' => 'GET',
         'path' => '/logout/{hash}',
         'handler' => \Parina\Modules\Private\LogoutHandler::class,
-        'middleware' => $privateMiddlewares
+        'middleware' => [
+            \Parina\Shared\Middlewares\RateLimit::class,
+            \Parina\Shared\Middlewares\RequestSize::class,
+            \Parina\Shared\Middlewares\SameOrigin::class,
+            \Parina\Shared\Middlewares\Csrf::class,
+            \Parina\Shared\Middlewares\Auth::class,
+            \Parina\Shared\Middlewares\Acl::class,
+            \Parina\Shared\Middlewares\ValidateHash::class
+        ]
     ]
 ];
