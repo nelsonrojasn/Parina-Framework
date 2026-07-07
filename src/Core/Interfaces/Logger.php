@@ -3,5 +3,5 @@
 namespace Parina\Core\Interfaces;
 
 interface Logger {
-    public static function log(string $message): void;
+    public function log(string $message): void;
 }

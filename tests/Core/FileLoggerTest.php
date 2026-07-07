@@ -11,6 +11,7 @@ class FileLoggerTest extends TestCase
     {
         // Validamos que se ejecute sin lanzar excepciones.
         $this->expectNotToPerformAssertions();
-        FileLogger::log("Test log message from unit tests");
+        $logger = new FileLogger();
+        $logger->log("Test log message from unit tests");
     }
 }
