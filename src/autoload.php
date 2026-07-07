@@ -4,6 +4,9 @@
  * KISS Autoloader for Parina Framework.
  * Implements PSR-4 class loading standard.
  */
+// Load global helpers
+require_once __DIR__ . '/Core/Helpers.php';
+
 spl_autoload_register(static function (string $class) {
     if (str_starts_with($class, 'Parina\\')) {
         $file = __DIR__ . '/' . str_replace('\\', '/', substr($class, 7)) . '.php';
