@@ -4,29 +4,38 @@ namespace Parina\Shared\Middlewares;
 use Parina\Core\Request;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
-use Parina\Shared\Services\JwtAuth as JwtService;
+use Parina\Shared\Services\TokenServiceInterface;
 use Parina\Core\Responses\UnauthorizedResponse;
 use Parina\Core\Session;
 
 class JwtAuth implements Middleware
 {
+    private TokenServiceInterface $tokenService;
+
+    public function __construct(?TokenServiceInterface $tokenService = null)
+    {
+        $this->tokenService = $tokenService ?? new \Parina\Shared\Services\JwtTokenService();
+    }
+
     public function handle(Request $request): ?Response
     {
-        // En algunos servidores PHP, el header puede venir en $_SERVER['HTTP_AUTHORIZATION']
-        $authHeader = $request->server['HTTP_AUTHORIZATION'] ?? '';
+        $token = $request->bearerToken();
 
-        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        if (!$token) {
             return new UnauthorizedResponse("Token missing or malformed.");
         }
         
-        $token = $matches[1];
-        $payload = JwtService::validateToken($token);
+        $payload = $this->tokenService->validateToken($token);
 
         if (!$payload) {
             return new UnauthorizedResponse("Invalid or expired token.");
         }
 
-        // Inyectar datos del usuario para que el Handler los tenga disponibles
+        // Store in Request Attributes (for stateless handlers)
+        $request->setAttribute('user_id', $payload['sub'] ?? null);
+        $request->setAttribute('user_data', $payload);
+
+        // Store in Session (backward compatibility for legacy handlers)
         Session::set('user_id', $payload['sub'] ?? null);
         Session::set('user_data', $payload);
 

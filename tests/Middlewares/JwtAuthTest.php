@@ -5,7 +5,7 @@ namespace Tests\Middlewares;
 use PHPUnit\Framework\TestCase;
 use Parina\Core\Request;
 use Parina\Shared\Middlewares\JwtAuth;
-use Parina\Shared\Services\JwtAuth as JwtService;
+use Parina\Shared\Services\TokenServiceInterface;
 use Parina\Core\Responses\UnauthorizedResponse;
 
 class JwtAuthTest extends TestCase
@@ -17,6 +17,8 @@ class JwtAuthTest extends TestCase
 
     public function test_jwt_auth_blocks_when_token_missing()
     {
+        $tokenServiceMock = $this->createMock(TokenServiceInterface::class);
+
         $request = new Request(
             query: [],
             post: [],
@@ -25,7 +27,7 @@ class JwtAuthTest extends TestCase
             cookies: []
         );
 
-        $middleware = new JwtAuth();
+        $middleware = new JwtAuth($tokenServiceMock);
         $response = $middleware->handle($request);
 
         $this->assertInstanceOf(UnauthorizedResponse::class, $response);
@@ -35,6 +37,9 @@ class JwtAuthTest extends TestCase
 
     public function test_jwt_auth_blocks_when_token_invalid()
     {
+        $tokenServiceMock = $this->createMock(TokenServiceInterface::class);
+        $tokenServiceMock->method('validateToken')->with('invalid.token.here')->willReturn(null);
+
         $request = new Request(
             query: [],
             post: [],
@@ -45,7 +50,7 @@ class JwtAuthTest extends TestCase
             cookies: []
         );
 
-        $middleware = new JwtAuth();
+        $middleware = new JwtAuth($tokenServiceMock);
         $response = $middleware->handle($request);
 
         $this->assertInstanceOf(UnauthorizedResponse::class, $response);
@@ -55,21 +60,22 @@ class JwtAuthTest extends TestCase
 
     public function test_jwt_auth_passes_when_token_valid()
     {
-        // Generar un token válido usando el servicio
         $payload = ['sub' => 123, 'username' => 'testuser'];
-        $token = JwtService::createToken($payload);
+
+        $tokenServiceMock = $this->createMock(TokenServiceInterface::class);
+        $tokenServiceMock->method('validateToken')->with('valid.token.here')->willReturn($payload);
 
         $request = new Request(
             query: [],
             post: [],
             server: [
-                'HTTP_AUTHORIZATION' => 'Bearer ' . $token
+                'HTTP_AUTHORIZATION' => 'Bearer valid.token.here'
             ],
             files: [],
             cookies: []
         );
 
-        $middleware = new JwtAuth();
+        $middleware = new JwtAuth($tokenServiceMock);
         $response = $middleware->handle($request);
 
         $this->assertNull($response);
