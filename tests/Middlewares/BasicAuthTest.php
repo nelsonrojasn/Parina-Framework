@@ -6,30 +6,28 @@ use PHPUnit\Framework\TestCase;
 use Parina\Core\Request;
 use Parina\Shared\Middlewares\BasicAuth;
 use Parina\Core\Responses\BasicRealmResponse;
-use Parina\Modules\Public\SetupHandler;
+use Parina\Shared\Services\UserQueryRepositoryInterface;
 
 class BasicAuthTest extends TestCase
 {
     protected function setUp(): void
     {
         $_SESSION = [];
-        
-        // Inicializar base de datos y usuario admin de prueba
-        $setup = new SetupHandler();
-        $setup->handle(new Request([], [], [], [], []));
     }
 
     public function test_basic_auth_blocks_when_credentials_missing()
     {
+        $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
+        
         $request = new Request(
             query: [],
             post: [],
-            server: [], // Sin PHP_AUTH_USER ni PHP_AUTH_PW
+            server: [], // No PHP_AUTH_USER nor PHP_AUTH_PW
             files: [],
             cookies: []
         );
 
-        $middleware = new BasicAuth();
+        $middleware = new BasicAuth($repoMock);
         $response = $middleware->handle($request);
 
         $this->assertInstanceOf(BasicRealmResponse::class, $response);
@@ -38,6 +36,9 @@ class BasicAuthTest extends TestCase
 
     public function test_basic_auth_blocks_when_credentials_invalid()
     {
+        $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
+        $repoMock->method('checkCredentials')->with('wrong_user', 'wrong_password')->willReturn(null);
+
         $request = new Request(
             query: [],
             post: [],
@@ -49,7 +50,7 @@ class BasicAuthTest extends TestCase
             cookies: []
         );
 
-        $middleware = new BasicAuth();
+        $middleware = new BasicAuth($repoMock);
         $response = $middleware->handle($request);
 
         $this->assertInstanceOf(BasicRealmResponse::class, $response);
@@ -58,6 +59,10 @@ class BasicAuthTest extends TestCase
 
     public function test_basic_auth_passes_when_credentials_valid()
     {
+        $user = ['id' => 1, 'username' => 'admin'];
+        $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
+        $repoMock->method('checkCredentials')->with('admin', 'admin123')->willReturn($user);
+
         $request = new Request(
             query: [],
             post: [],
@@ -69,7 +74,7 @@ class BasicAuthTest extends TestCase
             cookies: []
         );
 
-        $middleware = new BasicAuth();
+        $middleware = new BasicAuth($repoMock);
         $response = $middleware->handle($request);
 
         $this->assertNull($response);
