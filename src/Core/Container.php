@@ -46,10 +46,7 @@ class Container
         }
 
         // 2. Resolve mapped binding
-        $concrete = $className;
-        if (isset($this->bindings[$className])) {
-            $concrete = $this->bindings[$className];
-        }
+        $concrete = $this->bindings[$className] ?? $className;
 
         // If the mapped binding resolves to a pre-existing object (and is not a factory closure), return it
         if (is_object($concrete) && !($concrete instanceof \Closure)) {
@@ -70,42 +67,10 @@ class Container
             return $this->instances[$concrete];
         }
 
-        // 3. Inspect the class
-        $reflector = new ReflectionClass($concrete);
+        // 3. Build the concrete instance
+        $instance = $this->build($concrete);
 
-        if (!$reflector->isInstantiable()) {
-            throw new Exception("La clase o interfaz {$concrete} no es instanciable.");
-        }
-
-        // 4. Check constructor
-        $constructor = $reflector->getConstructor();
-        if (is_null($constructor)) {
-            $instance = new $concrete();
-        } else {
-            // 5. Resolve constructor parameters
-            $parameters = $constructor->getParameters();
-            $dependencies = [];
-
-            foreach ($parameters as $parameter) {
-                $type = $parameter->getType();
-
-                if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-                    // Recursively resolve dependency
-                    $dependencies[] = $this->get($type->getName());
-                } else {
-                    // If it has a default value, use it
-                    if ($parameter->isDefaultValueAvailable()) {
-                        $dependencies[] = $parameter->getDefaultValue();
-                    } else {
-                        throw new Exception("No se puede resolver el parámetro primitivo '{$parameter->getName()}' en {$concrete}");
-                    }
-                }
-            }
-
-            $instance = $reflector->newInstanceArgs($dependencies);
-        }
-
-        // 6. Cache the instance if registered as a singleton
+        // 4. Cache the instance if registered as a singleton
         if (array_key_exists($className, $this->instances)) {
             $this->instances[$className] = $instance;
         }
@@ -114,6 +79,52 @@ class Container
         }
 
         return $instance;
+    }
+
+    /**
+     * Build the concrete instance of a class.
+     */
+    private function build(string $concrete)
+    {
+        $reflector = new ReflectionClass($concrete);
+
+        if (!$reflector->isInstantiable()) {
+            throw new Exception("La clase o interfaz {$concrete} no es instanciable.");
+        }
+
+        $constructor = $reflector->getConstructor();
+        if (is_null($constructor)) {
+            return new $concrete();
+        }
+
+        $dependencies = $this->resolveDependencies($constructor->getParameters(), $concrete);
+        return $reflector->newInstanceArgs($dependencies);
+    }
+
+    /**
+     * Resolve dependencies for a constructor.
+     */
+    private function resolveDependencies(array $parameters, string $concrete): array
+    {
+        $dependencies = [];
+
+        foreach ($parameters as $parameter) {
+            $type = $parameter->getType();
+
+            if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+                // Recursively resolve dependency
+                $dependencies[] = $this->get($type->getName());
+            } else {
+                // If it has a default value, use it
+                if ($parameter->isDefaultValueAvailable()) {
+                    $dependencies[] = $parameter->getDefaultValue();
+                } else {
+                    throw new Exception("No se puede resolver el parámetro primitivo '{$parameter->getName()}' en {$concrete}");
+                }
+            }
+        }
+
+        return $dependencies;
     }
 
     /**
