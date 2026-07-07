@@ -9,7 +9,12 @@ use Parina\Core\Responses\NotFoundResponse;
 class Kernel
 {
 
-    public function __construct(private Router $router) {}
+    private Container $container;
+
+    public function __construct(private Router $router, ?Container $container = null)
+    {
+        $this->container = $container ?? new Container();
+    }
 
     public function run(): void
     {
@@ -30,7 +35,8 @@ class Kernel
 
         // Execute middlewares if available
         foreach ($route['middleware'] as $mw) {
-            $response = (new $mw())->handle($request, $route);
+            $mwInstance = is_string($mw) ? $this->container->get($mw) : $mw;
+            $response = $mwInstance->handle($request, $route);
             // if middleware doesn't return null, we break the execution
             if ($response !== null) {
                 $this->send($response);
@@ -42,7 +48,7 @@ class Kernel
         $handler = $route['handler'];
 
         if (is_string($handler)) {
-            $handler = new $handler();
+            $handler = $this->container->get($handler);
         }
 
         if (!$handler instanceof Handler) {

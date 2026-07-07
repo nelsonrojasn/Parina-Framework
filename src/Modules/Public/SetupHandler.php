@@ -8,11 +8,18 @@ use Parina\Core\Request;
 use Parina\Core\Responses\ErrorResponse;
 use Parina\Core\Responses\RedirectResponse;
 use Parina\Core\Config;
-use Parina\Core\FileLogger;
+use Parina\Core\Interfaces\Logger;
 use Parina\Shared\Infrastructure\Db;
 
 class SetupHandler implements Handler
 {
+    private Logger $logger;
+
+    public function __construct(?Logger $logger = null)
+    {
+        $this->logger = $logger ?? new \Parina\Core\FileLogger();
+    }
+
     public function handle(Request $request): Response
     {
         try {
@@ -56,7 +63,7 @@ class SetupHandler implements Handler
                 // Create 'admin' user (Password: 'admin123' using native password_hash with salt)
                 $hashedPassword = password_hash( 'admin123', PASSWORD_BCRYPT);
                 Db::query(
-                    "INSERT INTO users (company_id, username, password, email) VALUES (:company_id, :username, :password, :email)",
+                     "INSERT INTO users (company_id, username, password, email) VALUES (:company_id, :username, :password, :email)",
                     [
                         'company_id' => $companyId,
                         'username'   => 'admin',
@@ -81,7 +88,7 @@ class SetupHandler implements Handler
             return (new RedirectResponse('/', 303));
 
         } catch (\Exception $e) {
-            FileLogger::log("SetupHandler Error (" . $e->getCode() . "): " . $e->getMessage());
+            $this->logger->log("SetupHandler Error (" . $e->getCode() . "): " . $e->getMessage());
             return (new ErrorResponse("DB Setup Error: " . $e->getMessage(), 500));
         }
     }
