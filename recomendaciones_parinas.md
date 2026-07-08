@@ -47,7 +47,7 @@ Siguiendo las convenciones clásicas y limpias que facilitan el mapeo manual:
 *   **Claves Foráneas:** Deben nombrarse con el nombre de la tabla de origen seguido del sufijo `_id` (ej: `proveedor_id`).
 *   **Campos de Fecha:**
     *   `creado_at` para la fecha/hora de creación del registro.
-    *   `actualizado_in` para la fecha/hora del último cambio.
+    *   `actualizado_at` para la fecha/hora del último cambio.
 
 ### Abstracción de Datos sin ORM Mágico (CQS)
 En lugar de depender de un ActiveRecord pesado con carga perezosa (*lazy loading*), en Parina recomendamos separar las lecturas de las escrituras (**Command Query Separation**):
