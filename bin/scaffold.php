@@ -170,6 +170,15 @@ function scaffoldTest(string $handlerClass): void
     $className = ($lastBackslash !== false) ? substr($handlerClass, $lastBackslash + 1) : $handlerClass;
     
     $testFilePath = "tests/Handlers/{$className}Test.php";
+    $testNamespace = "Tests\\Handlers";
+
+    // Auto-detect Features namespace to place tests symmetrically
+    $parts = explode('\\', ltrim($handlerClass, '\\'));
+    if (count($parts) >= 3 && $parts[0] === 'Parina' && $parts[1] === 'Features') {
+        $featureName = $parts[2];
+        $testFilePath = "tests/Features/{$featureName}/{$className}Test.php";
+        $testNamespace = "Tests\\Features\\{$featureName}";
+    }
 
     if (file_exists($testFilePath)) {
         echo "  [Test] Already exists: $testFilePath\n";
@@ -186,7 +195,7 @@ function scaffoldTest(string $handlerClass): void
     $stub = <<<PHP
 <?php
 
-namespace Tests\Handlers;
+namespace $testNamespace;
 
 use PHPUnit\Framework\TestCase;
 use Parina\Core\Request;

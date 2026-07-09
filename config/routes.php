@@ -6,32 +6,31 @@ return [
     [
         'method' => 'GET',
         'path' => '/',
-        'handler' => \Parina\Modules\Public\HomeHandler::class,
+        'handler' => \Parina\Features\Marketing\Handlers\HomeHandler::class,
         'middleware' => []
     ],
     [
         'method' => 'GET',
         'path' => '/about',
-        'handler' => \Parina\Modules\Public\AboutHandler::class,
+        'handler' => \Parina\Features\Marketing\Handlers\AboutHandler::class,
         'middleware' => []
     ],
-
     [
         'method' => 'GET',
         'path' => '/login',
-        'handler' => \Parina\Modules\Public\LoginFormHandler::class,
+        'handler' => \Parina\Features\Authentication\Handlers\LoginFormHandler::class,
         'middleware' => []
     ],
     [
         'method' => 'POST',
         'path' => '/login',
-        'handler' => \Parina\Modules\Public\LoginCheckHandler::class,
+        'handler' => \Parina\Features\Authentication\Handlers\LoginCheckHandler::class,
         'middleware' => []
     ],
     [
         'method' => 'GET',
         'path' => '/comprar/credito/auto/{id}',
-        'handler' => \Parina\Modules\Public\AutoPurchaseHandler::class,
+        'handler' => \Parina\Features\AutoPurchase\Handlers\AutoPurchaseHandler::class,
         'middleware' => [
             \Parina\Shared\Middlewares\Auth::class
         ]
@@ -39,7 +38,7 @@ return [
     [
         'method' => 'GET',
         'path' => '/admin/home/{hash}',
-        'handler' => \Parina\Modules\Admin\AdminHandler::class,
+        'handler' => \Parina\Features\Dashboard\Handlers\AdminHandler::class,
         'middleware' => [
             \Parina\Shared\Middlewares\RateLimit::class,
             \Parina\Shared\Middlewares\RequestSize::class,
@@ -53,7 +52,7 @@ return [
     [
         'method' => 'GET',
         'path' => '/admin/users/{hash}',
-        'handler' => \Parina\Modules\Admin\UsersListHandler::class,
+        'handler' => \Parina\Features\UserManagement\Handlers\UsersListHandler::class,
         'middleware' => [
             \Parina\Shared\Middlewares\RateLimit::class,
             \Parina\Shared\Middlewares\RequestSize::class,
@@ -67,7 +66,7 @@ return [
     [
         'method' => 'GET',
         'path' => '/logout/{hash}',
-        'handler' => \Parina\Modules\Private\LogoutHandler::class,
+        'handler' => \Parina\Features\Authentication\Handlers\LogoutHandler::class,
         'middleware' => [
             \Parina\Shared\Middlewares\RateLimit::class,
             \Parina\Shared\Middlewares\RequestSize::class,

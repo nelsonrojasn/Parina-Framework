@@ -2,7 +2,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/badges/build.png?b=main)](https://scrutinizer-ci.com/g/nelsonrojasn/Parina-Framework/build-status/main)
 
-🇺🇸 **English** | 🇪🇸 [Español](docs/README.es.md) | 🇫🇷 [Français](docs/README.fr.md) | 🇵🇹 [Português](docs/README.pt.md) | 🇮🇹 [Italiano](docs/README.it.md) | 🇩🇪 [Deutsch](docs/README.de.md) | 🇨🇳 [简体中文](docs/README.zh.md) | 🇯🇵 [日本語](docs/README.ja.md)
+🇺🇸 **English** | 🇪🇸 [Español](docs/README.es.md)
 
 ### *Altiplano Edition: Less is more. The web framework for clear thinking.*
 
@@ -10,13 +10,14 @@
 
 ## 💡 What is Parina?
 
-Parina is a minimal micro-framework for modern PHP applications. It provides just enough structure to build applications with clarity, control, and peak performance.
+Parina is a minimal micro-framework for modern PHP applications. It provides just enough structure to build applications with clarity, control, and peak performance, adhering to Feature-Driven Architecture and clean design patterns.
 
 ---
 
 ## 🛠️ Key Features
 
 * **DI Container with Reflection**: Automatic resolution and constructor injection of dependencies for Handlers and Middlewares.
+* **Feature-Driven Architecture**: Handlers, views, and tests organized by cohesive business features (e.g. `Authentication`, `UserManagement`, `Marketing`) instead of role-based folders or separate technical layers.
 * **Stateless HTTP Request (`Request`)**: Unified payload input (`input()`), simple HTTP header fetching (`header()`), and local request context attributes (`setAttribute()`) for clean middleware-to-handler data sharing.
 * **CQS & Adapter Patterns**: Separation of read queries and write commands inside Repositories, coupled with dynamic database driver adapters (SQLite, MySQL, PostgreSQL) adhering to the Open/Closed Principle.
 * **XSS Protection**: Secure variable escaping inside templates using the global helper function `h()`.
@@ -144,7 +145,7 @@ $kernel->run();
 
 ## 🏠 Minimal Handler Example
 ```php
-namespace Parina\Modules\Public;
+namespace Parina\Features\UserManagement\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
@@ -160,9 +161,9 @@ class UsersListHandler implements Handler
 
     public function handle(Request $request): Response
     {
-        $users = $this->userRepo->getActiveUsersList();
+        $users = $this->userRepo->all();
         // Secure HTML output using the global h() helper to prevent XSS
-        $content = View::renderWithLayout("Admin/Views/users/list", "default", ['users' => $users]);
+        $content = View::renderWithLayout("UserManagement/Views/list", "default", ['users' => $users]);
         return new HtmlResponse($content, 200);
     }
 }
@@ -170,7 +171,7 @@ class UsersListHandler implements Handler
 
 ## 🖼 Minimal View Example
 ```php
-<!-- Modules/Admin/Views/users/list.php -->
+<!-- Features/UserManagement/Views/list.php -->
 <h1>Users List</h1>
 <ul>
   <?php foreach ($users as $user): ?>
@@ -188,8 +189,8 @@ Parina includes a CLI tool to generate routing configurations, handler classes, 
 1. Define your routes in a CSV file (e.g., `routes.csv`):
    ```csv
    Method,Path,HandlerClass,Middlewares,Description
-   GET,/,Parina\Modules\Public\HomeHandler,,Home page
-   GET,/about,Parina\Modules\Public\AboutHandler,,About us
+   GET,/,Parina\Features\Marketing\Handlers\HomeHandler,,Home page
+   GET,/about,Parina\Features\Marketing\Handlers\AboutHandler,,About us
    ```
 
 2. Run the scaffolding tool:
@@ -199,8 +200,8 @@ Parina includes a CLI tool to generate routing configurations, handler classes, 
 
 This will automatically generate:
 * Route configurations in `config/routes.php`.
-* Missing Handler classes in `src/`.
-* Basic unit tests in `tests/Handlers/` to verify your handlers.
+* Missing Handler classes in `src/Features/`.
+* Basic unit tests in `tests/Features/` to verify your handlers.
 
 ---
 
@@ -212,8 +213,8 @@ Parina is developed with PHPUnit, focusing on complete coverage.
 tests/
  ├── KernelTest.php
  ├── RouterTest.php
- ├── HandlerTest.php
- └── Handlers/FakeHandler.php
+ ├── ContainerTest.php
+ └── Features/
 ```
 
 ---

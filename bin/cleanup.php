@@ -14,11 +14,13 @@ if (!$force) {
     echo "⚠️  WARNING: PARINA FRAMEWORK CLEANUP COMMAND\n";
     echo "========================================================\n";
     echo "This script will permanently delete all demo files:\n";
-    echo "- src/Modules/Admin/ (recursively)\n";
-    echo "- src/Modules/Private/ (recursively)\n";
-    echo "- src/Modules/Public/AboutHandler.php, LoginFormHandler.php, LoginCheckHandler.php, AutoPurchaseHandler.php\n";
-    echo "- src/Modules/Public/Views/about.php, login.php\n";
-    echo "- tests/Handlers/ (Demo handler test files)\n";
+    echo "- src/Features/Dashboard/ (recursively)\n";
+    echo "- src/Features/UserManagement/ (recursively)\n";
+    echo "- src/Features/Authentication/ (recursively)\n";
+    echo "- src/Features/AutoPurchase/ (recursively)\n";
+    echo "- src/Features/Marketing/Handlers/AboutHandler.php\n";
+    echo "- src/Features/Marketing/Views/about.php\n";
+    echo "- tests/Features/ (Demo handler test files)\n";
     echo "- src/Db/app.sqlite (if exists)\n";
     echo "And reset config/routes.php and routes.csv to a pristine state.\n\n";
     echo "Are you sure you want to proceed? (yes/no) [no]: ";
@@ -50,27 +52,27 @@ function deleteDirectory($dir) {
 
 $projectRoot = dirname(__DIR__);
 
-// 1. Delete modules directories
-$adminDir = $projectRoot . '/src/Modules/Admin';
-if (is_dir($adminDir)) {
-    deleteDirectory($adminDir);
-    echo "Deleted: src/Modules/Admin/\n";
-}
-
-$privateDir = $projectRoot . '/src/Modules/Private';
-if (is_dir($privateDir)) {
-    deleteDirectory($privateDir);
-    echo "Deleted: src/Modules/Private/\n";
-}
-
-// 2. Delete public demo handlers
-$publicHandlers = [
-    '/src/Modules/Public/AboutHandler.php',
-    '/src/Modules/Public/LoginFormHandler.php',
-    '/src/Modules/Public/LoginCheckHandler.php',
-    '/src/Modules/Public/AutoPurchaseHandler.php',
+// 1. Delete feature directories
+$featuresToDelete = [
+    '/src/Features/Dashboard',
+    '/src/Features/UserManagement',
+    '/src/Features/Authentication',
+    '/src/Features/AutoPurchase',
 ];
-foreach ($publicHandlers as $file) {
+foreach ($featuresToDelete as $feature) {
+    $dirPath = $projectRoot . $feature;
+    if (is_dir($dirPath)) {
+        deleteDirectory($dirPath);
+        echo "Deleted: " . substr($feature, 1) . "/\n";
+    }
+}
+
+// 2. Delete Marketing demo handler and view
+$marketingDemoFiles = [
+    '/src/Features/Marketing/Handlers/AboutHandler.php',
+    '/src/Features/Marketing/Views/about.php',
+];
+foreach ($marketingDemoFiles as $file) {
     $filePath = $projectRoot . $file;
     if (file_exists($filePath)) {
         unlink($filePath);
@@ -78,28 +80,15 @@ foreach ($publicHandlers as $file) {
     }
 }
 
-// 3. Delete public demo views
-$publicViews = [
-    '/src/Modules/Public/Views/about.php',
-    '/src/Modules/Public/Views/login.php',
-];
-foreach ($publicViews as $file) {
-    $filePath = $projectRoot . $file;
-    if (file_exists($filePath)) {
-        unlink($filePath);
-        echo "Deleted: " . substr($file, 1) . "\n";
-    }
-}
-
-// 4. Delete demo tests
+// 3. Delete demo tests from tests/Features/
 $demoTests = [
-    '/tests/Handlers/AboutHandlerTest.php',
-    '/tests/Handlers/AdminHandlerTest.php',
-    '/tests/Handlers/AutoPurchaseHandlerTest.php',
-    '/tests/Handlers/LoginCheckHandlerTest.php',
-    '/tests/Handlers/LoginFormHandlerTest.php',
-    '/tests/Handlers/LogoutHandlerTest.php',
-    '/tests/Handlers/UsersListHandlerTest.php',
+    '/tests/Features/Marketing/AboutHandlerTest.php',
+    '/tests/Features/Authentication/LoginFormHandlerTest.php',
+    '/tests/Features/Authentication/LoginCheckHandlerTest.php',
+    '/tests/Features/Authentication/LogoutHandlerTest.php',
+    '/tests/Features/Dashboard/AdminHandlerTest.php',
+    '/tests/Features/UserManagement/UsersListHandlerTest.php',
+    '/tests/Features/AutoPurchase/AutoPurchaseHandlerTest.php',
 ];
 foreach ($demoTests as $file) {
     $filePath = $projectRoot . $file;
@@ -109,14 +98,32 @@ foreach ($demoTests as $file) {
     }
 }
 
-// 5. Delete DB
+// Also delete empty feature test subdirectories if they exist
+$featureTestDirs = [
+    '/tests/Features/Marketing',
+    '/tests/Features/Authentication',
+    '/tests/Features/Dashboard',
+    '/tests/Features/UserManagement',
+    '/tests/Features/AutoPurchase',
+];
+foreach ($featureTestDirs as $dir) {
+    $dirPath = $projectRoot . $dir;
+    if (is_dir($dirPath)) {
+        $files = array_diff(scandir($dirPath), ['.', '..']);
+        if (count($files) === 0) {
+            rmdir($dirPath);
+        }
+    }
+}
+
+// 4. Delete DB
 $dbFile = $projectRoot . '/src/Db/app.sqlite';
 if (file_exists($dbFile)) {
     unlink($dbFile);
     echo "Deleted: src/Db/app.sqlite\n";
 }
 
-// 6. Reset config/routes.php
+// 5. Reset config/routes.php
 $routesFile = $projectRoot . '/config/routes.php';
 $pristineRoutes = <<<'PHP'
 <?php
@@ -127,7 +134,7 @@ return [
     [
         'method' => 'GET',
         'path' => '/',
-        'handler' => \Parina\Modules\Public\HomeHandler::class,
+        'handler' => \Parina\Features\Marketing\Handlers\HomeHandler::class,
         'middleware' => []
     ]
 ];
@@ -136,7 +143,7 @@ PHP;
 file_put_contents($routesFile, $pristineRoutes);
 echo "Reset: config/routes.php\n";
 
-// 7. Reset routes.csv
+// 6. Reset routes.csv
 $routesCsvFile = $projectRoot . '/routes.csv';
 if (file_exists($routesCsvFile)) {
     file_put_contents($routesCsvFile, "Method,Path,HandlerClass,Middlewares,Description\n");

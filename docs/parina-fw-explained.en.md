@@ -46,41 +46,61 @@ HTTP Request
 
 ---
 
-# 3. Security: Defensive Architecture and Pure Interfaces
+# 3. Directory Layout: Feature-Driven Architecture (FDA)
+
+Unlike traditional frameworks that segregate code by technical responsibility (e.g., all controllers in one folder, all views in another) or by access role (`Public`/`Admin` folders), Parina implements **Feature-Driven Architecture (FDA)**.
+
+All code belonging to a cohesive business feature is grouped together under `src/Features/`:
+
+```
+src/Features/
+└── [FeatureName]/
+    ├── Handlers/      <-- Input controllers for the feature
+    └── Views/         <-- HTML layout templates specific to the feature
+```
+
+### Benefits:
+* **High Cohesion:** Handlers and views that work together live together.
+* **Dead Code elimination:** Deleting a feature is as simple as deleting its subdirectory.
+* **Secured Routing:** Access control (admin vs public) is decoupled from the folder structure and is managed cleanly by route middlewares (`Auth`, `Acl`).
+
+---
+
+# 4. Security: Defensive Architecture and Pure Interfaces
 
 Parina's security is organized in layers and executes mainly in the middleware pipeline, guaranteeing that malicious traffic never reaches the business controllers:
 
 * **Stateless Authentication**:
-  * **JWT**: The [JwtAuth](file:///home/nelson/repos/Parina-Framework/src/Shared/Middlewares/JwtAuth.php) middleware extracts tokens using the `$request->bearerToken()` helper, validates them via `TokenServiceInterface`, and injects the identity into the local request attributes (`$request->setAttribute('user_id')`).
-  * **Basic Auth**: The [BasicAuth](file:///home/nelson/repos/Parina-Framework/src/Shared/Middlewares/BasicAuth.php) middleware validates credentials using `UserQueryRepositoryInterface::checkCredentials()`, which prevents the unnecessary creation of cookies and server sessions in REST APIs.
-* **Cryptographic URL Signing**: The [ValidateHash](file:///home/nelson/repos/Parina-Framework/src/Shared/Middlewares/ValidateHash.php) middleware injects `CipherInterface` to parse temporary signatures (TTL) of sensitive links, validating the integrity of the link before routing the request.
-* **Access Control (ACL)**: Based on the `AclInterface` interface, it allows validating dynamic permissions and easily injecting mock implementations in the testing environment.
+  * **JWT**: The [JwtAuth](file:///Users/nelson/repos/parina-fw/src/Shared/Middlewares/JwtAuth.php) middleware extracts tokens using the `$request->bearerToken()` helper, validates them via `TokenServiceInterface`, and injects the identity into the local request attributes (`$request->setAttribute('user_id')`).
+  * **Basic Auth**: The [BasicAuth](file:///Users/nelson/repos/parina-fw/src/Shared/Middlewares/BasicAuth.php) middleware validates credentials using `UserQueryRepositoryInterface` and native PHP `password_verify()` inside the middleware itself, strictly separating business authentication logic from database queries.
+* **Cryptographic URL Signing**: The [ValidateHash](file:///Users/nelson/repos/parina-fw/src/Shared/Middlewares/ValidateHash.php) middleware parses temporary signatures (TTL) of sensitive links using an injected `CipherInterface` instance, validating the integrity of the link before routing the request.
+* **Access Control (ACL)**: Based on `AclInterface`, it allows validating dynamic permissions. Dependencies like `Logger` are strictly injected in its constructor, with no static facade fallbacks.
 * **XSS and CSRF Prevention**:
   * **CSRF**: A token injected in forms and validated in middlewares protects against request forgery.
   * **XSS**: The global helper `h($variable)` acts as a native escaping sanitizer in PHP views (`htmlspecialchars`).
 
 ---
 
-# 4. Data Access and Modification: The Dual Stratum of Persistence
+# 5. Data Access: Pure Abstractions & CQS
 
-Parina offers flexibility to the developer by allowing two persistence approaches:
+Parina offers two database persistence strategies:
 
 ### A. Persistence by Repository (CQS - Command Query Segregation)
-This is the framework's modern and clean approach. It divides operations into query and write interfaces:
-* **Reading (`UserQueryRepositoryInterface`)**: Returns flat data or specific value objects. Optimized for complex queries and speed.
-* **Writing (`UserCommandRepositoryInterface`)**: Persists and modifies the system state.
-* **DbUserRepository**: Implementation that centralizes SQL access.
-* *Benefit*: Decoupling of the database from the HTTP session (SRP) and 100% in-memory unit tests using mocks.
+This is the framework's decoupled approach. Operations are separated into distinct query and command interfaces:
+* **Reading (`UserQueryRepositoryInterface`)**: Pure query operations (`findById()`, `findByUsername()`, `all()`).
+* **Writing (`UserCommandRepositoryInterface`)**: State mutation operations (`save()`, `delete()`).
+* **Implementation (`DbUserQueryRepository` & `DbUserCommandRepository`)**: Decoupled classes that inject `SqlGeneratorInterface` for database interaction.
+* **Credentials logic:** Removed from the repository layer. The repository only returns the raw user record, and the password hashing/verification is performed in the application layers (e.g. `LoginCheckHandler`) to preserve clean separation.
 
 ### B. Persistence by Active Record (`BaseModel`)
-* Classes like `User` inherit directly from `BaseModel`. They map class properties to table columns and provide direct CRUD methods (`all()`, `find()`, `create()`).
-* It is an ideal option for rapid prototyping and very simple CRUD operations.
+* Model classes inherit from `BaseModel` and map directly to database tables.
+* Decoupled from SQL compilation logic by consuming the injected `SqlGeneratorInterface` resolved via the DI Container.
 
-### C. Driver Abstraction (Adapter Pattern)
-* The final database engine (SQLite, MySQL, or PostgreSQL) is dynamically injected through the `DatabaseAdapter` interface registered in the container.
-* Complies with the **Open/Closed Principle (OCP)**: if you need to migrate databases or add an unsupported database engine (like SQL Server), you only need to create a class that implements `DatabaseAdapter` and register it in `dependencies.php`, without changing a single line of framework internal code.
+### C. Database Adapter Pattern (OCP)
+* The final database engine (SQLite, MySQL, or PostgreSQL) is dynamically resolved through the `DatabaseAdapter` interface registered in the container.
+* Complies with the **Open/Closed Principle (OCP)**: adding a new database engine only requires creating a class that implements `DatabaseAdapter` and registering it in `dependencies.php`.
 
 ---
 
 ### Final Architect's Diagnosis:
-Parina Framework proves that extreme simplicity is not at odds with good design patterns. Its modern architecture in dependency decoupling (DIP) and data interface segregation (CQS) make it an agile, secure, and extremely easy-to-test PHP application engine.
+Parina Framework proves that extreme simplicity is not at odds with good design patterns. Its modern architecture in dependency decoupling (DIP), directory organization (FDA), and data interface segregation (CQS) make it an agile, secure, and extremely easy-to-test PHP application engine.

@@ -6,7 +6,7 @@ class View
     private static array $basePaths = [
         __DIR__ . '/../Shared/Layouts/',     // Path for templates
         __DIR__ . '/../Shared/Partials/',     // Path for partials
-        __DIR__ . '/../Modules/'     // Path for modules
+        __DIR__ . '/../Features/'     // Path for features
     ];
 
     /**

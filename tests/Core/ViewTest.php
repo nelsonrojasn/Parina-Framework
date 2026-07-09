@@ -39,7 +39,7 @@ class ViewTest extends TestCase
         View::setPaths([
             $srcDir . '/Shared/Layouts/',
             $srcDir . '/Shared/Partials/',
-            $srcDir . '/Modules/'
+            $srcDir . '/Features/'
         ]);
     }
 
