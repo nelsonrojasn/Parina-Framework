@@ -69,14 +69,14 @@ Cada capa de middleware sigue una regla binaria simple:
 ```php
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\ErrorResponse;
 
 class SimpleAuth implements Middleware
 {
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         if (!isset($_SESSION['user'])) {
             return new ErrorResponse("No autorizado", 401);
@@ -139,8 +139,12 @@ foreach ($routes as $route) {
     $router->add($route['method'], $route['path'], $route['handler'], $route['middleware'] ?? []);
 }
 
+$request = \Parina\Core\Request::capture();
 $kernel = new Kernel($router, $container);
-$kernel->run();
+$response = $kernel->handle($request);
+
+$emitter = new \Parina\Core\ResponseEmitter();
+$emitter->emit($response);
 ```
 
 ## 🏠 Ejemplo de Handler Mínimo
@@ -149,7 +153,7 @@ namespace Parina\Features\UserManagement\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
 use Parina\Shared\Services\UserQueryRepositoryInterface;
@@ -159,7 +163,7 @@ class UsersListHandler implements Handler
     // Resolved and injected automatically by the DI Container via Reflection
     public function __construct(private UserQueryRepositoryInterface $userRepo) {}
 
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): Response
     {
         $users = $this->userRepo->all();
         // Secure HTML output using the global h() helper to prevent XSS

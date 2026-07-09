@@ -28,7 +28,7 @@ HTTP Request
    ▼
 [Kernel] (Dispatcher)
    │
-   ├──> Captura superglobales en un objeto [Request] (Value Object)
+   ├──> Recibe el objeto request que implementa [RequestInterface]
    │
    ├──> [Pipeline de Middlewares] (Filtros de interceptación)
    │       └──> Si un middleware retorna un [Response] (ej. error 401), el flujo se interrumpe.
@@ -36,11 +36,11 @@ HTTP Request
    ├──> [Container::get()] (Resolución DI basada en Reflection)
    │       └──> Instancia el Handler resolviendo sus dependencias recursivamente.
    │
-   ├──> [Handler::handle(Request)] (Controlador)
+   ├──> [Handler::handle(RequestInterface)] (Controlador)
    │       └──> Ejecuta la lógica y retorna un objeto que implementa [Response]
    │
    ▼
-[Kernel::send()] (Emisión)
+[ResponseEmitter] (Emisión)
    └──> Envía cabeceras HTTP, código de estado y emite el contenido.
 ```
 

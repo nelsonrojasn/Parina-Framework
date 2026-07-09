@@ -72,7 +72,7 @@ namespace Parina\Features\ProductManagement\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
 use Parina\Shared\Services\ProductQueryRepositoryInterface;
@@ -84,7 +84,7 @@ class ProductListHandler implements Handler
         private ProductQueryRepositoryInterface $productRepo
     ) {}
 
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): Response
     {
         $products = $this->productRepo->getActiveProducts();
         
