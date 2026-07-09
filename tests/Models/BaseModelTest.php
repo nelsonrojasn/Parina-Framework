@@ -73,4 +73,28 @@ class BaseModelTest extends TestCase
 
         $this->assertNull(DummyModel::find(1));
     }
+
+    public function test_custom_sql_generator()
+    {
+        $customGenerator = new class implements \Parina\Shared\Infrastructure\SqlGeneratorInterface {
+            public function selectAll(string $table, array|string $columns): string {
+                return "SELECT * FROM custom_table";
+            }
+            public function selectById(string $table, array|string $columns, string $primaryKey = 'id'): string { return ''; }
+            public function selectFirst(string $table, string $condition, array|string $columns): string { return ''; }
+            public function insert(string $table, array $data): string { return ''; }
+            public function update(string $table, array $data, string $primaryKey = 'id'): string { return ''; }
+            public function delete(string $table, string $primaryKey = 'id'): string { return ''; }
+        };
+
+        try {
+            DummyModel::setSqlGenerator($customGenerator);
+            
+            // This should fail to run the query because custom_table doesn't exist, but it proves it uses the custom SQL!
+            $this->expectException(\PDOException::class);
+            DummyModel::all();
+        } finally {
+            DummyModel::setSqlGenerator(new \Parina\Shared\Infrastructure\SqlGenerator());
+        }
+    }
 }
