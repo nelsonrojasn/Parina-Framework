@@ -41,5 +41,9 @@ foreach ($routes as $route) {
 
 
 //Kernel dispatcher
+$request = \Parina\Core\Request::capture();
 $kernel = new Kernel($router, $container);
-$kernel->run();
+$response = $kernel->handle($request);
+
+$emitter = new \Parina\Core\ResponseEmitter();
+$emitter->emit($response);
