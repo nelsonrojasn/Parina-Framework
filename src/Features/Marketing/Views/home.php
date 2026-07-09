@@ -8,9 +8,9 @@ Designed to be lightweight, clear, and easy to understand from the very first mo
 
 <h3>Getting Started</h3>
 <ul>
-  <li>Edit your routes in <code>public/index.php</code></li>
-  <li>Create a handler in <code>src/Modules/Public/</code></li>
-  <li>Render a view from <code>Views/</code></li>
+  <li>Register your routes in <code>routes.csv</code> or <code>config/routes.php</code></li>
+  <li>Create a handler inside a feature folder in <code>src/Features/</code></li>
+  <li>Render a view from its corresponding feature <code>Views/</code> directory</li>
   <li>Start the server:
     <pre>php -S localhost:8000 -t public</pre>
   </li>
