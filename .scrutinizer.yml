@@ -4,6 +4,7 @@ tools:
 filter:
     excluded_paths:
         - 'vendor/*'
+        - 'tests/*'
 
 # Say to Scrutinizer to use pre-installed PHP instead of compiling one
 build:
