@@ -1,7 +1,9 @@
 <?php
 namespace Parina\Core;
 
-class Request
+use Parina\Core\Interfaces\RequestInterface;
+
+class Request implements RequestInterface
 {
     private array $attributes = [];
     private ?array $parsedJson = null;

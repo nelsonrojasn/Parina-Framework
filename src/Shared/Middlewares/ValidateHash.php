@@ -2,7 +2,7 @@
 
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Shared\Security\CipherInterface;
@@ -20,11 +20,11 @@ class ValidateHash implements Middleware
     /**
      * Handle middleware execution
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @param array|null $route Passed dynamically by Kernel but optional in signature for interface compatibility
      * @return Response|null
      */
-    public function handle(Request $request, ?array $route = null): ?Response
+    public function handle(RequestInterface $request, ?array $route = null): ?Response
     {
         $hash = $request->param('hash');
 

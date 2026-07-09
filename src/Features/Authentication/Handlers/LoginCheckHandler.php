@@ -4,7 +4,7 @@ namespace Parina\Features\Authentication\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\Responses\RedirectResponse;
 use Parina\Core\View;
@@ -25,7 +25,7 @@ class LoginCheckHandler implements Handler
         $this->auth = $auth;
     }
 
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): Response
     {    
         $username = $request->post('user');
         $password = $request->post('password');

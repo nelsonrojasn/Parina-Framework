@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use Parina\Core\Request;
 use Parina\Core\Interfaces\Handler;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Response;
 use Tests\Handlers\TestHandler;
 use Tests\Handlers\ParamHandler;
@@ -37,7 +38,7 @@ class HandlerTest extends TestCase
         // Create an anonymous handler that uses multiple params
         $request = Request::capture();
         $handler = new class implements Handler {
-            public function handle(Request $request): Response
+            public function handle(RequestInterface $request): Response
             {
                 $a = $request->params['a'];
                 $b = $request->params['b'];
@@ -67,7 +68,7 @@ class HandlerTest extends TestCase
     public function testHandlerThrowsExceptionIfNeeded()
     {
         $handler = new class implements Handler {
-            public function handle(Request $request): Response
+            public function handle(RequestInterface $request): Response
             {
                 throw new \RuntimeException("boom");
             }

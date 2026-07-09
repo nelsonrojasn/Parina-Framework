@@ -1,7 +1,7 @@
 <?php
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Shared\Services\AclInterface;
@@ -16,7 +16,7 @@ class Acl implements Middleware
         $this->acl = $acl;
     }
 
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         if (!$this->acl->hasPermissions($request->path())) {
             return (new ErrorResponse("Permission denied.", 403));

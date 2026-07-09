@@ -1,7 +1,7 @@
 <?php
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Session;
@@ -17,7 +17,7 @@ class RateLimit implements Middleware
         $this->config = $config;
     }
 
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         $bypass = Session::get('_pin_bypass_limit');
         $last_request = Session::get('_pin_last_req') ?? 0;

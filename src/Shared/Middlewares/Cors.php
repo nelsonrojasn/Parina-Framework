@@ -2,14 +2,14 @@
 
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\PlainTextResponse;
 
 class Cors implements Middleware
 {
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         // En un entorno real, podrías obtener esto de Parina\Core\Config
         $allowedOrigin = '*'; 

@@ -6,6 +6,8 @@ use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\NotFoundResponse;
 
+use Parina\Core\Interfaces\RequestInterface;
+
 class Kernel
 {
     private Container $container;
@@ -17,7 +19,7 @@ class Kernel
         $this->container = $container ?? new Container();
     }
 
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): Response
     {
         $method  = $request->method();
         $uri     = $request->path();

@@ -2,7 +2,7 @@
 
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\BasicRealmResponse;
@@ -17,7 +17,7 @@ class BasicAuth implements Middleware
         $this->userRepository = $userRepository;
     }
 
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         $username = $request->server('PHP_AUTH_USER');
         $password = $request->server('PHP_AUTH_PW');

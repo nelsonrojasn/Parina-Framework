@@ -4,6 +4,7 @@ namespace Parina\Features\AutoPurchase\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\HtmlResponse;
 
@@ -12,7 +13,7 @@ use Parina\Core\Responses\HtmlResponse;
  */
 class AutoPurchaseHandler implements Handler
 {
-    public function handle(Request $request): Response
+    public function handle(RequestInterface $request): Response
     {
         return new HtmlResponse("<h1>Comprar auto</h1>");
     }

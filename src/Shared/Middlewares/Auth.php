@@ -1,7 +1,7 @@
 <?php
 namespace Parina\Shared\Middlewares;
 
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Shared\Services\AuthInterface;
@@ -16,7 +16,7 @@ class Auth implements Middleware
         $this->auth = $auth;
     }
 
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {
         if (!$this->auth->isLoggedIn()) {
             return (new ErrorResponse("Not logged in.", 403));

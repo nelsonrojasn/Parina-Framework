@@ -6,6 +6,7 @@ use Parina\Core\Interfaces\Middleware;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\ErrorResponse;
 use Parina\Core\Interfaces\ConfigInterface;
+use Parina\Core\Interfaces\RequestInterface;
 
 class RequestSize implements Middleware
 {
@@ -16,7 +17,7 @@ class RequestSize implements Middleware
         $this->config = $config ?? new \Parina\Core\AppConfig();
     }
 
-    public function handle(Request $request): ?Response
+    public function handle(RequestInterface $request): ?Response
     {        
         if (isset($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > $this->config->getMaxRequestSize()) {
             return (new ErrorResponse("Request length exceeded.", 413));

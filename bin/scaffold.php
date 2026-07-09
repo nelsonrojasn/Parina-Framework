@@ -140,7 +140,7 @@ function scaffoldHandler(string $handlerClass, string $description): void
 namespace $namespace;
 
 use Parina\Core\Interfaces\Handler;
-use Parina\Core\Request;
+use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Response;
 use Parina\Core\Responses\HtmlResponse;
 
@@ -149,7 +149,7 @@ use Parina\Core\Responses\HtmlResponse;
  */
 class $className implements Handler
 {
-    public function handle(Request \$request): Response
+    public function handle(RequestInterface \$request): Response
     {
         return new HtmlResponse("<h1>$description</h1>");
     }
