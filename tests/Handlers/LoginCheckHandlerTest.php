@@ -19,13 +19,13 @@ class LoginCheckHandlerTest extends TestCase
     public function test_handler_returns_valid_response_on_failed_login()
     {
         $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
-        $repoMock->method('checkCredentials')->willReturn(null);
+        $repoMock->method('findByUsername')->willReturn(null);
 
         $authMock = $this->createMock(AuthInterface::class);
         $authMock->expects($this->never())->method('login');
 
         $handler = new LoginCheckHandler($repoMock, $authMock);
-        $request = new Request([], [], [], [], []);
+        $request = new Request([], ['user' => 'admin', 'password' => 'wrong_password'], [], [], []);
         
         $response = $handler->handle($request);
         
@@ -36,16 +36,21 @@ class LoginCheckHandlerTest extends TestCase
 
     public function test_handler_redirects_on_successful_login()
     {
-        $user = ['id' => 1, 'username' => 'admin', 'company_id' => 1];
+        $user = [
+            'id' => 1,
+            'username' => 'admin',
+            'company_id' => 1,
+            'password' => password_hash('admin123', PASSWORD_DEFAULT)
+        ];
 
         $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
-        $repoMock->method('checkCredentials')->willReturn($user);
+        $repoMock->method('findByUsername')->with('admin')->willReturn($user);
 
         $authMock = $this->createMock(AuthInterface::class);
         $authMock->expects($this->once())->method('login')->with($user);
 
         $handler = new LoginCheckHandler($repoMock, $authMock);
-        $request = new Request([], [], [], [], []);
+        $request = new Request([], ['user' => 'admin', 'password' => 'admin123'], [], [], []);
         
         $response = $handler->handle($request);
         

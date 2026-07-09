@@ -36,8 +36,13 @@ class BasicAuthTest extends TestCase
 
     public function test_basic_auth_blocks_when_credentials_invalid()
     {
+        $user = [
+            'id' => 2,
+            'username' => 'wrong_user',
+            'password' => password_hash('correct_password', PASSWORD_DEFAULT)
+        ];
         $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
-        $repoMock->method('checkCredentials')->with('wrong_user', 'wrong_password')->willReturn(null);
+        $repoMock->method('findByUsername')->with('wrong_user')->willReturn($user);
 
         $request = new Request(
             query: [],
@@ -59,9 +64,13 @@ class BasicAuthTest extends TestCase
 
     public function test_basic_auth_passes_when_credentials_valid()
     {
-        $user = ['id' => 1, 'username' => 'admin'];
+        $user = [
+            'id' => 1,
+            'username' => 'admin',
+            'password' => password_hash('admin123', PASSWORD_DEFAULT)
+        ];
         $repoMock = $this->createMock(UserQueryRepositoryInterface::class);
-        $repoMock->method('checkCredentials')->with('admin', 'admin123')->willReturn($user);
+        $repoMock->method('findByUsername')->with('admin')->willReturn($user);
 
         $request = new Request(
             query: [],

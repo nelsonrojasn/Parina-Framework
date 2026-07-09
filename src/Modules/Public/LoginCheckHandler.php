@@ -21,7 +21,7 @@ class LoginCheckHandler implements Handler
         ?UserQueryRepositoryInterface $userRepository = null,
         ?AuthInterface $auth = null
     ) {
-        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserRepository();
+        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserQueryRepository();
         $this->auth = $auth ?? new \Parina\Shared\Services\SessionAuth();
     }
 
@@ -30,9 +30,9 @@ class LoginCheckHandler implements Handler
         $username = $request->post('user');
         $password = $request->post('password');
 
-        $user = $this->userRepository->checkCredentials($username, $password);
+        $user = $this->userRepository->findByUsername($username);
 
-        if ($user) {
+        if ($user && password_verify($password, $user['password'])) {
             $this->auth->login($user);
             Session::set('flash', 'Welcome back, ' . $user['username'] . '!');
             return new RedirectResponse('/', 302);

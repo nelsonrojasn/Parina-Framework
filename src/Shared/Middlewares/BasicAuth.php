@@ -14,7 +14,7 @@ class BasicAuth implements Middleware
 
     public function __construct(?UserQueryRepositoryInterface $userRepository = null)
     {
-        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserRepository();
+        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserQueryRepository();
     }
 
     public function handle(Request $request): ?Response
@@ -26,9 +26,9 @@ class BasicAuth implements Middleware
             return new BasicRealmResponse("Unauthorized", 401);
         }
 
-        $user = $this->userRepository->checkCredentials($username, $password);
+        $user = $this->userRepository->findByUsername($username);
 
-        if (!$user) {
+        if (!$user || !password_verify($password, $user['password'])) {
             return new BasicRealmResponse("Unauthorized", 401);
         }
 

@@ -28,8 +28,8 @@ return [
         \Parina\Shared\Security\CipherInterface::class => \Parina\Shared\Security\AesCipherService::class,
 
         // Repositories (CQS)
-        \Parina\Shared\Services\UserQueryRepositoryInterface::class => \Parina\Shared\Services\DbUserRepository::class,
-        \Parina\Shared\Services\UserCommandRepositoryInterface::class => \Parina\Shared\Services\DbUserRepository::class,
+        \Parina\Shared\Services\UserQueryRepositoryInterface::class => \Parina\Shared\Services\DbUserQueryRepository::class,
+        \Parina\Shared\Services\UserCommandRepositoryInterface::class => \Parina\Shared\Services\DbUserCommandRepository::class,
 
         // DatabaseAdapter resolves dynamically via factory closure (OCP compliant)
         DatabaseAdapter::class => function (\Parina\Core\Container $container) {
