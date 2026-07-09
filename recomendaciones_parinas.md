@@ -61,14 +61,14 @@ En lugar de depender de un ActiveRecord pesado con carga perezosa (*lazy loading
 Los Handlers son las clases encargadas de atender una ruta específica. 
 
 ### Ubicación y Nomenclatura
-*   Viven dentro de `src/Modules/` subdivididos por su área de visibilidad (ej: [src/Modules/Public/](../src/Modules/Public/)).
+*   Viven dentro de su característica correspondiente en `src/Features/` (ej: [src/Features/ProductManagement/Handlers/](./src/Features/ProductManagement/Handlers/)).
 *   Deben llevar el sufijo `Handler` y usar nombres en singular que describan su acción exacta (ej: `HomeHandler`, `ProductListHandler`).
 
 ### Ejemplo de Estructura Limpia con Inyección de Dependencias:
 El contenedor de Parina resuelve y pasa las dependencias automáticamente a través del constructor:
 
 ```php
-namespace Parina\Modules\Public;
+namespace Parina\Features\ProductManagement\Handlers;
 
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\Response;
@@ -89,7 +89,7 @@ class ProductListHandler implements Handler
         $products = $this->productRepo->getActiveProducts();
         
         $content = View::renderWithLayout(
-            "Public/Views/products/list", 
+            "ProductManagement/Views/list", 
             "default", 
             ['products' => $products]
         );
@@ -106,14 +106,14 @@ class ProductListHandler implements Handler
 Las vistas en Parina son archivos PHP puros, rápidos y directos, evitando motores de plantillas pesados.
 
 ### Ubicación de archivos
-*   **Vistas de Módulo:** Viven en la subcarpeta `Views/` del módulo correspondiente (ej: `src/Modules/Public/Views/products/list.php`).
-*   **Layouts Compartidos:** Estructuras HTML base globales que envuelven las vistas. Viven en [src/Shared/Layouts/](../src/Shared/Layouts/).
+*   **Vistas de Características (FDA):** Viven en la subcarpeta `Views/` de la característica correspondiente (ej: `src/Features/ProductManagement/Views/list.php`).
+*   **Layouts Compartidos:** Estructuras HTML base globales que envuelven las vistas. Viven en [src/Shared/Layouts/](./src/Shared/Layouts/).
 
 ### Escape de Datos Obligatorio (Protección XSS)
 Para mantener la aplicación segura, es mandatorio escapar cualquier variable dinámica proveniente de la base de datos o de la entrada del usuario usando el helper global `h()`:
 
 ```php
-<!-- src/Modules/Public/Views/products/list.php -->
+<!-- src/Features/ProductManagement/Views/list.php -->
 <h1>Listado de Productos</h1>
 <ul>
     <?php foreach ($products as $product): ?>
@@ -130,7 +130,7 @@ Para mantener la aplicación segura, es mandatorio escapar cualquier variable di
 ## 5. Pruebas Unitarias e Integración (`tests/`)
 
 Un código sin pruebas no es confiable. En Parina, las pruebas deben ser rápidas y tener una estructura espejo:
-*   Para cada Handler en `src/Modules/Public/HomeHandler.php`, debe existir un test en `tests/Handlers/HomeHandlerTest.php`.
+*   Para cada Handler en `src/Features/Marketing/Handlers/HomeHandler.php`, debe existir un test en `tests/Features/Marketing/HomeHandlerTest.php`.
 *   Las pruebas deben validar que el handler retorne el código de estado HTTP esperado y que el cuerpo de la respuesta contenga los elementos correctos.
 
 ---
@@ -142,13 +142,13 @@ En lugar de crear estos archivos a mano, Parina provee una herramienta CLI para 
 1.  Declara tus rutas y sus handlers en el archivo centralizado `routes.csv`:
     ```csv
     Method,Path,HandlerClass,Middlewares,Description
-    GET,/productos,Parina\Modules\Public\ProductListHandler,,Lista de productos
+    GET,/productos,Parina\Features\ProductManagement\Handlers\ProductListHandler,,Lista de productos
     ```
 2.  Ejecuta el generador de andamiaje:
     ```bash
     php bin/scaffold.php routes.csv
     ```
-3.  **Resultado:** El script creará automáticamente el archivo del Handler con su estructura base, registrará la ruta en `config/routes.php` y generará la plantilla de prueba unitaria en `tests/Handlers/ProductListHandlerTest.php`.
+3.  **Resultado:** El script creará automáticamente el archivo del Handler con su estructura base bajo `src/Features/ProductManagement/`, registrará la ruta en `config/routes.php` y generará la plantilla de prueba unitaria en `tests/Features/ProductManagement/ProductListHandlerTest.php`.
 
 ---
 
