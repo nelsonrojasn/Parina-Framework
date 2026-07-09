@@ -26,6 +26,7 @@ return [
         \Parina\Core\Interfaces\Logger::class => \Parina\Core\FileLogger::class,
         \Parina\Shared\Services\TokenServiceInterface::class => \Parina\Shared\Services\JwtTokenService::class,
         \Parina\Shared\Security\CipherInterface::class => \Parina\Shared\Security\AesCipherService::class,
+        \Parina\Shared\Infrastructure\SqlGeneratorInterface::class => \Parina\Shared\Infrastructure\SqlGenerator::class,
 
         // Repositories (CQS)
         \Parina\Shared\Services\UserQueryRepositoryInterface::class => \Parina\Shared\Services\DbUserQueryRepository::class,
