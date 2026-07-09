@@ -15,12 +15,7 @@ return [
         'handler' => \Parina\Modules\Public\AboutHandler::class,
         'middleware' => []
     ],
-    [
-        'method' => 'GET',
-        'path' => '/setup',
-        'handler' => \Parina\Modules\Public\SetupHandler::class,
-        'middleware' => []
-    ],
+
     [
         'method' => 'GET',
         'path' => '/login',

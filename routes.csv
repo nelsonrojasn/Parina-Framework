@@ -1,7 +1,6 @@
 Method,Path,HandlerClass,Middlewares,Description
 GET,/,Parina\Modules\Public\HomeHandler,,Página de inicio
 GET,/about,Parina\Modules\Public\AboutHandler,,Sobre nosotros
-GET,/setup,Parina\Modules\Public\SetupHandler,,Setup inicial
 GET,/login,Parina\Modules\Public\LoginFormHandler,,Formulario de login
 POST,/login,Parina\Modules\Public\LoginCheckHandler,,Procesar login
 GET,/comprar/credito/auto/{id},Parina\Modules\Public\AutoPurchaseHandler,Auth,Comprar auto

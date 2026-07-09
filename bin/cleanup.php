@@ -129,12 +129,6 @@ return [
         'path' => '/',
         'handler' => \Parina\Modules\Public\HomeHandler::class,
         'middleware' => []
-    ],
-    [
-        'method' => 'GET',
-        'path' => '/setup',
-        'handler' => \Parina\Modules\Public\SetupHandler::class,
-        'middleware' => []
     ]
 ];
 PHP;
