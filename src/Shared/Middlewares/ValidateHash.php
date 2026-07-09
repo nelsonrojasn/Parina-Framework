@@ -48,7 +48,7 @@ class ValidateHash implements Middleware
             }
 
             // Hydrate extra params back into the request
-            $request->params = array_merge($request->params, $extraParams, ['_action' => $action]);
+            $request->setParams(array_merge($request->getParams(), $extraParams, ['_action' => $action]));
 
             return null; // validation passed, proceed
         } catch (\Exception $e) {

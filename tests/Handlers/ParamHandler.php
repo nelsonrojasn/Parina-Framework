@@ -11,7 +11,7 @@ class ParamHandler implements Handler
 {
     public function handle(RequestInterface $request): Response
     {
-        $hash = $request->params['hash'];
+        $hash = $request->param('hash');
         return (new HtmlResponse("<h1>$hash</h1>", 200));
     }
 }

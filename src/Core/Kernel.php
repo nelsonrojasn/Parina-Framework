@@ -32,7 +32,7 @@ class Kernel
         }
 
         $route  = $match['route'];
-        $request->params = $match['params'];
+        $request->setParams($match['params']);
 
         // Execute middlewares if available
         foreach ($route['middleware'] as $mw) {

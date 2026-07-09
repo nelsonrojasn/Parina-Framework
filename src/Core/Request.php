@@ -51,6 +51,21 @@ class Request implements RequestInterface
         return $this->params[$key] ?? $default;
     }
 
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    public function setParams(array $params): void
+    {
+        $this->params = $params;
+    }
+
+    public function setParam(string $key, mixed $value): void
+    {
+        $this->params[$key] = $value;
+    }
+
     public function server(string $key, mixed $default = null): mixed
     {
         return $this->server[$key] ?? $default;

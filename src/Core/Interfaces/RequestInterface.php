@@ -13,6 +13,9 @@ interface RequestInterface
     public function input(string $key, mixed $default = null): mixed;
     public function setAttribute(string $key, mixed $value): void;
     public function getAttribute(string $key, mixed $default = null): mixed;
+    public function getParams(): array;
+    public function setParams(array $params): void;
+    public function setParam(string $key, mixed $value): void;
     public function bearerToken(): ?string;
     public function isAjax(): bool;
 }

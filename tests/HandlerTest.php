@@ -26,7 +26,7 @@ class HandlerTest extends TestCase
     {
         $handler = new ParamHandler();
         $request = Request::capture();
-        $request->params['hash'] = 'abc999';
+        $request->setParam('hash', 'abc999');
         
         $response = $handler->handle($request);
 
@@ -40,17 +40,17 @@ class HandlerTest extends TestCase
         $handler = new class implements Handler {
             public function handle(RequestInterface $request): Response
             {
-                $a = $request->params['a'];
-                $b = $request->params['b'];
-                $c = $request->params['c'];
+                $a = $request->param('a');
+                $b = $request->param('b');
+                $c = $request->param('c');
 
                 return (new PlainTextResponse("$a-$b-$c"));
             }
         };
 
-        $request->params['a'] = 'uno';
-        $request->params['b'] = 'dos';
-        $request->params['c'] = 'tres';
+        $request->setParam('a', 'uno');
+        $request->setParam('b', 'dos');
+        $request->setParam('c', 'tres');
 
         $response = $handler->handle($request);
 
