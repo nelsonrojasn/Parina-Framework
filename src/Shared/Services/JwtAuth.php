@@ -9,7 +9,7 @@ class JwtAuth
     {
         static $service = null;
         if ($service === null) {
-            $service = new JwtTokenService();
+            $service = new JwtTokenService(new \Parina\Core\AppConfig());
         }
         return $service;
     }

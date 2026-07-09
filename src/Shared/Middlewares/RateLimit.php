@@ -12,9 +12,9 @@ class RateLimit implements Middleware
 {
     private ConfigInterface $config;
 
-    public function __construct(?ConfigInterface $config = null)
+    public function __construct(ConfigInterface $config)
     {
-        $this->config = $config ?? new \Parina\Core\AppConfig();
+        $this->config = $config;
     }
 
     public function handle(Request $request): ?Response

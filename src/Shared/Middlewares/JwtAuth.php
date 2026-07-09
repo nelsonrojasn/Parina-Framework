@@ -12,9 +12,9 @@ class JwtAuth implements Middleware
 {
     private TokenServiceInterface $tokenService;
 
-    public function __construct(?TokenServiceInterface $tokenService = null)
+    public function __construct(TokenServiceInterface $tokenService)
     {
-        $this->tokenService = $tokenService ?? new \Parina\Shared\Services\JwtTokenService();
+        $this->tokenService = $tokenService;
     }
 
     public function handle(Request $request): ?Response

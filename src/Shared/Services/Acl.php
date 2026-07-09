@@ -8,26 +8,14 @@ class Acl implements AclInterface
 {
     private Logger $logger;
 
-    public function __construct(?Logger $logger = null)
+    public function __construct(Logger $logger)
     {
-        $this->logger = $logger ?? new \Parina\Core\FileLogger();
+        $this->logger = $logger;
     }
 
     public function hasPermissions(string $action): bool
     {
         $this->logger->log("Checking permissions for action: $action");
         return true;
-    }
-
-    /**
-     * Facade static call delegation for backward compatibility
-     */
-    public static function __callStatic(string $name, array $arguments)
-    {
-        static $instance = null;
-        if ($instance === null) {
-            $instance = new self();
-        }
-        return call_user_func_array([$instance, $name], $arguments);
     }
 }

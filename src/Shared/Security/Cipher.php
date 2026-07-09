@@ -8,7 +8,7 @@ class Cipher
     {
         static $service = null;
         if ($service === null) {
-            $service = new AesCipherService();
+            $service = new AesCipherService(new \Parina\Core\AppConfig());
         }
         return $service;
     }

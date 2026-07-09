@@ -11,9 +11,9 @@ class Acl implements Middleware
 {
     private AclInterface $acl;
 
-    public function __construct(?AclInterface $acl = null)
+    public function __construct(AclInterface $acl)
     {
-        $this->acl = $acl ?? new \Parina\Shared\Services\Acl();
+        $this->acl = $acl;
     }
 
     public function handle(Request $request): ?Response

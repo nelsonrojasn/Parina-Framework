@@ -17,7 +17,7 @@ class RateLimitTest extends TestCase
     public function test_allows_request_when_under_limit()
     {
         $request = new Request([], [], [], [], []);
-        $middleware = new RateLimit();
+        $middleware = new RateLimit(new \Parina\Core\AppConfig());
 
         $response = $middleware->handle($request);
 
@@ -30,7 +30,7 @@ class RateLimitTest extends TestCase
         $_SESSION['_pin_last_req'] = microtime(true); // Hace 0 milisegundos
 
         $request = new Request([], [], [], [], []);
-        $middleware = new RateLimit();
+        $middleware = new RateLimit(new \Parina\Core\AppConfig());
 
         $response = $middleware->handle($request);
 
@@ -44,7 +44,7 @@ class RateLimitTest extends TestCase
         $_SESSION['_pin_last_req'] = microtime(true);
 
         $request = new Request([], [], [], [], []);
-        $middleware = new RateLimit();
+        $middleware = new RateLimit(new \Parina\Core\AppConfig());
 
         $response = $middleware->handle($request);
 

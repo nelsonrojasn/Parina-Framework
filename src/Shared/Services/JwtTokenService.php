@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 namespace Parina\Shared\Services;
 
-use Parina\Core\Config;
+use Parina\Core\Interfaces\ConfigInterface;
 
 class JwtTokenService implements TokenServiceInterface
 {
+    private ConfigInterface $config;
+
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
+    }
+
     /**
      * Generates a JWT token for a payload
      */
@@ -15,12 +22,12 @@ class JwtTokenService implements TokenServiceInterface
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
         
         $payload['iat'] = time();
-        $payload['exp'] = time() + (Config::getTimeToLive() ?? 3600);
+        $payload['exp'] = time() + ($this->config->getTimeToLive() ?? 3600);
 
         $base64UrlHeader = $this->base64UrlEncode($header);
         $base64UrlPayload = $this->base64UrlEncode(json_encode($payload));
 
-        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, Config::getCryptoKey(), true);
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $this->config->getCryptoKey(), true);
         $base64UrlSignature = $this->base64UrlEncode($signature);
 
         return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
@@ -37,7 +44,7 @@ class JwtTokenService implements TokenServiceInterface
         [$header, $payload, $signature] = $parts;
 
         // Verify signature
-        $validSignature = hash_hmac('sha256', $header . "." . $payload, Config::getCryptoKey(), true);
+        $validSignature = hash_hmac('sha256', $header . "." . $payload, $this->config->getCryptoKey(), true);
         if (!hash_equals($this->base64UrlEncode($validSignature), $signature)) {
             return null;
         }

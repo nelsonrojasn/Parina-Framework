@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 namespace Parina\Shared\Security;
 
-use Parina\Core\Config;
+use Parina\Core\Interfaces\ConfigInterface;
 
 class AesCipherService implements CipherInterface
 {
+    private ConfigInterface $config;
+
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
+    }
+
     public function encrypt(string $data, string $key): string
     {
         $method = 'aes-256-cbc';
@@ -45,14 +52,14 @@ class AesCipherService implements CipherInterface
     {
         $query_parts = ['action' => $action];
         $query_parts = array_merge($query_parts, $parameters);
-        $query_parts['_ttl'] = time() + Config::getTimeToLive();
+        $query_parts['_ttl'] = time() + $this->config->getTimeToLive();
         $query_string = http_build_query($query_parts);
-        return $this->encrypt($query_string, Config::getCryptoKey());
+        return $this->encrypt($query_string, $this->config->getCryptoKey());
     }
 
     public function parseUrlHash(string $encrypted_url): array
     {
-        $decrypted = $this->decrypt($encrypted_url, Config::getCryptoKey());
+        $decrypted = $this->decrypt($encrypted_url, $this->config->getCryptoKey());
         
         if (empty($decrypted)) {
             throw new \Exception("Security validation failed");
