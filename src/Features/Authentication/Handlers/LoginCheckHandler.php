@@ -18,11 +18,11 @@ class LoginCheckHandler implements Handler
     private AuthInterface $auth;
 
     public function __construct(
-        ?UserQueryRepositoryInterface $userRepository = null,
-        ?AuthInterface $auth = null
+        UserQueryRepositoryInterface $userRepository,
+        AuthInterface $auth
     ) {
-        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserQueryRepository();
-        $this->auth = $auth ?? new \Parina\Shared\Services\SessionAuth();
+        $this->userRepository = $userRepository;
+        $this->auth = $auth;
     }
 
     public function handle(Request $request): Response

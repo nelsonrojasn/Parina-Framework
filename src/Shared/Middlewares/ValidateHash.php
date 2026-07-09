@@ -12,9 +12,9 @@ class ValidateHash implements Middleware
 {
     private CipherInterface $cipher;
 
-    public function __construct(?CipherInterface $cipher = null)
+    public function __construct(CipherInterface $cipher)
     {
-        $this->cipher = $cipher ?? new \Parina\Shared\Security\AesCipherService();
+        $this->cipher = $cipher;
     }
 
     /**

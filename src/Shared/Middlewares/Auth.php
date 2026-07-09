@@ -11,9 +11,9 @@ class Auth implements Middleware
 {
     private AuthInterface $auth;
 
-    public function __construct(?AuthInterface $auth = null)
+    public function __construct(AuthInterface $auth)
     {
-        $this->auth = $auth ?? new \Parina\Shared\Services\Auth();
+        $this->auth = $auth;
     }
 
     public function handle(Request $request): ?Response

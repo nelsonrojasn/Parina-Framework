@@ -12,9 +12,9 @@ class BasicAuth implements Middleware
 {
     private UserQueryRepositoryInterface $userRepository;
 
-    public function __construct(?UserQueryRepositoryInterface $userRepository = null)
+    public function __construct(UserQueryRepositoryInterface $userRepository)
     {
-        $this->userRepository = $userRepository ?? new \Parina\Shared\Services\DbUserQueryRepository();
+        $this->userRepository = $userRepository;
     }
 
     public function handle(Request $request): ?Response
