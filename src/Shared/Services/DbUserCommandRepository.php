@@ -2,7 +2,7 @@
 
 namespace Parina\Shared\Services;
 
-use Parina\Shared\Infrastructure\Db;
+use Parina\Shared\Infrastructure\DatabaseAdapter;
 use Parina\Shared\Infrastructure\SqlGenerator;
 use Parina\Shared\Infrastructure\SqlGeneratorInterface;
 
@@ -10,8 +10,10 @@ class DbUserCommandRepository implements UserCommandRepositoryInterface
 {
     private SqlGeneratorInterface $sqlGenerator;
 
-    public function __construct(?SqlGeneratorInterface $sqlGenerator = null)
-    {
+    public function __construct(
+        private DatabaseAdapter $db,
+        ?SqlGeneratorInterface $sqlGenerator = null
+    ) {
         $this->sqlGenerator = $sqlGenerator ?? new SqlGenerator();
     }
 
@@ -27,18 +29,18 @@ class DbUserCommandRepository implements UserCommandRepositoryInterface
             $params = $data;
             $params['_id_where'] = $id;
 
-            $stmt = Db::query($sql, $params);
+            $stmt = $this->db->query($sql, $params);
             return $stmt->rowCount() > 0;
         } else {
             $sql = $this->sqlGenerator->insert('users', $user);
-            return (bool)Db::query($sql, $user);
+            return (bool)$this->db->query($sql, $user);
         }
     }
 
     public function delete(int $id): bool
     {
         $sql = $this->sqlGenerator->delete('users', 'id');
-        $stmt = Db::query($sql, ['id' => $id]);
+        $stmt = $this->db->query($sql, ['id' => $id]);
         return $stmt->rowCount() > 0;
     }
 }

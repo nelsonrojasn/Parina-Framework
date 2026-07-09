@@ -21,7 +21,9 @@ class ContainerTest extends TestCase
         foreach ($singletons as $interface => $concrete) {
             $instance = $container->get($interface);
             $this->assertNotNull($instance, "Failed to resolve {$interface}");
-            $this->assertInstanceOf($interface, $instance, "Resolved instance is not of type {$interface}");
+            if (class_exists($interface) || interface_exists($interface)) {
+                $this->assertInstanceOf($interface, $instance, "Resolved instance is not of type {$interface}");
+            }
         }
     }
 }

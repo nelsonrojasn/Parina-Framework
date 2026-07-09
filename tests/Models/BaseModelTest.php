@@ -4,7 +4,6 @@ namespace Tests\Models;
 
 use PHPUnit\Framework\TestCase;
 use Parina\Shared\Models\BaseModel;
-use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 
 class DummyModel extends BaseModel
@@ -19,16 +18,18 @@ class DummyModel extends BaseModel
 
 class BaseModelTest extends TestCase
 {
+    private SqliteAdapter $adapter;
+
     protected function setUp(): void
     {
         $config = [
             'dsn' => 'sqlite::memory:',
             'params' => []
         ];
-        $adapter = new SqliteAdapter($config);
-        Db::init($adapter);
+        $this->adapter = new SqliteAdapter($config);
+        BaseModel::setDatabaseAdapter($this->adapter);
 
-        Db::exec("CREATE TABLE IF NOT EXISTS dummies (
+        $this->adapter->exec("CREATE TABLE IF NOT EXISTS dummies (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT

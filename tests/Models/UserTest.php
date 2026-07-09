@@ -5,7 +5,7 @@ namespace Tests\Models;
 use PHPUnit\Framework\TestCase;
 use Parina\Shared\Models\User;
 use Parina\Core\Request;
-use Parina\Shared\Infrastructure\Db;
+use Parina\Shared\Models\BaseModel;
 
 class UserTest extends TestCase
 {
@@ -23,27 +23,27 @@ class UserTest extends TestCase
         $projectRoot = dirname(dirname(__DIR__));
         $schemaFile = $projectRoot . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sqlite.sql';
         $sqlTables = file_get_contents($schemaFile);
-        Db::exec($sqlTables);
+        BaseModel::getDb()->exec($sqlTables);
         
         // Clear previous records if any, then insert seed records
-        Db::exec("DELETE FROM company");
-        Db::exec("DELETE FROM profiles");
-        Db::exec("DELETE FROM users");
-        Db::exec("DELETE FROM profile_user");
-        Db::exec("DELETE FROM resources");
+        BaseModel::getDb()->exec("DELETE FROM company");
+        BaseModel::getDb()->exec("DELETE FROM profiles");
+        BaseModel::getDb()->exec("DELETE FROM users");
+        BaseModel::getDb()->exec("DELETE FROM profile_user");
+        BaseModel::getDb()->exec("DELETE FROM resources");
 
         // 1. Company
-        Db::query("INSERT INTO company (id, dni, name) VALUES (1, '766543211', 'Demo Company')");
+        BaseModel::getDb()->query("INSERT INTO company (id, dni, name) VALUES (1, '766543211', 'Demo Company')");
         // 2. Profile
-        Db::query("INSERT INTO profiles (id, name) VALUES (1, 'admin')");
+        BaseModel::getDb()->query("INSERT INTO profiles (id, name) VALUES (1, 'admin')");
         // 3. User
         $hashedPassword = password_hash('admin123', PASSWORD_BCRYPT);
-        Db::query(
+        BaseModel::getDb()->query(
             "INSERT INTO users (id, company_id, username, password, email) VALUES (1, 1, 'admin', :password, 'admin@democompany.org')",
             ['password' => $hashedPassword]
         );
         // 4. profile_user
-        Db::query("INSERT INTO profile_user (profile_id, user_id) VALUES (1, 1)");
+        BaseModel::getDb()->query("INSERT INTO profile_user (profile_id, user_id) VALUES (1, 1)");
     }
 
     public function test_find_by_login_name()

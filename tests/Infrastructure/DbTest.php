@@ -3,7 +3,6 @@
 namespace Tests\Infrastructure;
 
 use PHPUnit\Framework\TestCase;
-use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
 use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
@@ -81,26 +80,5 @@ class DbTest extends TestCase
 
         $this->assertEquals('hello_pg', $result['val']);
         $this->assertEquals(" LIMIT 10 OFFSET 20", $adapter->getLimitSql(10, 20));
-    }
-
-    public function test_db_facade_delegation()
-    {
-        $config = [
-            'dsn' => 'sqlite::memory:',
-            'params' => []
-        ];
-        $adapter = new SqliteAdapter($config);
-        
-        Db::init($adapter);
-
-        Db::exec("CREATE TABLE IF NOT EXISTS facade_table (id INTEGER PRIMARY KEY, name TEXT)");
-        Db::query("INSERT INTO facade_table (name) VALUES (?)", ['Nelson']);
-
-        $stmt = Db::query("SELECT * FROM facade_table");
-        $rows = $stmt->fetchAll();
-
-        $this->assertCount(1, $rows);
-        $this->assertEquals('Nelson', $rows[0]['name']);
-        $this->assertEquals(" LIMIT 5 OFFSET 0", Db::limit(5, 0));
     }
 }

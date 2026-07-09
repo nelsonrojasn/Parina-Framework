@@ -5,21 +5,23 @@ namespace Tests\Services;
 use PHPUnit\Framework\TestCase;
 use Parina\Shared\Services\DbUserQueryRepository;
 use Parina\Shared\Services\DbUserCommandRepository;
-use Parina\Shared\Infrastructure\Db;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
+use Parina\Shared\Models\BaseModel;
 
 class DbUserRepositoryTest extends TestCase
 {
+    private SqliteAdapter $adapter;
+
     protected function setUp(): void
     {
         $config = [
             'dsn' => 'sqlite::memory:',
             'params' => []
         ];
-        $adapter = new SqliteAdapter($config);
-        Db::init($adapter);
+        $this->adapter = new SqliteAdapter($config);
+        BaseModel::setDatabaseAdapter($this->adapter);
 
-        Db::exec("CREATE TABLE IF NOT EXISTS users (
+        $this->adapter->exec("CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT,
@@ -29,8 +31,8 @@ class DbUserRepositoryTest extends TestCase
 
     public function test_repository_lifecycle()
     {
-        $queryRepo = new DbUserQueryRepository();
-        $commandRepo = new DbUserCommandRepository();
+        $queryRepo = new DbUserQueryRepository($this->adapter);
+        $commandRepo = new DbUserCommandRepository($this->adapter);
 
         // 1. Create a user via Command repository
         $user = [

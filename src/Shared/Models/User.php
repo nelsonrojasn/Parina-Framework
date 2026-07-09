@@ -1,7 +1,6 @@
 <?php
 
 namespace Parina\Shared\Models;
-use Parina\Shared\Infrastructure\Db;
 use Parina\Core\Session;
 
 class User extends BaseModel
@@ -12,7 +11,7 @@ class User extends BaseModel
     public function findByLoginName(string $login): ?array
     {
         $sql = "SELECT * FROM " . self::$table . " WHERE username = :login";
-        $stmt = Db::query($sql, ['login' => $login]);
+        $stmt = self::getDb()->query($sql, ['login' => $login]);
         $result = $stmt->fetch();
         return $result ?: null;
     }

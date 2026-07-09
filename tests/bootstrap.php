@@ -15,6 +15,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-// Initialize database connection for tests
-\Parina\Shared\Infrastructure\Db::setConfig(\Parina\Core\Config::getDbConfig());
-\Parina\Shared\Infrastructure\Db::init();
+// Initialize database connection for tests using the container
+$container = new \Parina\Core\Container();
+$container->load(require dirname(__DIR__) . '/config/dependencies.php');
+\Parina\Shared\Models\BaseModel::setDatabaseAdapter(
+    $container->get(\Parina\Shared\Infrastructure\DatabaseAdapter::class)
+);
