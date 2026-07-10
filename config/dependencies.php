@@ -23,7 +23,7 @@ return [
         ConfigInterface::class => \Parina\Core\AppConfig::class,
 
         // Security / Auth / Log Services
-        \Parina\Shared\Services\Fps\FpsEngineInterface::class => \Parina\Shared\Services\Fps\FpsEngine::class,
+        \Parina\Shared\Services\Fsp\FspEngineInterface::class => \Parina\Shared\Services\Fsp\FspEngine::class,
         \Parina\Shared\Services\AclInterface::class => \Parina\Shared\Services\Acl::class,
         \Parina\Shared\Services\AuthInterface::class => \Parina\Shared\Services\SessionAuth::class,
         \Parina\Core\Interfaces\Logger::class => \Parina\Core\FileLogger::class,

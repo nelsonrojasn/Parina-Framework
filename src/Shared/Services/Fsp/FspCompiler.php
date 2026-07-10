@@ -1,13 +1,13 @@
 <?php
 
-namespace Parina\Shared\Services\Fps;
+namespace Parina\Shared\Services\Fsp;
 
 /**
- * Class FpsCompiler
+ * Class FspCompiler
  * 
- * Compiles raw FPS Rules DSL source code into a flat, jump-resolved bytecode array.
+ * Compiles raw FSP Rules DSL source code into a flat, jump-resolved bytecode array.
  */
-class FpsCompiler
+class FspCompiler
 {
     /**
      * Compiles raw DSL source code into a flat array of instructions (bytecode).

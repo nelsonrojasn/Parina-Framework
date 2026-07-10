@@ -1,25 +1,25 @@
 <?php
 
-namespace Parina\Shared\Services\Fps;
+namespace Parina\Shared\Services\Fsp;
 
 /**
- * Class FpsEngine
+ * Class FspEngine
  * 
- * Secure, zero-RCE sandbox virtual machine executing pre-compiled FPS bytecode.
+ * Secure, zero-RCE sandbox virtual machine executing pre-compiled FSP bytecode.
  */
-class FpsEngine implements FpsEngineInterface
+class FspEngine implements FspEngineInterface
 {
     /**
-     * @var FpsCompiler Instance of the compiler helper.
+     * @var FspCompiler Instance of the compiler helper.
      */
-    private FpsCompiler $compiler;
+    private FspCompiler $compiler;
 
     /**
-     * FpsEngine constructor.
+     * FspEngine constructor.
      */
     public function __construct()
     {
-        $this->compiler = new FpsCompiler();
+        $this->compiler = new FspCompiler();
     }
 
     /**

@@ -1,13 +1,13 @@
 <?php
 
-namespace Parina\Shared\Services\Fps;
+namespace Parina\Shared\Services\Fsp;
 
 /**
- * Interface FpsEngineInterface
+ * Interface FspEngineInterface
  * 
  * Contract for the high-performance prefix-notation sandbox rules engine.
  */
-interface FpsEngineInterface
+interface FspEngineInterface
 {
     /**
      * Compiles raw DSL source code into a flat bytecode instruction array.

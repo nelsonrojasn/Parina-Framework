@@ -2,15 +2,15 @@
 <?php
 
 /**
- * FPS Rules Engine CLI Tester
+ * FSP Rules Engine CLI Tester
  * 
- * Compiles and executes a custom FPS Rules script with optional input parameters.
+ * Compiles and executes a custom FSP Rules script with optional input parameters.
  */
 
 // Load Parina's PSR-4 autoloader.
 require_once __DIR__ . '/../src/autoload.php';
 
-use Parina\Shared\Services\Fps\FpsEngine;
+use Parina\Shared\Services\Fsp\FspEngine;
 
 // ANSI Colors.
 define('C_RESET', "\033[0m");
@@ -21,7 +21,7 @@ define('C_BLUE', "\033[1;34m");
 define('C_WHITE', "\033[1;37m");
 
 if ($argc < 2) {
-    echo C_YELLOW . "Usage: php bin/fps-tester.php <rules_file.fps> [parameters.json]" . C_RESET . "\n";
+    echo C_YELLOW . "Usage: php bin/fsp-tester.php <rules_file.fsp> [parameters.json]" . C_RESET . "\n";
     exit(1);
 }
 
@@ -50,7 +50,7 @@ if ($paramsFile) {
 }
 
 try {
-    $engine = new FpsEngine();
+    $engine = new FspEngine();
     
     echo C_BLUE . "Compiling ruleset: " . C_YELLOW . $rulesFile . C_RESET . "\n";
     $t0 = microtime(true);

@@ -3,15 +3,15 @@
 namespace Tests\Shared\Services;
 
 use PHPUnit\Framework\TestCase;
-use Parina\Shared\Services\Fps\FpsEngine;
+use Parina\Shared\Services\Fsp\FspEngine;
 
-class FpsEngineTest extends TestCase
+class FspEngineTest extends TestCase
 {
-    private FpsEngine $engine;
+    private FspEngine $engine;
 
     protected function setUp(): void
     {
-        $this->engine = new FpsEngine();
+        $this->engine = new FspEngine();
     }
 
     /**

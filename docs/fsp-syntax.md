@@ -1,14 +1,14 @@
-# FPS Rules Engine Syntax & Usage Guide
+# FSP Rules Engine Syntax & Usage Guide
 
-The **FPS Rules Engine** is a lightweight, secure, sandbox-isolated virtual machine designed to process business logic using a custom Domain-Specific Language (DSL) in **Prefix Notation**.
+The **FSP Rules Engine** is a lightweight, secure, sandbox-isolated virtual machine designed to process business logic using a custom Domain-Specific Language (DSL) in **Prefix Notation**.
 
-This document outlines the grammar, variables, prefix operators, control structures, and outputs of the FPS DSL.
+This document outlines the grammar, variables, prefix operators, control structures, and outputs of the FSP DSL.
 
 ---
 
 ## 1. Syntax & Language Grammar
 
-An FPS script consists of declarations, assignment statements, conditional structures, and result expressions.
+An FSP script consists of declarations, assignment statements, conditional structures, and result expressions.
 
 ### Declarations
 *   `formula <RuleName>`: Optional block header declaring the rule name.
@@ -72,27 +72,27 @@ We have created three production-ready example rulesets in the repository. You c
 
 ### Example A: Travel Workflow Stages
 Calculates the status stage and tracking details of a trip based on distance, country boundaries, and transportation status.
-*   **Rule File**: [travel_workflow.fps](file:///home/nelson/repos/parina/docs/examples/travel_workflow.fps)
+*   **Rule File**: [travel_workflow.fsp](file:///home/nelson/repos/parina/docs/examples/travel_workflow.fsp)
 *   **Parameters**: [travel_workflow_params.json](file:///home/nelson/repos/parina/docs/examples/travel_workflow_params.json)
 *   **Execution Command**:
     ```bash
-    php bin/fps-tester.php docs/examples/travel_workflow.fps docs/examples/travel_workflow_params.json
+    php bin/fsp-tester.php docs/examples/travel_workflow.fsp docs/examples/travel_workflow_params.json
     ```
 
 ### Example B: Pricing Discount Offer
 Calculates promotional pricing discounts, applying tiered volume discounts and optional coupon codes.
-*   **Rule File**: [offer_pricing.fps](file:///home/nelson/repos/parina/docs/examples/offer_pricing.fps)
+*   **Rule File**: [offer_pricing.fsp](file:///home/nelson/repos/parina/docs/examples/offer_pricing.fsp)
 *   **Parameters**: [offer_pricing_params.json](file:///home/nelson/repos/parina/docs/examples/offer_pricing_params.json)
 *   **Execution Command**:
     ```bash
-    php bin/fps-tester.php docs/examples/offer_pricing.fps docs/examples/offer_pricing_params.json
+    php bin/fsp-tester.php docs/examples/offer_pricing.fsp docs/examples/offer_pricing_params.json
     ```
 
 ### Example C: Monthly Insurance Premium
 Calculates monthly insurance premium pricing dynamically according to tiers of the insured amount.
-*   **Rule File**: [insurance_premium.fps](file:///home/nelson/repos/parina/docs/examples/insurance_premium.fps)
+*   **Rule File**: [insurance_premium.fsp](file:///home/nelson/repos/parina/docs/examples/insurance_premium.fsp)
 *   **Parameters**: [insurance_premium_params.json](file:///home/nelson/repos/parina/docs/examples/insurance_premium_params.json)
 *   **Execution Command**:
     ```bash
-    php bin/fps-tester.php docs/examples/insurance_premium.fps docs/examples/insurance_premium_params.json
+    php bin/fsp-tester.php docs/examples/insurance_premium.fsp docs/examples/insurance_premium_params.json
     ```
