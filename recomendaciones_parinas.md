@@ -150,8 +150,8 @@ En lugar de crear estos archivos a mano, Parina provee una herramienta CLI para 
 
 1.  Declara tus rutas y sus handlers en el archivo centralizado `routes.csv`:
     ```csv
-    Method,Path,HandlerClass,Middlewares,Description
-    GET,/productos,Parina\Features\ProductManagement\Handlers\ProductListHandler,,Lista de productos
+    Method,Path,Feature,HandlerName,Middlewares,Description
+    GET,/productos,ProductManagement,ProductList,,Lista de productos
     ```
 2.  Ejecuta el generador de andamiaje:
     ```bash

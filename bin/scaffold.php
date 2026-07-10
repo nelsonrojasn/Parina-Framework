@@ -44,12 +44,25 @@ $routesArray = [];
 foreach ($rows as $row) {
     $method = strtoupper(trim($row['method'] ?? 'GET'));
     $path = trim($row['path'] ?? '/');
-    $handlerClass = trim($row['handlerclass'] ?? $row['handler'] ?? '');
     $middlewaresRaw = trim($row['middlewares'] ?? $row['middleware'] ?? '');
     $description = trim($row['description'] ?? '');
 
+    $feature = trim($row['feature'] ?? $row['featurea'] ?? '');
+    $handlerName = trim($row['handlername'] ?? '');
+
+    if (!empty($feature) && !empty($handlerName)) {
+        if (str_ends_with(strtolower($handlerName), 'handler')) {
+            $baseName = substr($handlerName, 0, -7);
+            $handlerClass = 'Parina\\Features\\' . ucfirst($feature) . '\\Handlers\\' . ucfirst($baseName) . 'Handler';
+        } else {
+            $handlerClass = 'Parina\\Features\\' . ucfirst($feature) . '\\Handlers\\' . ucfirst($handlerName) . 'Handler';
+        }
+    } else {
+        $handlerClass = trim($row['handlerclass'] ?? $row['handler'] ?? '');
+    }
+
     if (empty($handlerClass)) {
-        echo "Warning: Skipped route '$path' because 'handler' is empty.\n";
+        echo "Warning: Skipped route '$path' because 'handler' / 'handlername' is empty.\n";
         continue;
     }
 

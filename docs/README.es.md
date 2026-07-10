@@ -192,9 +192,9 @@ Parina incluye una herramienta de línea de comandos para generar rutas, control
 
 1. Define tus rutas en un archivo CSV (por ejemplo, `routes.csv`):
    ```csv
-   Method,Path,HandlerClass,Middlewares,Description
-   GET,/,Parina\Features\Marketing\Handlers\HomeHandler,,Página de inicio
-   GET,/about,Parina\Features\Marketing\Handlers\AboutHandler,,Sobre nosotros
+   Method,Path,Feature,HandlerName,Middlewares,Description
+   GET,/,Marketing,Home,,Página de inicio
+   GET,/about,Marketing,About,,Sobre nosotros
    ```
 
 2. Ejecuta la herramienta de scaffolding:

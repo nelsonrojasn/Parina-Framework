@@ -146,7 +146,7 @@ echo "Reset: config/routes.php\n";
 // 6. Reset routes.csv
 $routesCsvFile = $projectRoot . '/routes.csv';
 if (file_exists($routesCsvFile)) {
-    file_put_contents($routesCsvFile, "Method,Path,HandlerClass,Middlewares,Description\n");
+    file_put_contents($routesCsvFile, "Method,Path,Feature,HandlerName,Middlewares,Description\n");
     echo "Reset: routes.csv\n";
 }
 

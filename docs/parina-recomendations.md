@@ -150,8 +150,8 @@ Instead of creating these files by hand, Parina provides a CLI tool to explicitl
 
 1.  Declare your routes and their handlers in the centralized `routes.csv` file:
     ```csv
-    Method,Path,HandlerClass,Middlewares,Description
-    GET,/productos,Parina\Features\ProductManagement\Handlers\ProductListHandler,,Product list
+    Method,Path,Feature,HandlerName,Middlewares,Description
+    GET,/productos,ProductManagement,ProductList,,Product list
     ```
 2.  Run the scaffolding generator:
     ```bash

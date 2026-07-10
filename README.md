@@ -192,9 +192,9 @@ Parina includes a CLI tool to generate routing configurations, handler classes, 
 
 1. Define your routes in a CSV file (e.g., `routes.csv`):
    ```csv
-   Method,Path,HandlerClass,Middlewares,Description
-   GET,/,Parina\Features\Marketing\Handlers\HomeHandler,,Home page
-   GET,/about,Parina\Features\Marketing\Handlers\AboutHandler,,About us
+   Method,Path,Feature,HandlerName,Middlewares,Description
+   GET,/,Marketing,Home,,Home page
+   GET,/about,Marketing,About,,About us
    ```
 
 2. Run the scaffolding tool:

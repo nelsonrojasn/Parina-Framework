@@ -1,9 +1,9 @@
-Method,Path,HandlerClass,Middlewares,Description
-GET,/,Parina\Features\Marketing\Handlers\HomeHandler,,Página de inicio
-GET,/about,Parina\Features\Marketing\Handlers\AboutHandler,,Sobre nosotros
-GET,/login,Parina\Features\Authentication\Handlers\LoginFormHandler,,Formulario de login
-POST,/login,Parina\Features\Authentication\Handlers\LoginCheckHandler,,Procesar login
-GET,/comprar/credito/auto/{id},Parina\Features\AutoPurchase\Handlers\AutoPurchaseHandler,Auth,Comprar auto
-GET,/admin/home/{hash},Parina\Features\Dashboard\Handlers\AdminHandler,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Página de administración
-GET,/admin/users/{hash},Parina\Features\UserManagement\Handlers\UsersListHandler,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Lista de usuarios
-GET,/logout/{hash},Parina\Features\Authentication\Handlers\LogoutHandler,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Cerrar sesión
+Method,Path,Feature,HandlerName,Middlewares,Description
+GET,/,Marketing,Home,,Página de inicio
+GET,/about,Marketing,About,,Sobre nosotros
+GET,/login,Authentication,LoginForm,,Formulario de login
+POST,/login,Authentication,LoginCheck,,Procesar login
+GET,/comprar/credito/auto/{id},AutoPurchase,AutoPurchase,Auth,Comprar auto
+GET,/admin/home/{hash},Dashboard,Admin,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Página de administración
+GET,/admin/users/{hash},UserManagement,UsersList,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Lista de usuarios
+GET,/logout/{hash},Authentication,Logout,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Cerrar sesión
