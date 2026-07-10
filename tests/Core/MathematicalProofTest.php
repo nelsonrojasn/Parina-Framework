@@ -24,6 +24,17 @@ class MathematicalProofTest extends TestCase
         $this->container->load(require dirname(dirname(__DIR__)) . '/config/dependencies.php');
         
         $this->adapter = $this->container->get(DatabaseAdapter::class);
+
+        // Ensure SQLite schema is loaded for the test run
+        $projectRoot = dirname(dirname(__DIR__));
+        $schemaFile = $projectRoot . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sqlite.sql';
+        if (file_exists($schemaFile)) {
+            $sqlTables = file_get_contents($schemaFile);
+            $this->adapter->exec($sqlTables);
+            
+            // Seed company to satisfy foreign key constraints
+            $this->adapter->exec("INSERT OR IGNORE INTO company (id, dni, name) VALUES (1, '766543211', 'Demo Company')");
+        }
     }
 
     /**
