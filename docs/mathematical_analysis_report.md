@@ -91,7 +91,56 @@ $$c(r, s_{db}) = (x, s_{db}') \quad \text{donde } x \in X_c, s_{db}' \in S_{db}$
 
 ---
 
-## 3. Conclusiones del Análisis
+## 3. Modelado de Componentes Adicionales de Infraestructura
+
+### A. Inyección de Dependencias (DI) como Grafo de Dependencias
+El contenedor de dependencias (`Container`) puede ser modelado como un grafo dirigido de dependencias $G_{di} = (V_{di}, E_{di})$.
+
+* **Vértices ($V_{di}$)**: El conjunto de clases e interfaces registradas en el contenedor.
+* **Arcos ($E_{di}$)**: Un arco $(A, B) \in E_{di}$ existe si y solo si la clase $A$ requiere a $B$ en su constructor para ser instanciada.
+* **Restricción de Aciclicidad (DIP)**:
+  El grafo de dependencias de DI **debe ser un DAG**:
+  $$\mathcal{C}_{di} = \emptyset$$
+  Si existe un ciclo (ej: $A \to B \to A$), la resolución recursiva por reflexión fallará provocando un desbordamiento de pila (*stack overflow*). El método `resolveDependencies()` actúa como una búsqueda en profundidad (DFS) que linealiza e instala el grafo.
+
+---
+
+### B. Sistema de Autorización (ACL) como Composición de Relaciones
+El control de acceso por roles y permisos se modela a través de tres conjuntos disjuntos y relaciones de mapeo:
+
+* Sea $U$ el conjunto de usuarios, $R$ el conjunto de roles y $P$ el conjunto de permisos.
+* Definimos la relación de asignación de roles a usuarios: $UR \subseteq U \times R$.
+* Definimos la relación de asignación de permisos a roles: $RP \subseteq R \times P$.
+
+La relación de **acceso efectivo** del usuario ($UP$) se obtiene mediante la composición de relaciones:
+$$UP = UR \circ RP \subseteq U \times P$$
+$$(u, p) \in UP \iff \exists r \in R \quad \text{tal que} \quad (u, r) \in UR \land (r, p) \in RP$$
+
+La función indicadora de autorización del middleware es:
+$$\mathbb{I}_{UP}(u, p) = \begin{cases} 1 & \text{si } (u, p) \in UP \\ 0 & \text{si } (u, p) \notin UP \end{cases}$$
+
+---
+
+### C. Enrutamiento (Router) como Autómata de Prefijos (Trie)
+El emparejamiento de rutas del `Router` puede pasar de una búsqueda lineal $O(N)$ a una búsqueda jerárquica en árbol de prefijos (**Trie**):
+
+* Sea $T$ un árbol donde cada nodo representa un segmento de la URI.
+* La búsqueda de una ruta correspondiente a una URI dada de longitud de segmentos $L$ se realiza en tiempo $O(L)$, independientemente de la cantidad total de rutas registradas $N$.
+
+---
+
+### D. Limitador de Tasa (RateLimit) como Token Bucket
+El middleware de control de tráfico se define bajo el modelo matemático del algoritmo **Token Bucket (Cubo de Tokens)**:
+
+* Sea $B_{max}$ la capacidad del cubo, $r$ la tasa de regeneración de peticiones por segundo, y $B(t)$ los tokens libres en el tiempo $t$.
+* La ecuación de actualización de tokens en cada hit es:
+  $$B(t) = \min\big(B_{max}, \ B(t_0) + r \cdot (t - t_0)\big)$$
+* Para dar paso a la petición, se evalúa:
+  $$\text{Estado del Request} = \begin{cases} \text{Permitido (Status 200)} & \text{si } B(t) \ge 1 \implies B(t') = B(t) - 1 \\ \text{Rechazado (Status 429)} & \text{si } B(t) < 1 \end{cases}$$
+
+---
+
+## 4. Conclusiones del Análisis
 
 1. **Estabilidad Topológica y Determinismo**:
    El flujo HTTP del framework se comporta como un DAG, lo que garantiza que la ejecución de la petición sea siempre **linealizable, predecible y libre de bucles infinitos** de procesamiento interno.
@@ -99,5 +148,9 @@ $$c(r, s_{db}) = (x, s_{db}') \quad \text{donde } x \in X_c, s_{db}' \in S_{db}$
    Las bifurcaciones del grafo redirigen de inmediato el control al punto de salida (`Response-Emit`) en caso de violación de políticas de acceso o filtros de seguridad, disminuyendo drásticamente el coste de CPU y evitando la resolución recursiva del Contenedor DI para peticiones maliciosas.
 3. **Invariancia y Seguridad Garantizada por CQS**:
    La segregación de interfaces en el repositorio (`UserQueryRepositoryInterface` y `UserCommandRepositoryInterface`) asegura que los componentes que inyectan consultas ($OP_{query} \subset Q$) tengan **cero efectos secundarios** sobre el estado físico de la base de datos ($S_{db}$). Esto certifica matemáticamente la naturaleza stateless del pipeline de autenticación.
-4. **Testeabilidad Pura y Desacoplada**:
+4. **Aciclicidad del Grafo de Dependencias (DI)**:
+   Modelar la inyección de dependencias como un DAG permite garantizar la estabilidad de la inicialización de objetos del sistema. Es posible auditar de forma estática en producción el árbol de llamadas para prevenir ciclos infinitos de instanciación.
+5. **Precisión Matemática en la Seguridad (ACL & RateLimit)**:
+   El uso de composición de relaciones binarias para ACL y del algoritmo continuo de Token Bucket para Rate Limit proporciona un sustento formal estricto que elimina anomalías de autorización o derivaciones de tiempo imprecisas.
+6. **Testeabilidad Pura y Desacoplada**:
    La separación disjunta de operaciones de CQS permite aislar los comportamientos de lectura en mocks rápidos en memoria, reduciendo la complejidad del entorno de testing y asegurando pruebas unitarias veloces e independientes del motor SQL físico.
