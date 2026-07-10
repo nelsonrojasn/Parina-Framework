@@ -198,7 +198,7 @@ if (!file_exists($dependenciesFile)) {
                 // Cycle detected
                 $idx = array_search($neighbor, $path);
                 if ($idx !== false) {
-                    $cyclePath = array_slice($path, $idx);
+                    $cyclePath = array_slice($path, (int) $idx);
                     $cyclePath[] = $neighbor;
                 } else {
                     $cyclePath = [$node, $neighbor];
