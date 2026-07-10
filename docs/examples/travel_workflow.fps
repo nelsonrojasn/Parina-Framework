@@ -1,0 +1,35 @@
+frule TravelStageWorkflow
+begin
+    # Check travel status and distance parameters to compute workflow stage
+    status = param.status
+    distance = param.distance
+    cross_border = param.cross_border
+    
+    # Calculate Travel Stage
+    if ==(status, "pending")
+        stage = "Scheduled"
+    else
+        if ==(status, "active")
+            if <=(distance, 50)
+                stage = "Local Transit"
+            else
+                stage = "Long-haul Transit"
+            end
+        else
+            if ==(status, "completed")
+                stage = "Archived & Complete"
+            else
+                stage = "Unknown"
+            end
+        end
+    end
+
+    # Calculate Border Crossing Risk
+    if ==(cross_border, true)
+        risk_level = "High # Border Control Required"
+    else
+        risk_level = "Standard"
+    end
+
+    result << status, distance, stage, risk_level
+end

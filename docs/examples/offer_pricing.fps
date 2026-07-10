@@ -1,0 +1,29 @@
+frule OfferPricingDiscount
+begin
+    # Calculate initial subtotal
+    quantity = param.quantity
+    unit_price = param.unit_price
+    coupon = param.coupon
+
+    subtotal = *(quantity, unit_price)
+
+    # Volume-based discount tier (10+ items gets 15% discount)
+    if >=(quantity, 10)
+        volume_discount = *(subtotal, 0.15)
+    else
+        volume_discount = 0
+    end
+
+    # Coupon code discount
+    if ==(coupon, "WELCOME10")
+        coupon_discount = 10
+    else
+        coupon_discount = 0
+    end
+
+    # Total discount and final price
+    total_discount = +(volume_discount, coupon_discount)
+    final_price = -(subtotal, total_discount)
+
+    result << subtotal, total_discount, final_price
+end

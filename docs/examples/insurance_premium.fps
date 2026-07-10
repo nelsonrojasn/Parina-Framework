@@ -1,0 +1,34 @@
+frule InsurancePremiumCalculation
+begin
+    # Calculates monthly premium based on insured coverage tier
+    insured_amount = param.insured_amount
+    has_prior_claims = param.has_prior_claims
+
+    # Tiered base premium calculation
+    if <=(insured_amount, 10000)
+        base_premium = 15
+    else
+        if <=(insured_amount, 50000)
+            base_premium = 50
+        else
+            if <=(insured_amount, 100000)
+                base_premium = 90
+            else
+                # 0.1% premium rate for high coverage
+                base_premium = *(insured_amount, 0.001)
+            end
+        end
+    end
+
+    # Prior claim penalty (adds 25% to the base premium)
+    if ==(has_prior_claims, true)
+        premium_rate_multiplier = 1.25
+        final_premium = *(base_premium, premium_rate_multiplier)
+        clause = "Premium loaded due to prior claims history"
+    else
+        final_premium = base_premium
+        clause = "Standard premium rates applied"
+    end
+
+    result << insured_amount, final_premium, clause
+end
