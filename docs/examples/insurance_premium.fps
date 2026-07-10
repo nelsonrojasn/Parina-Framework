@@ -1,4 +1,4 @@
-frule InsurancePremiumCalculation
+formula InsurancePremiumCalculation
 begin
     # Calculates monthly premium based on insured coverage tier
     insured_amount = param.insured_amount

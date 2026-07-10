@@ -11,7 +11,7 @@ This document outlines the grammar, variables, prefix operators, control structu
 An FPS script consists of declarations, assignment statements, conditional structures, and result expressions.
 
 ### Declarations
-*   `frule <RuleName>`: Optional block header declaring the rule name.
+*   `formula <RuleName>`: Optional block header declaring the rule name.
 *   `begin`: Denotes the start of execution.
 *   `end`: Denotes the end of a block (loops, conditionals, or the program itself).
 

@@ -38,7 +38,7 @@ class FpsCompiler
             }
             $line = trim($line);
 
-            if (empty($line) || str_starts_with(strtolower($line), 'frule') || strtolower($line) === 'begin') {
+            if (empty($line) || str_starts_with(strtolower($line), 'formula') || strtolower($line) === 'begin') {
                 $instructions[] = ['type' => 'noop'];
                 continue;
             }

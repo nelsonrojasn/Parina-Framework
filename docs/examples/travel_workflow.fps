@@ -1,4 +1,4 @@
-frule TravelStageWorkflow
+formula TravelStageWorkflow
 begin
     # Check travel status and distance parameters to compute workflow stage
     status = param.status

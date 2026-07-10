@@ -1,4 +1,4 @@
-frule OfferPricingDiscount
+formula OfferPricingDiscount
 begin
     # Calculate initial subtotal
     quantity = param.quantity
