@@ -72,8 +72,8 @@ We have created three production-ready example rulesets in the repository. You c
 
 ### Example A: Travel Workflow Stages
 Calculates the status stage and tracking details of a trip based on distance, country boundaries, and transportation status.
-*   **Rule File**: [travel_workflow.fsp](file:///home/nelson/repos/parina/docs/examples/travel_workflow.fsp)
-*   **Parameters**: [travel_workflow_params.json](file:///home/nelson/repos/parina/docs/examples/travel_workflow_params.json)
+*   **Rule File**: [travel_workflow.fsp](file:///./docs/examples/travel_workflow.fsp)
+*   **Parameters**: [travel_workflow_params.json](file:///./docs/examples/travel_workflow_params.json)
 *   **Execution Command**:
     ```bash
     php bin/fsp-tester.php docs/examples/travel_workflow.fsp docs/examples/travel_workflow_params.json
@@ -81,8 +81,8 @@ Calculates the status stage and tracking details of a trip based on distance, co
 
 ### Example B: Pricing Discount Offer
 Calculates promotional pricing discounts, applying tiered volume discounts and optional coupon codes.
-*   **Rule File**: [offer_pricing.fsp](file:///home/nelson/repos/parina/docs/examples/offer_pricing.fsp)
-*   **Parameters**: [offer_pricing_params.json](file:///home/nelson/repos/parina/docs/examples/offer_pricing_params.json)
+*   **Rule File**: [offer_pricing.fsp](file:///./docs/examples/offer_pricing.fsp)
+*   **Parameters**: [offer_pricing_params.json](file:///./docs/examples/offer_pricing_params.json)
 *   **Execution Command**:
     ```bash
     php bin/fsp-tester.php docs/examples/offer_pricing.fsp docs/examples/offer_pricing_params.json
@@ -90,8 +90,8 @@ Calculates promotional pricing discounts, applying tiered volume discounts and o
 
 ### Example C: Monthly Insurance Premium
 Calculates monthly insurance premium pricing dynamically according to tiers of the insured amount.
-*   **Rule File**: [insurance_premium.fsp](file:///home/nelson/repos/parina/docs/examples/insurance_premium.fsp)
-*   **Parameters**: [insurance_premium_params.json](file:///home/nelson/repos/parina/docs/examples/insurance_premium_params.json)
+*   **Rule File**: [insurance_premium.fsp](file:///./docs/examples/insurance_premium.fsp)
+*   **Parameters**: [insurance_premium_params.json](file:///./docs/examples/insurance_premium_params.json)
 *   **Execution Command**:
     ```bash
     php bin/fsp-tester.php docs/examples/insurance_premium.fsp docs/examples/insurance_premium_params.json
