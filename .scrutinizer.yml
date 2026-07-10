@@ -1,9 +1,12 @@
 tools:
-    php_analyzer: true
+    php_analyzer:
+        dependency_paths:
+            - '.phpunit-src/'
 
 filter:
     excluded_paths:
         - 'vendor/*'
+        - '.phpunit-src/*'
 
 # Say to Scrutinizer to use pre-installed PHP instead of compiling one
 build:
@@ -12,6 +15,9 @@ build:
             version: '8.2' 
     nodes:
         analysis:
+            dependencies:
+                before:
+                    - mkdir -p .phpunit-src && php -r '$p = new Phar("phpunit.phar"); $p->extractTo(".phpunit-src");'
             tests:
                 override:
                     - php-scrutinizer-run
