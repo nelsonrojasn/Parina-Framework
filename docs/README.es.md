@@ -19,7 +19,7 @@ Parina es un micro-framework minimalista para aplicaciones PHP modernas. Proporc
 * **Contenedor DI con Reflection**: Resolución automática e inyección de dependencias por constructor en Controladores y Middlewares de manera recursiva.
 * **Arquitectura Feature-Driven**: Controladores (handlers), vistas y pruebas unitarias organizadas por características cohesivas de negocio (ej. `Authentication`, `UserManagement`, `Marketing`) en lugar de carpetas basadas en roles o capas técnicas dispersas.
 * **Petición HTTP sin Estado (`Request`)**: Entrada de datos unificada (`input()`), consulta simple de cabeceras (`header()`) y bolsa de contexto local (`setAttribute()`) para comunicación limpia entre middlewares y controladores.
-* **Patrones CQS y Adapter**: Separación de consultas de lectura y comandos de escritura en Repositorios, junto con adaptadores dinámicos de base de datos (SQLite, MySQL, PostgreSQL) conformes al Principio Abierto/Cerrado.
+* **Patrones CQS y Adapter**: Separación de consultas de lectura y comandos de escritura en Repositorios (validados automáticamente por el [Linter](file:///home/nelson/repos/Parina-Framework/bin/linter.php) del sistema), junto con adaptadores dinámicos de base de datos (SQLite, MySQL, PostgreSQL) conformes al Principio Abierto/Cerrado. Consulta las [Recomendaciones de CQS](file:///home/nelson/repos/Parina-Framework/recomendaciones_parinas.md#abstraccion-de-datos-sin-orm-magico-cqs) para ver las reglas detalladas.
 * **Protección contra XSS**: Escape seguro de variables en vistas mediante la función de ayuda global `h()`.
 
 ---

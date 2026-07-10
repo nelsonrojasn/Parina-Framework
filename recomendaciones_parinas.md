@@ -50,9 +50,18 @@ Siguiendo las convenciones clásicas y limpias que facilitan el mapeo manual:
     *   `actualizado_at` para la fecha/hora del último cambio.
 
 ### Abstracción de Datos sin ORM Mágico (CQS)
-En lugar de depender de un ActiveRecord pesado con carga perezosa (*lazy loading*), en Parina recomendamos separar las lecturas de las escrituras (**Command Query Separation**):
+En lugar de depender de un ActiveRecord pesado con carga perezosa (*lazy loading*), en Parina recomendamos separar las lecturas de las escrituras (**Command Query Separation**). Esto se audita de forma automatizada mediante nuestro linter (`php bin/linter.php`), el cual impone las siguientes reglas de aislamiento:
+
 *   **Queries (Lecturas):** Repositorios dedicados a consultar datos que devuelven directamente arreglos asociativos de PHP (rápidos y directos para las vistas).
+    *   **Regla de Nomenclatura:** La interfaz y clase concreta deben incluir la palabra `Query` en su nombre (ej: `UserQueryRepositoryInterface`, `DbUserQueryRepository`).
+    *   **Regla de Retorno:** Sus métodos **nunca** deben declarar un tipo de retorno `void`.
+    *   **Invariancia de Estado:** Tienen estrictamente prohibido realizar efectos secundarios. Su código no debe contener palabras clave SQL de escritura (`INSERT`, `UPDATE`, `DELETE`) ni invocar métodos mutadores de `SqlGenerator` (`insert`, `update`, `delete`).
 *   **Commands (Escrituras/Lógica):** Clases dedicadas a mutar el estado de la base de datos de manera explícita y segura.
+    *   **Regla de Nomenclatura:** La interfaz y clase concreta deben incluir la palabra `Command` en su nombre (ej: `UserCommandRepositoryInterface`, `DbUserCommandRepository`).
+    *   **Regla de Retorno:** Sus métodos solo deben retornar tipos seguros de control: `void`, `bool`, `int` (para IDs o filas afectadas), o `null`. Tienen prohibido retornar colecciones o arreglos asociativos de datos persistentes.
+    *   **Responsabilidad Única:** No deben incluir métodos de lectura típicos de entidades completas (como métodos que empiecen con `find`, `get`, `select` o `read`).
+*   **Aislamiento en Features:**
+    *   Para garantizar que las características de negocio sean independientes del motor SQL y sigan un acoplamiento indirecto, los Handlers en `src/Features/` tienen **prohibido** inyectar directamente la clase `DatabaseAdapter`. Deben depender exclusivamente de interfaces de repositorios Query o Command.
 
 ---
 

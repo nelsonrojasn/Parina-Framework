@@ -50,9 +50,18 @@ Following classic and clean conventions that facilitate manual mapping:
     *   `actualizado_at` for the date/time of the last update.
 
 ### Data Abstraction without Magical ORM (CQS)
-Instead of relying on a heavy ActiveRecord with lazy loading, in Parina we recommend separating reads from writes (**Command Query Separation**):
+Instead of relying on a heavy ActiveRecord with lazy loading, in Parina we recommend separating reads from writes (**Command Query Separation**). This is audited automatically by our linter (`php bin/linter.php`), which enforces the following isolation rules:
+
 *   **Queries (Reads):** Dedicated repositories for querying data that directly return PHP associative arrays (fast and direct for views).
+    *   **Naming Rule:** Both the interface and the concrete class must include `Query` in their name (e.g., `UserQueryRepositoryInterface`, `DbUserQueryRepository`).
+    *   **Return Rule:** Their methods **must never** declare a `void` return type.
+    *   **State Invariance:** They are strictly forbidden from causing side effects. Their code must not contain modifying SQL keywords (`INSERT`, `UPDATE`, `DELETE`) nor call mutating `SqlGenerator` methods (`insert`, `update`, `delete`).
 *   **Commands (Writes/Logic):** Dedicated classes for mutating database state explicitly and securely.
+    *   **Naming Rule:** Both the interface and the concrete class must include `Command` in their name (e.g., `UserCommandRepositoryInterface`, `DbUserCommandRepository`).
+    *   **Return Rule:** Their methods must strictly return control types: `void`, `bool`, `int` (for IDs or affected rows), or `null`. They are forbidden from returning associative arrays or collections of entity data.
+    *   **Single Responsibility:** They must not include typical query methods for retrieving full entities (such as methods starting with `find`, `get`, `select`, or `read`).
+*   **Feature Isolation:**
+    *   To guarantee that business features are independent of the SQL engine and follow loose coupling, Handlers inside `src/Features/` are **forbidden** from directly injecting the `DatabaseAdapter` class. They must depend exclusively on Query or Command repository interfaces.
 
 ---
 
