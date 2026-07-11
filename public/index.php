@@ -10,8 +10,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 use Parina\Core\Router;
 use Parina\Core\Kernel;
-use Parina\Core\Config;
 use Parina\Core\Container;
+use Parina\Core\View;
+use Parina\Core\Interfaces\ConfigInterface;
+use Parina\Shared\Services\AuthInterface;
+use Parina\Shared\Security\CipherInterface;
 use Parina\Shared\Infrastructure\DatabaseAdapter;
 
 require_once __DIR__ . '/../src/autoload.php';
@@ -21,6 +24,11 @@ $container = new Container();
 if (file_exists(__DIR__ . '/../config/dependencies.php')) {
     $container->load(require __DIR__ . '/../config/dependencies.php');
 }
+
+// Register shared variables for views
+View::share('auth', $container->get(AuthInterface::class));
+View::share('cipher', $container->get(CipherInterface::class));
+View::share('config', $container->get(ConfigInterface::class));
 
 $router = new Router();
 

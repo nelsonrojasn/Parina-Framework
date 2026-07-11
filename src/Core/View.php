@@ -2,13 +2,6 @@
 declare(strict_types=1);
 namespace Parina\Core;
 
-use Parina\Core\Interfaces\ConfigInterface;
-use Parina\Shared\Services\AuthInterface;
-use Parina\Shared\Security\CipherInterface;
-use Parina\Core\AppConfig;
-use Parina\Shared\Services\SessionAuth;
-use Parina\Shared\Security\AesCipherService;
-
 class View
 {
     private static array $basePaths = [
@@ -16,6 +9,8 @@ class View
         __DIR__ . '/../Shared/Partials/',     // Path for partials
         __DIR__ . '/../Features/'     // Path for features
     ];
+
+    private static array $shared = [];
 
     /**
      * Allows dynamically adding new search paths
@@ -63,10 +58,15 @@ class View
         return self::capture($layout, $data);
     }
 
+    public static function share(string $key, mixed $value): void
+    {
+        self::$shared[$key] = $value;
+    }
+
     private static function capture(string $path, array $data = []): string
     {
         $resolvedPath = self::resolvePath($path);
-        $data = self::mergeLayoutDependencies($data);
+        $data = self::mergeSharedData($data);
 
         extract($data, EXTR_SKIP);
 
@@ -88,32 +88,8 @@ class View
         throw new \RuntimeException("View not found: '$path'.\nTried in:\n - " . implode("\n - ", $tried));
     }
 
-    private static function mergeLayoutDependencies(array $data): array
+    private static function mergeSharedData(array $data): array
     {
-        $container = Container::getInstance();
-
-        $config = ($container && $container->has(ConfigInterface::class))
-            ? $container->get(ConfigInterface::class)
-            : new AppConfig();
-
-        $auth = ($container && $container->has(AuthInterface::class))
-            ? $container->get(AuthInterface::class)
-            : new SessionAuth();
-
-        $cipher = ($container && $container->has(CipherInterface::class))
-            ? $container->get(CipherInterface::class)
-            : new AesCipherService($config);
-
-        if (!isset($data['config'])) {
-            $data['config'] = $config;
-        }
-        if (!isset($data['auth'])) {
-            $data['auth'] = $auth;
-        }
-        if (!isset($data['cipher'])) {
-            $data['cipher'] = $cipher;
-        }
-
-        return $data;
+        return array_merge(self::$shared, $data);
     }
 }

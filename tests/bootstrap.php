@@ -15,4 +15,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+use Parina\Core\View;
+use Parina\Core\AppConfig;
+use Parina\Shared\Services\SessionAuth;
+use Parina\Shared\Security\AesCipherService;
+
+$config = new AppConfig();
+View::share('config', $config);
+View::share('auth', new SessionAuth());
+View::share('cipher', new AesCipherService($config));
+
 
