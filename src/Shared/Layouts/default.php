@@ -4,23 +4,23 @@ use Parina\Core\View;
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Parina Framework - The Silence of the Altiplano</title>
+    <title>Parina Framework - El Silencio del Altiplano</title>
     <link rel="stylesheet" href="/assets/css/parina.css">
 </head>
 <body>
 
 <header>
     <nav>
-        <a href="/">Home</a>
+        <a href="/">Inicio</a>
         <?php if (file_exists($config->getDbPath()) && !$auth->isLoggedIn()) : ?>
-            <a href="/login">Login</a>
+            <a href="/login">Iniciar Sesión</a>
         <?php endif; ?>
         <?php if ($auth->isLoggedIn()) : ?>
             <a href="/admin/home/<?= $cipher->encryptUrl('admin/home');?>">Admin</a>
-            <a href="/admin/users/<?= $cipher->encryptUrl('admin/users');?>">Users</a>
-            <a href="/logout/<?= $cipher->encryptUrl('logout');?>">Logout</a>
+            <a href="/admin/users/<?= $cipher->encryptUrl('admin/users');?>">Usuarios</a>
+            <a href="/logout/<?= $cipher->encryptUrl('logout');?>">Cerrar Sesión</a>
         <?php endif; ?>
-        <a href="/about">About</a>
+        <a href="/about">Acerca de</a>
     </nav>
 </header>
 

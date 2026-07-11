@@ -18,6 +18,6 @@ class UsersListHandlerTest extends TestCase
 
         $this->assertInstanceOf(HtmlResponse::class, $response);
         $this->assertEquals(200, $response->getStatus());
-        $this->assertStringContainsString('<h1>Users list</h1>', $response->getContent());
+        $this->assertStringContainsString('<h1>Listado de Usuarios</h1>', $response->getContent());
     }
 }

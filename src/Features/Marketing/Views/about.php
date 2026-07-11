@@ -1,10 +1,10 @@
 <article>
-    <h1>About Parina</h1>
-    <p>Parina is not a tool to program faster, it is a tool to think better.</p>
+    <h1>Acerca de Parina</h1>
+    <p>Parina no es una herramienta para programar más rápido, es una herramienta para pensar mejor.</p>
     
-    <h2>Philosophy</h2>
+    <h2>Filosofía</h2>
     <ul>
-        <li><strong>Simplicity:</strong> Code that fits in your head.</li>
-        <li><strong>Sovereignty:</strong> You decide the infrastructure.</li>
+        <li><strong>Simplicidad:</strong> Código que cabe en tu cabeza.</li>
+        <li><strong>Soberanía:</strong> Tú decides la infraestructura.</li>
     </ul>
 </article>

@@ -1,21 +1,21 @@
-<h1>Welcome to Parina Framework</h1>
-<p>A solid and minimalist foundation for your web projects.</p>
+<h1>Bienvenido a Parina Framework</h1>
+<p>Una base sólida y minimalista para tus proyectos web.</p>
 
 <p>
-Parina offers you the essential tools so you have total control over your code.<br>
-Designed to be lightweight, clear, and easy to understand from the very first moment.
+Parina te ofrece las herramientas esenciales para que tengas el control total de tu código.<br>
+Diseñado para ser ligero, claro y fácil de entender desde el primer momento.
 </p>
 
-<h3>Getting Started</h3>
+<h3>Primeros Pasos</h3>
 <ul>
-  <li>Register your routes in <code>routes.csv</code> or <code>config/routes.php</code></li>
-  <li>Create a handler inside a feature folder in <code>src/Features/</code></li>
-  <li>Render a view from its corresponding feature <code>Views/</code> directory</li>
-  <li>Start the server:
+  <li>Registra tus rutas en <code>routes.csv</code> o <code>config/routes.php</code></li>
+  <li>Crea un handler dentro de una carpeta de característica en <code>src/Features/</code></li>
+  <li>Renderiza una vista desde el directorio de <code>Views/</code> de su característica correspondiente</li>
+  <li>Inicia el servidor:
     <pre>php -S localhost:8000 -t public</pre>
   </li>
 </ul>
 
 <p>
-We hope you enjoy the experience of building on a clean and efficient ground.
+Esperamos que disfrutes la experiencia de construir sobre un terreno limpio y eficiente.
 </p>

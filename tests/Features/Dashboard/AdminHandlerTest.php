@@ -18,6 +18,6 @@ class AdminHandlerTest extends TestCase
 
         $this->assertInstanceOf(HtmlResponse::class, $response);
         $this->assertEquals(200, $response->getStatus());
-        $this->assertStringContainsString('<h1>Admin</h1>', $response->getContent());
+        $this->assertStringContainsString('<h1>Administración</h1>', $response->getContent());
     }
 }
