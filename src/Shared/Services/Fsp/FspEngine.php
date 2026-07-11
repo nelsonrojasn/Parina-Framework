@@ -15,11 +15,31 @@ class FspEngine implements FspEngineInterface
     private FspCompiler $compiler;
 
     /**
+     * @var array Mapped operators to callables.
+     */
+    private array $operators;
+
+    /**
      * FspEngine constructor.
      */
     public function __construct()
     {
         $this->compiler = new FspCompiler();
+        $this->operators = [
+            '==' => fn($a, $b) => $a == $b,
+            '~=' => fn($a, $b) => $a != $b,
+            '<'  => fn($a, $b) => $a < $b,
+            '<=' => fn($a, $b) => $a <= $b,
+            '>'  => fn($a, $b) => $a > $b,
+            '>=' => fn($a, $b) => $a >= $b,
+            '&&' => fn($a, $b) => $a && $b,
+            '||' => fn($a, $b) => $a || $b,
+            '+'  => fn($a, $b) => $a + $b,
+            '-'  => fn($a, $b) => $a - $b,
+            '*'  => fn($a, $b) => $a * $b,
+            '/'  => fn($a, $b) => $b != 0 ? $a / $b : 0,
+            '%'  => fn($a, $b) => $b != 0 ? $a % $b : 0,
+        ];
     }
 
     /**
@@ -42,35 +62,13 @@ class FspEngine implements FspEngineInterface
 
         while ($pc < $total) {
             $inst = $instructions[$pc];
-            switch ($inst['type']) {
-                case 'noop':
-                    $pc++;
-                    break;
-
-                case 'assign':
-                    $variables[$inst['var']] = $this->evalNode($inst['expr'], $variables, $params);
-                    $pc++;
-                    break;
-
-                case 'result':
-                    foreach ($inst['vars'] as $v) {
-                        $result[$v] = $variables[$v] ?? "";
-                    }
-                    $pc++;
-                    break;
-
-                case 'if':
-                    $cond = $this->evalNode($inst['expr'], $variables, $params);
-                    if ($cond) {
-                        $pc++;
-                    } else {
-                        $pc = $inst['jmp_target'] ?? $total;
-                    }
-                    break;
-
-                case 'jmp':
-                    $pc = $inst['jmp_target'] ?? $total;
-                    break;
+            $type = $inst['type'] ?? 'noop';
+            $method = 'exec' . ucfirst($type);
+            
+            if (method_exists($this, $method)) {
+                $this->$method($inst, $pc, $variables, $params, $result, $total);
+            } else {
+                $pc++;
             }
         }
         return $result;
@@ -86,36 +84,69 @@ class FspEngine implements FspEngineInterface
      */
     private function evalNode(array $node, array &$variables, array &$params)
     {
-        switch ($node['type']) {
-            case 'const':
-                return $node['value'];
-            case 'param':
-                return $params[$node['key']] ?? null;
-            case 'var':
-                // Follow fallback to variable name if not instantiated.
-                return $variables[$node['name']] ?? $node['name'];
-            case 'op':
-                $left = $this->evalNode($node['args'][0], $variables, $params);
-                $right = isset($node['args'][1]) ? $this->evalNode($node['args'][1], $variables, $params) : null;
-                
-                // Switch inline evaluation to avoid method call overhead on low-resource hardware.
-                switch ($node['op']) {
-                    case '==': return $left == $right;
-                    case '~=': return $left != $right;
-                    case '<':  return $left < $right;
-                    case '<=': return $left <= $right;
-                    case '>':  return $left > $right;
-                    case '>=': return $left >= $right;
-                    case '&&': return $left && $right;
-                    case '||': return $left || $right;
-                    case '+':  return $left + $right;
-                    case '-':  return $left - $right;
-                    case '*':  return $left * $right;
-                    case '/':  return $right != 0 ? $left / $right : 0;
-                    case '%':  return $right != 0 ? $left % $right : 0;
-                    default:   return null;
-                }
+        $type = $node['type'] ?? '';
+        $method = 'eval' . ucfirst($type);
+        if (method_exists($this, $method)) {
+            return $this->$method($node, $variables, $params);
         }
         return null;
+    }
+
+    private function evalConst(array $node, array &$variables, array &$params)
+    {
+        return $node['value'];
+    }
+
+    private function evalParam(array $node, array &$variables, array &$params)
+    {
+        return $params[$node['key']] ?? null;
+    }
+
+    private function evalVar(array $node, array &$variables, array &$params)
+    {
+        return $variables[$node['name']] ?? $node['name'];
+    }
+
+    private function evalOp(array $node, array &$variables, array &$params)
+    {
+        $left = $this->evalNode($node['args'][0], $variables, $params);
+        $right = isset($node['args'][1]) ? $this->evalNode($node['args'][1], $variables, $params) : null;
+        $op = $node['op'];
+        
+        return isset($this->operators[$op]) ? $this->operators[$op]($left, $right) : null;
+    }
+
+    private function execNoop(array $inst, int &$pc, array &$variables, array &$params, array &$result, int $total): void
+    {
+        $pc++;
+    }
+
+    private function execAssign(array $inst, int &$pc, array &$variables, array &$params, array &$result, int $total): void
+    {
+        $variables[$inst['var']] = $this->evalNode($inst['expr'], $variables, $params);
+        $pc++;
+    }
+
+    private function execResult(array $inst, int &$pc, array &$variables, array &$params, array &$result, int $total): void
+    {
+        foreach ($inst['vars'] as $v) {
+            $result[$v] = $variables[$v] ?? "";
+        }
+        $pc++;
+    }
+
+    private function execIf(array $inst, int &$pc, array &$variables, array &$params, array &$result, int $total): void
+    {
+        $cond = $this->evalNode($inst['expr'], $variables, $params);
+        if ($cond) {
+            $pc++;
+        } else {
+            $pc = $inst['jmp_target'] ?? $total;
+        }
+    }
+
+    private function execJmp(array $inst, int &$pc, array &$variables, array &$params, array &$result, int $total): void
+    {
+        $pc = $inst['jmp_target'] ?? $total;
     }
 }

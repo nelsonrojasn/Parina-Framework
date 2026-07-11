@@ -22,94 +22,152 @@ class FspCompiler
         $jmpStack = [];
 
         foreach ($lines as $lineNo => $rawLine) {
-            // Strip comments safely, preserving '#' characters inside double-quoted string literals.
-            $line = '';
-            $inString = false;
-            $len = strlen($rawLine);
-            for ($i = 0; $i < $len; $i++) {
-                $char = $rawLine[$i];
-                if ($char === '"') {
-                    $inString = !$inString;
-                }
-                if ($char === '#' && !$inString) {
+            $line = $this->stripComments($rawLine);
+
+            $matched = false;
+            foreach ($this->getLineParsers() as $parser) {
+                if ($parser($line, $instructions, $jmpStack)) {
+                    $matched = true;
                     break;
                 }
-                $line .= $char;
             }
-            $line = trim($line);
 
-            if (empty($line) || str_starts_with(strtolower($line), 'formula') || strtolower($line) === 'begin') {
+            if (!$matched) {
                 $instructions[] = ['type' => 'noop'];
-                continue;
             }
-
-            if (strtolower($line) === 'end') {
-                if (!empty($jmpStack)) {
-                    $pop = array_pop($jmpStack);
-                    $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
-                    $instructions[] = ['type' => 'noop'];
-                } else {
-                    $instructions[] = ['type' => 'noop'];
-                }
-                continue;
-            }
-
-            if (str_starts_with($line, 'if ')) {
-                $condStr = trim(substr($line, 3));
-                $tokens = $this->tokenize($condStr);
-                $idx = 0;
-                $expr = $this->parseExpression($tokens, $idx);
-                
-                $instIdx = count($instructions);
-                $instructions[] = [
-                    'type' => 'if',
-                    'expr' => $expr,
-                    'jmp_target' => null
-                ];
-                $jmpStack[] = ['type' => 'if', 'idx' => $instIdx];
-                continue;
-            }
-
-            if ($line === 'else') {
-                $pop = array_pop($jmpStack);
-                if ($pop && $pop['type'] === 'if') {
-                    $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
-                }
-                
-                $instIdx = count($instructions);
-                $instructions[] = [
-                    'type' => 'jmp',
-                    'jmp_target' => null
-                ];
-                $jmpStack[] = ['type' => 'else', 'idx' => $instIdx];
-                continue;
-            }
-
-            if (preg_match('/^result\s*(?:<<|=)\s*(.*)$/i', $line, $matches)) {
-                $vars = array_map('trim', explode(',', $matches[1]));
-                $instructions[] = [
-                    'type' => 'result',
-                    'vars' => $vars
-                ];
-                continue;
-            }
-
-            if (preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$/', $line, $matches)) {
-                $tokens = $this->tokenize(trim($matches[2]));
-                $idx = 0;
-                $expr = $this->parseExpression($tokens, $idx);
-                $instructions[] = [
-                    'type' => 'assign',
-                    'var' => $matches[1],
-                    'expr' => $expr
-                ];
-                continue;
-            }
-
-            $instructions[] = ['type' => 'noop'];
         }
 
         return $instructions;
+    }
+
+    /**
+     * Strips comments safely, preserving '#' characters inside double-quoted string literals.
+     */
+    private function stripComments(string $rawLine): string
+    {
+        $line = '';
+        $inString = false;
+        $len = strlen($rawLine);
+        for ($i = 0; $i < $len; $i++) {
+            $char = $rawLine[$i];
+            if ($char === '"') {
+                $inString = !$inString;
+            }
+            if ($char === '#' && !$inString) {
+                break;
+            }
+            $line .= $char;
+        }
+        return trim($line);
+    }
+
+    /**
+     * Get the registry of line parser callbacks.
+     *
+     * @return array<callable>
+     */
+    private function getLineParsers(): array
+    {
+        return [
+            fn(string $line, array &$inst, array &$jmp) => $this->parseNoop($line, $inst, $jmp),
+            fn(string $line, array &$inst, array &$jmp) => $this->parseEnd($line, $inst, $jmp),
+            fn(string $line, array &$inst, array &$jmp) => $this->parseIf($line, $inst, $jmp),
+            fn(string $line, array &$inst, array &$jmp) => $this->parseElse($line, $inst, $jmp),
+            fn(string $line, array &$inst, array &$jmp) => $this->parseResult($line, $inst, $jmp),
+            fn(string $line, array &$inst, array &$jmp) => $this->parseAssign($line, $inst, $jmp),
+        ];
+    }
+
+    private function parseNoop(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if (empty($line) || str_starts_with(strtolower($line), 'formula') || strtolower($line) === 'begin') {
+            $instructions[] = ['type' => 'noop'];
+            return true;
+        }
+        return false;
+    }
+
+    private function parseEnd(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if (strtolower($line) !== 'end') {
+            return false;
+        }
+        if (!empty($jmpStack)) {
+            $pop = array_pop($jmpStack);
+            $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
+            $instructions[] = ['type' => 'noop'];
+        } else {
+            $instructions[] = ['type' => 'noop'];
+        }
+        return true;
+    }
+
+    private function parseIf(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if (!str_starts_with($line, 'if ')) {
+            return false;
+        }
+        $condStr = trim(substr($line, 3));
+        $tokens = $this->tokenize($condStr);
+        $idx = 0;
+        $expr = $this->parseExpression($tokens, $idx);
+        
+        $instIdx = count($instructions);
+        $instructions[] = [
+            'type' => 'if',
+            'expr' => $expr,
+            'jmp_target' => null
+        ];
+        $jmpStack[] = ['type' => 'if', 'idx' => $instIdx];
+        return true;
+    }
+
+    private function parseElse(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if ($line !== 'else') {
+            return false;
+        }
+        $pop = array_pop($jmpStack);
+        if ($pop && $pop['type'] === 'if') {
+            $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
+        }
+        
+        $instIdx = count($instructions);
+        $instructions[] = [
+            'type' => 'jmp',
+            'jmp_target' => null
+        ];
+        $jmpStack[] = ['type' => 'else', 'idx' => $instIdx];
+        return true;
+    }
+
+    private function parseResult(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if (!preg_match('/^result\s*(?:<<|=)\s*(.*)$/i', $line, $matches)) {
+            return false;
+        }
+        $vars = array_map('trim', explode(',', $matches[1]));
+        $instructions[] = [
+            'type' => 'result',
+            'vars' => $vars
+        ];
+        return true;
+    }
+
+    private function parseAssign(string $line, array &$instructions, array &$jmpStack): bool
+    {
+        if (!preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$/', $line, $matches)) {
+            return false;
+        }
+        $tokens = $this->tokenize(trim($matches[2]));
+        $idx = 0;
+        $expr = $this->parseExpression($tokens, $idx);
+        $instructions[] = [
+            'type' => 'assign',
+            'var' => $matches[1],
+            'expr' => $expr
+        ];
+        return true;
     }
 
     /**
@@ -218,20 +276,7 @@ class FspCompiler
         
         // Function or operator call notation: OP(arg1, arg2)
         if (($token['type'] === 'OP' || $token['type'] === 'IDENTIFIER') && isset($tokens[$index + 1]) && $tokens[$index + 1]['type'] === 'LPAREN') {
-            $op = $token['value'];
-            $index += 2; // Skip OP and LPAREN
-            
-            $args = [];
-            while (isset($tokens[$index]) && $tokens[$index]['type'] !== 'RPAREN') {
-                $args[] = $this->parseExpression($tokens, $index);
-                if (isset($tokens[$index]) && $tokens[$index]['type'] === 'COMMA') {
-                    $index++; // Skip COMMA
-                }
-            }
-            if (isset($tokens[$index]) && $tokens[$index]['type'] === 'RPAREN') {
-                $index++;
-            }
-            return ['type' => 'op', 'op' => $op, 'args' => $args];
+            return $this->parseFunctionCall($tokens, $index, $token['value']);
         }
 
         if ($token['type'] === 'IDENTIFIER') {
@@ -241,5 +286,25 @@ class FspCompiler
 
         $index++;
         return ['type' => 'const', 'value' => $token['value']];
+    }
+
+    /**
+     * Parses a function/operator call, extracting arguments and skipping parentheses.
+     */
+    private function parseFunctionCall(array $tokens, int &$index, string $op): array
+    {
+        $index += 2; // Skip OP/IDENTIFIER and LPAREN
+        
+        $args = [];
+        while (isset($tokens[$index]) && $tokens[$index]['type'] !== 'RPAREN') {
+            $args[] = $this->parseExpression($tokens, $index);
+            if (isset($tokens[$index]) && $tokens[$index]['type'] === 'COMMA') {
+                $index++; // Skip COMMA
+            }
+        }
+        if (isset($tokens[$index]) && $tokens[$index]['type'] === 'RPAREN') {
+            $index++;
+        }
+        return ['type' => 'op', 'op' => $op, 'args' => $args];
     }
 }
