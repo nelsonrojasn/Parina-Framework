@@ -46,9 +46,7 @@ class FspCompiler
             if (strtolower($line) === 'end') {
                 if (!empty($jmpStack)) {
                     $pop = array_pop($jmpStack);
-                    if (is_array($pop) && isset($pop['idx'])) {
-                        $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
-                    }
+                    $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
                     $instructions[] = ['type' => 'noop'];
                 } else {
                     $instructions[] = ['type' => 'noop'];
@@ -74,7 +72,7 @@ class FspCompiler
 
             if ($line === 'else') {
                 $pop = array_pop($jmpStack);
-                if (is_array($pop) && isset($pop['idx']) && $pop['type'] === 'if') {
+                if ($pop && $pop['type'] === 'if') {
                     $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
                 }
                 
@@ -160,12 +158,12 @@ class FspCompiler
             
             // Match two-character operators.
             $twoChars = substr($expr, $i, 2);
-            if (in_array($twoChars, ['==', '~=', '<=', '>=', '&&', '||'], true)) {
+            if (in_array($twoChars, ['==', '~=', '<=', '>=', '&&', '||'])) {
                 $tokens[] = ['type' => 'OP', 'value' => $twoChars];
                 $i += 2;
                 continue;
             }
-            if (in_array($char, ['+', '-', '*', '/', '%', '<', '>'], true)) {
+            if (in_array($char, ['+', '-', '*', '/', '%', '<', '>'])) {
                 $tokens[] = ['type' => 'OP', 'value' => $char];
                 $i++;
                 continue;
@@ -173,7 +171,7 @@ class FspCompiler
 
             // Read identifiers, parameters, numbers or booleans.
             $start = $i;
-            while ($i < $len && (ctype_alnum((string)$expr[$i]) || $expr[$i] === '_' || $expr[$i] === '.')) {
+            while ($i < $len && (ctype_alnum($expr[$i]) || $expr[$i] === '_' || $expr[$i] === '.')) {
                 $i++;
             }
             $value = substr($expr, $start, $i - $start);
@@ -199,7 +197,7 @@ class FspCompiler
     /**
      * Parses tokens recursively to produce a structured array AST node.
      *
-     * @param array<int, array{type: string, value: mixed}> $tokens List of parsed tokens.
+     * @param array $tokens List of parsed tokens.
      * @param int $index Current token pointer.
      * @return array Parsed expression node.
      */
@@ -209,39 +207,28 @@ class FspCompiler
             return ['type' => 'const', 'value' => null];
         }
         $token = $tokens[$index];
-        if (!is_array($token) || !isset($token['type'])) {
-            $index++;
-            return ['type' => 'const', 'value' => null];
-        }
         if ($token['type'] === 'STRING' || $token['type'] === 'NUMBER' || $token['type'] === 'BOOL') {
             $index++;
-            return ['type' => 'const', 'value' => $token['value'] ?? null];
+            return ['type' => 'const', 'value' => $token['value']];
         }
         if ($token['type'] === 'PARAM') {
             $index++;
-            return ['type' => 'param', 'key' => $token['value'] ?? null];
+            return ['type' => 'param', 'key' => $token['value']];
         }
         
         // Function or operator call notation: OP(arg1, arg2)
-        $nextToken = $tokens[$index + 1] ?? null;
-        if (($token['type'] === 'OP' || $token['type'] === 'IDENTIFIER') && is_array($nextToken) && isset($nextToken['type']) && $nextToken['type'] === 'LPAREN') {
-            $op = $token['value'] ?? '';
+        if (($token['type'] === 'OP' || $token['type'] === 'IDENTIFIER') && isset($tokens[$index + 1]) && $tokens[$index + 1]['type'] === 'LPAREN') {
+            $op = $token['value'];
             $index += 2; // Skip OP and LPAREN
             
             $args = [];
-            while (isset($tokens[$index])) {
-                $currentT = $tokens[$index];
-                if (is_array($currentT) && isset($currentT['type']) && $currentT['type'] === 'RPAREN') {
-                    break;
-                }
+            while (isset($tokens[$index]) && $tokens[$index]['type'] !== 'RPAREN') {
                 $args[] = $this->parseExpression($tokens, $index);
-                $currentT = $tokens[$index] ?? null;
-                if (is_array($currentT) && isset($currentT['type']) && $currentT['type'] === 'COMMA') {
+                if (isset($tokens[$index]) && $tokens[$index]['type'] === 'COMMA') {
                     $index++; // Skip COMMA
                 }
             }
-            $currentT = $tokens[$index] ?? null;
-            if (is_array($currentT) && isset($currentT['type']) && $currentT['type'] === 'RPAREN') {
+            if (isset($tokens[$index]) && $tokens[$index]['type'] === 'RPAREN') {
                 $index++;
             }
             return ['type' => 'op', 'op' => $op, 'args' => $args];
@@ -249,10 +236,10 @@ class FspCompiler
 
         if ($token['type'] === 'IDENTIFIER') {
             $index++;
-            return ['type' => 'var', 'name' => $token['value'] ?? ''];
+            return ['type' => 'var', 'name' => $token['value']];
         }
 
         $index++;
-        return ['type' => 'const', 'value' => $token['value'] ?? null];
+        return ['type' => 'const', 'value' => $token['value']];
     }
 }

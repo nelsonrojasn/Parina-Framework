@@ -41,42 +41,30 @@ class FspEngine implements FspEngineInterface
         $total = count($instructions);
 
         while ($pc < $total) {
-            $inst = $instructions[$pc] ?? null;
-            if (!is_array($inst) || !isset($inst['type'])) {
-                $pc++;
-                continue;
-            }
+            $inst = $instructions[$pc];
             switch ($inst['type']) {
                 case 'noop':
                     $pc++;
                     break;
 
                 case 'assign':
-                    if (isset($inst['var'], $inst['expr'])) {
-                        $variables[$inst['var']] = $this->evalNode($inst['expr'], $variables, $params);
-                    }
+                    $variables[$inst['var']] = $this->evalNode($inst['expr'], $variables, $params);
                     $pc++;
                     break;
 
                 case 'result':
-                    if (isset($inst['vars']) && is_array($inst['vars'])) {
-                        foreach ($inst['vars'] as $v) {
-                            $result[$v] = $variables[$v] ?? "";
-                        }
+                    foreach ($inst['vars'] as $v) {
+                        $result[$v] = $variables[$v] ?? "";
                     }
                     $pc++;
                     break;
 
                 case 'if':
-                    if (isset($inst['expr'])) {
-                        $cond = $this->evalNode($inst['expr'], $variables, $params);
-                        if ($cond) {
-                            $pc++;
-                        } else {
-                            $pc = $inst['jmp_target'] ?? $total;
-                        }
-                    } else {
+                    $cond = $this->evalNode($inst['expr'], $variables, $params);
+                    if ($cond) {
                         $pc++;
+                    } else {
+                        $pc = $inst['jmp_target'] ?? $total;
                     }
                     break;
 
@@ -96,28 +84,22 @@ class FspEngine implements FspEngineInterface
      * @param array $params Reference to current input parameters.
      * @return mixed Evaluated result value.
      */
-    private function evalNode(array $node, array &$variables, array &$params): mixed
+    private function evalNode(array $node, array &$variables, array &$params)
     {
-        if (!isset($node['type'])) {
-            return null;
-        }
         switch ($node['type']) {
             case 'const':
-                return $node['value'] ?? null;
+                return $node['value'];
             case 'param':
-                return isset($node['key']) ? ($params[$node['key']] ?? null) : null;
+                return $params[$node['key']] ?? null;
             case 'var':
                 // Follow fallback to variable name if not instantiated.
-                $varName = $node['name'] ?? '';
-                return $variables[$varName] ?? $varName;
+                return $variables[$node['name']] ?? $node['name'];
             case 'op':
-                $args = $node['args'] ?? [];
-                $left = isset($args[0]) ? $this->evalNode($args[0], $variables, $params) : null;
-                $right = isset($args[1]) ? $this->evalNode($args[1], $variables, $params) : null;
+                $left = $this->evalNode($node['args'][0], $variables, $params);
+                $right = isset($node['args'][1]) ? $this->evalNode($node['args'][1], $variables, $params) : null;
                 
                 // Switch inline evaluation to avoid method call overhead on low-resource hardware.
-                $op = $node['op'] ?? '';
-                switch ($op) {
+                switch ($node['op']) {
                     case '==': return $left == $right;
                     case '~=': return $left != $right;
                     case '<':  return $left < $right;
@@ -126,11 +108,11 @@ class FspEngine implements FspEngineInterface
                     case '>=': return $left >= $right;
                     case '&&': return $left && $right;
                     case '||': return $left || $right;
-                    case '+':  return (is_numeric($left) && is_numeric($right)) ? $left + $right : 0;
-                    case '-':  return (is_numeric($left) && is_numeric($right)) ? $left - $right : 0;
-                    case '*':  return (is_numeric($left) && is_numeric($right)) ? $left * $right : 0;
-                    case '/':  return (is_numeric($left) && is_numeric($right) && $right != 0) ? $left / $right : 0;
-                    case '%':  return (is_numeric($left) && is_numeric($right) && $right != 0) ? $left % $right : 0;
+                    case '+':  return $left + $right;
+                    case '-':  return $left - $right;
+                    case '*':  return $left * $right;
+                    case '/':  return $right != 0 ? $left / $right : 0;
+                    case '%':  return $right != 0 ? $left % $right : 0;
                     default:   return null;
                 }
         }
