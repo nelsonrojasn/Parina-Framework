@@ -4,7 +4,7 @@
 use Parina\Core\Config;
 use Parina\Core\Container;
 use Parina\Shared\Infrastructure\DatabaseAdapter;
-use Parina\Shared\Models\BaseModel;
+use Parina\Shared\Infrastructure\SqlGeneratorInterface;
 use Parina\Shared\Services\CsvSeeder;
 
 require_once dirname(__DIR__) . '/src/autoload.php';
@@ -26,9 +26,10 @@ if (!file_exists($csvFile)) {
 
 $container = new Container();
 $container->load(require dirname(__DIR__) . '/config/dependencies.php');
-BaseModel::setDatabaseAdapter($container->get(DatabaseAdapter::class));
 
-$seeder = new CsvSeeder();
+$db = $container->get(DatabaseAdapter::class);
+$sqlGenerator = $container->get(SqlGeneratorInterface::class);
+$seeder = new CsvSeeder($db, $sqlGenerator);
 $inserted = $seeder->seedFromCsv($table, $csvFile, ['delimiter' => $delimiter]);
 
 echo "Inserted {$inserted} row(s) into {$table} from {$csvFile}.\n";

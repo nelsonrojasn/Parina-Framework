@@ -12,7 +12,6 @@ use Parina\Core\Router;
 use Parina\Core\Kernel;
 use Parina\Core\Config;
 use Parina\Core\Container;
-use Parina\Shared\Models\BaseModel;
 use Parina\Shared\Infrastructure\DatabaseAdapter;
 
 require_once __DIR__ . '/../src/autoload.php';
@@ -22,9 +21,6 @@ $container = new Container();
 if (file_exists(__DIR__ . '/../config/dependencies.php')) {
     $container->load(require __DIR__ . '/../config/dependencies.php');
 }
-
-// Initialize database adapter on BaseModel
-BaseModel::setDatabaseAdapter($container->get(DatabaseAdapter::class));
 
 $router = new Router();
 

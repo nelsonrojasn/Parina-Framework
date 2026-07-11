@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Parina\Shared\Services\DbUserQueryRepository;
 use Parina\Shared\Services\DbUserCommandRepository;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
-use Parina\Shared\Models\BaseModel;
 
 class DbUserRepositoryTest extends TestCase
 {
@@ -19,7 +18,6 @@ class DbUserRepositoryTest extends TestCase
             'params' => []
         ];
         $this->adapter = new SqliteAdapter($config);
-        BaseModel::setDatabaseAdapter($this->adapter);
 
         $this->adapter->exec("CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

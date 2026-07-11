@@ -2,10 +2,16 @@
 
 namespace Parina\Shared\Services;
 
-use Parina\Shared\Models\BaseModel;
+use Parina\Shared\Infrastructure\DatabaseAdapter;
+use Parina\Shared\Infrastructure\SqlGeneratorInterface;
 
 class CsvSeeder
 {
+    public function __construct(
+        private DatabaseAdapter $db,
+        private SqlGeneratorInterface $sqlGenerator
+    ) {}
+
     public function seedFromCsv(string $table, string $csvFile, array $options = []): int
     {
         if (!file_exists($csvFile)) {
@@ -44,7 +50,8 @@ class CsvSeeder
                 continue;
             }
 
-            BaseModel::createIntoTable($table, $data);
+            $sql = $this->sqlGenerator->insert($table, $data);
+            $this->db->query($sql, $data);
             $inserted++;
         }
 

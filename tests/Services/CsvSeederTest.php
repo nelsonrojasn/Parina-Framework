@@ -3,7 +3,7 @@
 namespace Tests\Services;
 
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
-use Parina\Shared\Models\BaseModel;
+use Parina\Shared\Infrastructure\SqlGenerator;
 use Parina\Shared\Services\CsvSeeder;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +16,6 @@ class CsvSeederTest extends TestCase
     {
         $this->dbPath = sys_get_temp_dir() . '/parina-csv-seeder-' . uniqid('', true) . '.sqlite';
         $this->adapter = new SqliteAdapter(['dsn' => 'sqlite:' . $this->dbPath, 'params' => []]);
-        BaseModel::setDatabaseAdapter($this->adapter);
     }
 
     protected function tearDown(): void
@@ -33,7 +32,7 @@ class CsvSeederTest extends TestCase
         $csvPath = sys_get_temp_dir() . '/parina-csv-seeder-' . uniqid('', true) . '.csv';
         file_put_contents($csvPath, "name,email\nAna,ana@example.com\nBob,bob@example.com\n");
 
-        $seeder = new CsvSeeder();
+        $seeder = new CsvSeeder($this->adapter, new SqlGenerator());
         $inserted = $seeder->seedFromCsv('people', $csvPath);
 
         $this->assertSame(2, $inserted);
