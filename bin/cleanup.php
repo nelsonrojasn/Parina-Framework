@@ -18,6 +18,7 @@ if (!$force) {
     echo "- src/Features/UserManagement/ (recursively)\n";
     echo "- src/Features/Authentication/ (recursively)\n";
     echo "- src/Features/AutoPurchase/ (recursively)\n";
+    echo "- src/Features/Database/ (recursively)\n";
     echo "- src/Features/Marketing/Handlers/AboutHandler.php\n";
     echo "- src/Features/Marketing/Views/about.php\n";
     echo "- tests/Features/ (Demo handler test files)\n";
@@ -58,6 +59,7 @@ $featuresToDelete = [
     '/src/Features/UserManagement',
     '/src/Features/Authentication',
     '/src/Features/AutoPurchase',
+    '/src/Features/Database',
 ];
 foreach ($featuresToDelete as $feature) {
     $dirPath = $projectRoot . $feature;
@@ -89,6 +91,7 @@ $demoTests = [
     '/tests/Features/Dashboard/AdminHandlerTest.php',
     '/tests/Features/UserManagement/UsersListHandlerTest.php',
     '/tests/Features/AutoPurchase/AutoPurchaseHandlerTest.php',
+    '/tests/Features/Database/SetupHandlerTest.php',
 ];
 foreach ($demoTests as $file) {
     $filePath = $projectRoot . $file;
@@ -105,6 +108,7 @@ $featureTestDirs = [
     '/tests/Features/Dashboard',
     '/tests/Features/UserManagement',
     '/tests/Features/AutoPurchase',
+    '/tests/Features/Database',
 ];
 foreach ($featureTestDirs as $dir) {
     $dirPath = $projectRoot . $dir;
