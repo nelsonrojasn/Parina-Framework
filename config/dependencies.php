@@ -8,8 +8,6 @@ use Parina\Shared\Infrastructure\DatabaseAdapter;
 use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
 use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
-use Parina\Shared\Infrastructure\Adapters\SqlServerAdapter;
-use Parina\Shared\Infrastructure\Adapters\OracleAdapter;
 
 return [
     // Bindings (Transient: new instance resolved every time)
@@ -39,8 +37,6 @@ return [
         'db.driver.mysql'  => fn($c) => new MySqlAdapter($c->get(ConfigInterface::class)->getDbConfig()),
         'db.driver.pgsql'  => fn($c) => new PostgreSqlAdapter($c->get(ConfigInterface::class)->getDbConfig()),
         'db.driver.sqlite' => fn($c) => new SqliteAdapter($c->get(ConfigInterface::class)->getDbConfig()),
-        'db.driver.sqlsrv' => fn($c) => new SqlServerAdapter($c->get(ConfigInterface::class)->getDbConfig()),
-        'db.driver.oci'    => fn($c) => new OracleAdapter($c->get(ConfigInterface::class)->getDbConfig()),
 
         // DatabaseAdapter resolves dynamically via factory closure (OCP compliant)
         DatabaseAdapter::class => function (\Parina\Core\Container $container) {
@@ -52,9 +48,6 @@ return [
                 'postgres'   => 'pgsql',
                 'postgresql' => 'pgsql',
                 'default'    => 'sqlite',
-                'mssql'      => 'sqlsrv',
-                'sqlserver'  => 'sqlsrv',
-                'oracle'     => 'oci'
             ];
             $driver = $driverMap[$driver] ?? $driver;
 
