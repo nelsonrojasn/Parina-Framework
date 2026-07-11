@@ -9,7 +9,7 @@ use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\Responses\ErrorResponse;
 use Parina\Core\Interfaces\ConfigInterface;
 use Parina\Shared\Services\DatabaseSetupServiceInterface;
-
+use Parina\Core\View;
 /**
  * Description: Inicializar la base de datos
  */
@@ -33,9 +33,10 @@ class SetupHandler implements Handler
             $dbConfig = $this->config->getDbConfig();
             $driver = $dbConfig['driver'] ?? 'sqlite';
 
-            $content = "<h1>¡Base de Datos Inicializada!</h1>";
-            $content .= "<p>El esquema <code>schema.{$driver}.sql</code> se ha inyectado con éxito en el motor de base de datos.</p>";
-            $content .= "<p><a href='/'>Volver al Inicio</a></p>";
+            $data = [
+                'driver' => $driver
+            ];
+            $content = View::renderWithLayout("Database/Views/index", "default", $data);
 
             return new HtmlResponse($content, 200);
         } catch (\Exception $e) {
