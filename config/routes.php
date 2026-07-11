@@ -76,5 +76,11 @@ return [
             \Parina\Shared\Middlewares\Acl::class,
             \Parina\Shared\Middlewares\ValidateHash::class
         ]
+    ],
+    [
+        'method' => 'GET',
+        'path' => '/setup',
+        'handler' => \Parina\Features\Database\Handlers\SetupHandler::class,
+        'middleware' => []
     ]
 ];

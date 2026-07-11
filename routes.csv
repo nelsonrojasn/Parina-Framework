@@ -7,3 +7,4 @@ GET,/comprar/credito/auto/{id},AutoPurchase,AutoPurchase,Auth,Comprar auto
 GET,/admin/home/{hash},Dashboard,Admin,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Página de administración
 GET,/admin/users/{hash},UserManagement,UsersList,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Lista de usuarios
 GET,/logout/{hash},Authentication,Logout,"RateLimit,RequestSize,SameOrigin,Csrf,Auth,Acl,ValidateHash",Cerrar sesión
+GET,/setup,Database,Setup,,Configurar base de datos
