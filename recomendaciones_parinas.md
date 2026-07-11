@@ -142,6 +142,35 @@ Un código sin pruebas no es confiable. En Parina, las pruebas deben ser rápida
 *   Para cada Handler en `src/Features/Marketing/Handlers/HomeHandler.php`, debe existir un test en `tests/Features/Marketing/HomeHandlerTest.php`.
 *   Las pruebas deben validar que el handler retorne el código de estado HTTP esperado y que el cuerpo de la respuesta contenga los elementos correctos.
 
+## 🎓 Guía de Supervivencia y Buenas Prácticas para Entusiastas
+
+Si estás dando tus primeros pasos en la programación orientada a objetos (POO), patrones como CQS o arquitecturas desacopladas, aquí tienes reglas de oro para mantener tu código impecable en Parina Framework:
+
+### 1. Usa Tipado Estricto Obligatorio (`strict_types`)
+PHP es flexible, pero esa flexibilidad puede ocultar errores silenciosos. Inicia **siempre** cada archivo PHP con `declare(strict_types=1);` justo debajo de la etiqueta `<?php`.
+*   **Por qué:** Evita conversiones automáticas invisibles (ej: que un string `"10"` se sume silenciosamente como número). Hace que el compilador y los linters detecten errores de tipado de inmediato.
+
+### 2. No uses `new` para Instanciar Dependencias en tus Handlers
+Cuando un Handler necesita otro servicio (como un repositorio, un servicio de seguridad o un logger), **nunca** uses el operador `new` dentro de sus métodos.
+*   **Por qué:** Esto se conoce como *acoplamiento duro*. Si creas la instancia dentro del Handler, no podrás simularla (mockearla) en tus pruebas.
+*   **Correcto:** Declara la dependencia en el constructor del Handler y deja que el contenedor de dependencias de Parina la inyecte de manera automática.
+
+### 3. Respeta el Ciclo de Vida HTTP (No uses `echo`, `die()` o `exit()`)
+Dentro de un Handler, tu única misión es retornar un objeto que implemente `Response` (como `HtmlResponse` o `JsonResponse`).
+*   **Por qué:** Usar `die()`, `exit()` o `echo` interrumpe abruptamente la ejecución del framework, rompe la pipeline de middlewares y hace imposible probar ese Handler unitariamente.
+
+### 4. No accedas a Superglobales (`$_GET`, `$_POST`, `$_SERVER`)
+Para leer parámetros de consulta, entradas de formularios o datos del servidor, utiliza los métodos del objeto `$request` (como `$request->query()`, `$request->post()`, `$request->method()`).
+*   **Por qué:** El objeto `$request` encapsula el estado HTTP de forma inmutable y testeable. Si usas superglobales directamente, tu código queda acoplado al estado global de PHP de ese instante, dificultando las pruebas y violando el principio de encapsulamiento.
+
+### 5. CQS Simple: Las Consultas no deben Mutar Datos
+Recuerda que separar lecturas de escrituras no es por capricho. Un método de repositorio de tipo "Query" **nunca** debe cambiar nada en la base de datos.
+*   **Por qué:** Si al consultar datos (`getUserById`) modificas un registro en segundo plano, tu aplicación se volverá impredecible. Las consultas deben ser "puras" y seguras de ejecutar tantas veces como sea necesario sin alterar el estado del sistema.
+
+### 6. No instancies Clases ni Accedas a Servicios en las Vistas
+Las vistas (los archivos `.php` bajo `Views/`) deben ser puramente de presentación. **Nunca** instancies un repositorio o invoques un servicio global directamente dentro de una vista (ej: `<?php $db = new DatabaseAdapter(); ?>`).
+*   **Por qué:** Rompe el patrón MVC. La vista no debe saber de dónde vienen los datos ni cómo se procesan; solo debe estructurar e imprimir (escapando con `h()`) las variables que el Handler le pasó a través del arreglo `$data` o usar los helpers provistos por el motor.
+
 ---
 
 ## 🚀 El Atajo de Oro: Scaffolding por CSV
