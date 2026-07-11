@@ -2,6 +2,13 @@
 declare(strict_types=1);
 namespace Parina\Core;
 
+use Parina\Core\Interfaces\ConfigInterface;
+use Parina\Shared\Services\AuthInterface;
+use Parina\Shared\Security\CipherInterface;
+use Parina\Core\AppConfig;
+use Parina\Shared\Services\SessionAuth;
+use Parina\Shared\Security\AesCipherService;
+
 class View
 {
     private static array $basePaths = [
@@ -58,64 +65,55 @@ class View
 
     private static function capture(string $path, array $data = []): string
     {
-        $resolvedPath = null;
-        $triedPaths = [];
-
-        foreach (self::$basePaths as $base) {
-            $candidate = $base . $path . '.php';
-            $triedPaths[] = $candidate;
-            if (file_exists($candidate)) {
-                $resolvedPath = $candidate;
-                break;
-            }
-        }
-
-        if (!$resolvedPath) {
-            $list = implode("\n - ", $triedPaths);
-            throw new \RuntimeException("View not found: '$path'.\nTried in:\n - $list");
-        }
-
-        $container = Container::getInstance();
-        $auth = null;
-        $cipher = null;
-        $config = null;
-
-        if ($container) {
-            if ($container->has(\Parina\Shared\Services\AuthInterface::class)) {
-                $auth = $container->get(\Parina\Shared\Services\AuthInterface::class);
-            }
-            if ($container->has(\Parina\Shared\Security\CipherInterface::class)) {
-                $cipher = $container->get(\Parina\Shared\Security\CipherInterface::class);
-            }
-            if ($container->has(\Parina\Core\Interfaces\ConfigInterface::class)) {
-                $config = $container->get(\Parina\Core\Interfaces\ConfigInterface::class);
-            }
-        }
-
-        if (!$config) {
-            $config = new \Parina\Core\AppConfig();
-        }
-        if (!$auth) {
-            $auth = new \Parina\Shared\Services\SessionAuth();
-        }
-        if (!$cipher) {
-            $cipher = new \Parina\Shared\Security\AesCipherService($config);
-        }
-
-        if (!isset($data['auth'])) {
-            $data['auth'] = $auth;
-        }
-        if (!isset($data['cipher'])) {
-            $data['cipher'] = $cipher;
-        }
-        if (!isset($data['config'])) {
-            $data['config'] = $config;
-        }
+        $resolvedPath = self::resolvePath($path);
+        $data = self::mergeLayoutDependencies($data);
 
         extract($data, EXTR_SKIP);
 
         ob_start();
         include $resolvedPath;
         return ob_get_clean();
+    }
+
+    private static function resolvePath(string $path): string
+    {
+        foreach (self::$basePaths as $base) {
+            $candidate = $base . $path . '.php';
+            if (file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        $tried = array_map(fn($base) => $base . $path . '.php', self::$basePaths);
+        throw new \RuntimeException("View not found: '$path'.\nTried in:\n - " . implode("\n - ", $tried));
+    }
+
+    private static function mergeLayoutDependencies(array $data): array
+    {
+        $container = Container::getInstance();
+
+        $config = ($container && $container->has(ConfigInterface::class))
+            ? $container->get(ConfigInterface::class)
+            : new AppConfig();
+
+        $auth = ($container && $container->has(AuthInterface::class))
+            ? $container->get(AuthInterface::class)
+            : new SessionAuth();
+
+        $cipher = ($container && $container->has(CipherInterface::class))
+            ? $container->get(CipherInterface::class)
+            : new AesCipherService($config);
+
+        if (!isset($data['config'])) {
+            $data['config'] = $config;
+        }
+        if (!isset($data['auth'])) {
+            $data['auth'] = $auth;
+        }
+        if (!isset($data['cipher'])) {
+            $data['cipher'] = $cipher;
+        }
+
+        return $data;
     }
 }
