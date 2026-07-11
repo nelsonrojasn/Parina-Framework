@@ -13,6 +13,7 @@ return [
     // Bindings (Transient: new instance resolved every time)
     'bindings' => [
         // Ej: \Parina\Shared\Repositories\PrecioRepositoryInterface::class => \Parina\Shared\Repositories\LocalPrecioRepository::class,
+        \Parina\Shared\Services\DatabaseSetupServiceInterface::class => \Parina\Shared\Services\DatabaseSetupService::class,
     ],
 
     // Singletons (Shared: resolved once and cached)
