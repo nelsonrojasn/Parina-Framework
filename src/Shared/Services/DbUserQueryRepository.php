@@ -19,14 +19,14 @@ class DbUserQueryRepository implements UserQueryRepositoryInterface
 
     public function findById(int $id): ?array
     {
-        $sql = $this->sqlGenerator->selectFirst('users', 'id = :id', '*') . $this->db->getLimitSql(1);
+        $sql = $this->sqlGenerator->selectFirst('usuario', 'id = :id', '*') . $this->db->getLimitSql(1);
         $stmt = $this->db->query($sql, ['id' => $id]);
         return $stmt->fetch() ?: null;
     }
 
     public function findByUsername(string $username): ?array
     {
-        $sql = $this->sqlGenerator->selectFirst('users', 'username = :username', '*') . $this->db->getLimitSql(1);
+        $sql = $this->sqlGenerator->selectFirst('usuario', 'username = :username', '*') . $this->db->getLimitSql(1);
         $stmt = $this->db->query($sql, ['username' => $username]);
         return $stmt->fetch() ?: null;
     }

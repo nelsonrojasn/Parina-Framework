@@ -24,7 +24,7 @@ class DbUserCommandRepository implements UserCommandRepositoryInterface
             $data = $user;
             unset($data['id']);
 
-            $sql = $this->sqlGenerator->update('users', $data, 'id');
+            $sql = $this->sqlGenerator->update('usuario', $data, 'id');
             
             $params = $data;
             $params['_id_where'] = $id;
@@ -32,14 +32,14 @@ class DbUserCommandRepository implements UserCommandRepositoryInterface
             $stmt = $this->db->query($sql, $params);
             return $stmt->rowCount() > 0;
         } else {
-            $sql = $this->sqlGenerator->insert('users', $user);
+            $sql = $this->sqlGenerator->insert('usuario', $user);
             return (bool)$this->db->query($sql, $user);
         }
     }
 
     public function delete(int $id): bool
     {
-        $sql = $this->sqlGenerator->delete('users', 'id');
+        $sql = $this->sqlGenerator->delete('usuario', 'id');
         $stmt = $this->db->query($sql, ['id' => $id]);
         return $stmt->rowCount() > 0;
     }

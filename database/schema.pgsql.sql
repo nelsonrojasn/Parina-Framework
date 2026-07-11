@@ -1,64 +1,13 @@
-CREATE TABLE IF NOT EXISTS company (
+CREATE TABLE IF NOT EXISTS usuario (
     id SERIAL PRIMARY KEY,
-    dni VARCHAR(50) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL,
-    activity VARCHAR(255),
-    address VARCHAR(255),
-    deleted SMALLINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    company_id INT NOT NULL,
+    company_id INT DEFAULT NULL,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     is_active SMALLINT DEFAULT 1,
     deleted SMALLINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS profiles (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    deleted SMALLINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS profile_user (
-    profile_id INT NOT NULL,
-    user_id INT NOT NULL,
-    deleted SMALLINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (profile_id, user_id),
-    FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS resources (
-    id SERIAL PRIMARY KEY,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    deleted SMALLINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS resource_user (
-    resource_id INT NOT NULL,
-    user_id INT NOT NULL,
-    is_allowed SMALLINT DEFAULT 1,
-    deleted SMALLINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (resource_id, user_id),
-    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+INSERT INTO usuario (username, password, email, is_active) VALUES ('admin', '$2y$10$QCHG.PX4JEiR1E1VN/2Freu8QiphVmHFWK8G89SifuNrmvML2F5mu', 'admin@example.com', 1) ON CONFLICT (username) DO NOTHING;

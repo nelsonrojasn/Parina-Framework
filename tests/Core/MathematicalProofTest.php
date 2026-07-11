@@ -31,18 +31,15 @@ class MathematicalProofTest extends TestCase
         if (file_exists($schemaFile)) {
             $sqlTables = file_get_contents($schemaFile);
             $this->adapter->exec($sqlTables);
-            
-            // Seed company to satisfy foreign key constraints
-            $this->adapter->exec("INSERT OR IGNORE INTO company (id, dni, name) VALUES (1, '766543211', 'Demo Company')");
         }
     }
 
     /**
-     * Helper to compute a database-level checksum of the users table data.
+     * Helper to compute a database-level checksum of the usuario table data.
      */
     private function getUsersTableChecksum(): string
     {
-        $stmt = $this->adapter->query("SELECT SUM(id) as sum_id, COUNT(id) as count_id FROM users");
+        $stmt = $this->adapter->query("SELECT SUM(id) as sum_id, COUNT(id) as count_id FROM usuario");
         $result = $stmt->fetch();
         return json_encode($result);
     }

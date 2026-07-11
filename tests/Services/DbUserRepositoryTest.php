@@ -19,7 +19,7 @@ class DbUserRepositoryTest extends TestCase
         ];
         $this->adapter = new SqliteAdapter($config);
 
-        $this->adapter->exec("CREATE TABLE IF NOT EXISTS users (
+        $this->adapter->exec("CREATE TABLE IF NOT EXISTS usuario (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT,
