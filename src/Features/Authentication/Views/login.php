@@ -1,5 +1,6 @@
 <?php
-    use Parina\Shared\Security\Cipher;
+declare(strict_types=1);
+use Parina\Shared\Security\Cipher;
     use Parina\Shared\Security\Csrf;
 ?>
 <h1>Parina Framework</h1>

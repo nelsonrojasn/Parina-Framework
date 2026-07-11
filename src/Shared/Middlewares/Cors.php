@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Parina\Shared\Middlewares;
 
 use Parina\Core\Interfaces\RequestInterface;

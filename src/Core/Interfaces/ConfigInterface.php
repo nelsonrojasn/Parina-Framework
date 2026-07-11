@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Parina\Core\Interfaces;
 
 interface ConfigInterface

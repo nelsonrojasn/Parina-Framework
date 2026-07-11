@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /**
  * KISS Autoloader for Parina Framework.
  * Implements PSR-4 class loading standard.

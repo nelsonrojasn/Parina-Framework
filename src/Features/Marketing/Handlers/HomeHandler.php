@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Parina\Features\Marketing\Handlers;
 
 use Parina\Core\Interfaces\Handler;

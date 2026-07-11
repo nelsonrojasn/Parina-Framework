@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Parina\Features\Database\Handlers;
 
 use Parina\Core\Interfaces\Handler;

@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Parina\Core\Responses;
 
 use Parina\Core\Interfaces\Response;

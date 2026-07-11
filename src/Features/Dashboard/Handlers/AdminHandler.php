@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Parina\Features\Dashboard\Handlers;
 
 use Parina\Core\View;
