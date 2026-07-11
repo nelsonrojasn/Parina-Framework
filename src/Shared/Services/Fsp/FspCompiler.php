@@ -10,6 +10,26 @@ namespace Parina\Shared\Services\Fsp;
 class FspCompiler
 {
     /**
+     * @var array Flat list of compiled instructions.
+     */
+    private array $instructions = [];
+
+    /**
+     * @var array Stack for resolving jump offsets.
+     */
+    private array $jmpStack = [];
+
+    /**
+     * @var array Token list for the current expression.
+     */
+    private array $tokens = [];
+
+    /**
+     * @var int Pointer within the current token stream.
+     */
+    private int $tokenIndex = 0;
+
+    /**
      * Compiles raw DSL source code into a flat array of instructions (bytecode).
      *
      * @param string $source Raw rule script source.
@@ -17,27 +37,28 @@ class FspCompiler
      */
     public function compile(string $source): array
     {
+        $this->instructions = [];
+        $this->jmpStack = [];
+
         $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $source));
-        $instructions = [];
-        $jmpStack = [];
 
         foreach ($lines as $lineNo => $rawLine) {
             $line = $this->stripComments($rawLine);
 
             $matched = false;
             foreach ($this->getLineParsers() as $parser) {
-                if ($parser($line, $instructions, $jmpStack)) {
+                if ($this->$parser($line)) {
                     $matched = true;
                     break;
                 }
             }
 
             if (!$matched) {
-                $instructions[] = ['type' => 'noop'];
+                $this->instructions[] = ['type' => 'noop'];
             }
         }
 
-        return $instructions;
+        return $this->instructions;
     }
 
     /**
@@ -62,107 +83,107 @@ class FspCompiler
     }
 
     /**
-     * Get the registry of line parser callbacks.
+     * Get the registry of line parser method names.
      *
-     * @return array<callable>
+     * @return array<string>
      */
     private function getLineParsers(): array
     {
         return [
-            fn(string $line, array &$inst, array &$jmp) => $this->parseNoop($line, $inst, $jmp),
-            fn(string $line, array &$inst, array &$jmp) => $this->parseEnd($line, $inst, $jmp),
-            fn(string $line, array &$inst, array &$jmp) => $this->parseIf($line, $inst, $jmp),
-            fn(string $line, array &$inst, array &$jmp) => $this->parseElse($line, $inst, $jmp),
-            fn(string $line, array &$inst, array &$jmp) => $this->parseResult($line, $inst, $jmp),
-            fn(string $line, array &$inst, array &$jmp) => $this->parseAssign($line, $inst, $jmp),
+            'parseNoop',
+            'parseEnd',
+            'parseIf',
+            'parseElse',
+            'parseResult',
+            'parseAssign',
         ];
     }
 
-    private function parseNoop(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseNoop(string $line): bool
     {
         if (empty($line) || str_starts_with(strtolower($line), 'formula') || strtolower($line) === 'begin') {
-            $instructions[] = ['type' => 'noop'];
+            $this->instructions[] = ['type' => 'noop'];
             return true;
         }
         return false;
     }
 
-    private function parseEnd(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseEnd(string $line): bool
     {
         if (strtolower($line) !== 'end') {
             return false;
         }
-        if (!empty($jmpStack)) {
-            $pop = array_pop($jmpStack);
-            $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
-            $instructions[] = ['type' => 'noop'];
+        if (!empty($this->jmpStack)) {
+            $pop = array_pop($this->jmpStack);
+            $this->instructions[$pop['idx']]['jmp_target'] = count($this->instructions) + 1;
+            $this->instructions[] = ['type' => 'noop'];
         } else {
-            $instructions[] = ['type' => 'noop'];
+            $this->instructions[] = ['type' => 'noop'];
         }
         return true;
     }
 
-    private function parseIf(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseIf(string $line): bool
     {
         if (!str_starts_with($line, 'if ')) {
             return false;
         }
         $condStr = trim(substr($line, 3));
-        $tokens = $this->tokenize($condStr);
-        $idx = 0;
-        $expr = $this->parseExpression($tokens, $idx);
+        $this->tokens = $this->tokenize($condStr);
+        $this->tokenIndex = 0;
+        $expr = $this->parseExpression();
         
-        $instIdx = count($instructions);
-        $instructions[] = [
+        $instIdx = count($this->instructions);
+        $this->instructions[] = [
             'type' => 'if',
             'expr' => $expr,
             'jmp_target' => null
         ];
-        $jmpStack[] = ['type' => 'if', 'idx' => $instIdx];
+        $this->jmpStack[] = ['type' => 'if', 'idx' => $instIdx];
         return true;
     }
 
-    private function parseElse(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseElse(string $line): bool
     {
         if ($line !== 'else') {
             return false;
         }
-        $pop = array_pop($jmpStack);
+        $pop = array_pop($this->jmpStack);
         if ($pop && $pop['type'] === 'if') {
-            $instructions[$pop['idx']]['jmp_target'] = count($instructions) + 1;
+            $this->instructions[$pop['idx']]['jmp_target'] = count($this->instructions) + 1;
         }
         
-        $instIdx = count($instructions);
-        $instructions[] = [
+        $instIdx = count($this->instructions);
+        $this->instructions[] = [
             'type' => 'jmp',
             'jmp_target' => null
         ];
-        $jmpStack[] = ['type' => 'else', 'idx' => $instIdx];
+        $this->jmpStack[] = ['type' => 'else', 'idx' => $instIdx];
         return true;
     }
 
-    private function parseResult(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseResult(string $line): bool
     {
         if (!preg_match('/^result\s*(?:<<|=)\s*(.*)$/i', $line, $matches)) {
             return false;
         }
         $vars = array_map('trim', explode(',', $matches[1]));
-        $instructions[] = [
+        $this->instructions[] = [
             'type' => 'result',
             'vars' => $vars
         ];
         return true;
     }
 
-    private function parseAssign(string $line, array &$instructions, array &$jmpStack): bool
+    private function parseAssign(string $line): bool
     {
         if (!preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$/', $line, $matches)) {
             return false;
         }
-        $tokens = $this->tokenize(trim($matches[2]));
-        $idx = 0;
-        $expr = $this->parseExpression($tokens, $idx);
-        $instructions[] = [
+        $this->tokens = $this->tokenize(trim($matches[2]));
+        $this->tokenIndex = 0;
+        $expr = $this->parseExpression();
+        $this->instructions[] = [
             'type' => 'assign',
             'var' => $matches[1],
             'expr' => $expr
@@ -178,132 +199,105 @@ class FspCompiler
      */
     private function tokenize(string $expr): array
     {
-        $tokens = [];
-        $len = strlen($expr);
-        $i = 0;
-        while ($i < $len) {
-            $char = $expr[$i];
-            if (ctype_space($char)) {
-                $i++;
-                continue;
-            }
-            if ($char === '(') {
-                $tokens[] = ['type' => 'LPAREN', 'value' => '('];
-                $i++;
-                continue;
-            }
-            if ($char === ')') {
-                $tokens[] = ['type' => 'RPAREN', 'value' => ')'];
-                $i++;
-                continue;
-            }
-            if ($char === ',') {
-                $tokens[] = ['type' => 'COMMA', 'value' => ','];
-                $i++;
-                continue;
-            }
-            if ($char === '"') {
-                $start = $i + 1;
-                $i++;
-                while ($i < $len && $expr[$i] !== '"') {
-                    $i++;
-                }
-                $value = substr($expr, $start, $i - $start);
-                $tokens[] = ['type' => 'STRING', 'value' => $value];
-                $i++; // Skip closing quote
-                continue;
-            }
-            
-            // Match two-character operators.
-            $twoChars = substr($expr, $i, 2);
-            if (in_array($twoChars, ['==', '~=', '<=', '>=', '&&', '||'])) {
-                $tokens[] = ['type' => 'OP', 'value' => $twoChars];
-                $i += 2;
-                continue;
-            }
-            if (in_array($char, ['+', '-', '*', '/', '%', '<', '>'])) {
-                $tokens[] = ['type' => 'OP', 'value' => $char];
-                $i++;
-                continue;
-            }
+        $patterns = [
+            'PARAM'      => '/^param\.([a-zA-Z_][a-zA-Z0-9_]*)/i',
+            'BOOL'       => '/^(true|false)\b/i',
+            'NUMBER'     => '/^(\d+(?:\.\d+)?)\b/',
+            'STRING'     => '/^"([^"]*)"/',
+            'OP'         => '/^(==|~=|<=|>=|&&|\|\||[+\-*\/%<>])/',
+            'LPAREN'     => '/^(\()/',
+            'RPAREN'     => '/^(\))/',
+            'COMMA'      => '/^(,)/',
+            'IDENTIFIER' => '/^([a-zA-Z_][a-zA-Z0-9_]*)/',
+        ];
 
-            // Read identifiers, parameters, numbers or booleans.
-            $start = $i;
-            while ($i < $len && (ctype_alnum($expr[$i]) || $expr[$i] === '_' || $expr[$i] === '.')) {
-                $i++;
+        $tokens = [];
+        $expr = trim($expr);
+        while ($expr !== '') {
+            $matched = false;
+            foreach ($patterns as $type => $pattern) {
+                if (preg_match($pattern, $expr, $m)) {
+                    $val = $m[1];
+                    $tokens[] = $this->buildToken($type, $val);
+                    $expr = ltrim(substr($expr, strlen($m[0])));
+                    $matched = true;
+                    break;
+                }
             }
-            $value = substr($expr, $start, $i - $start);
-            if ($value === '') {
-                $i++;
-                continue;
-            }
-            if (is_numeric($value)) {
-                $tokens[] = ['type' => 'NUMBER', 'value' => str_contains($value, '.') ? (float)$value : (int)$value];
-            } elseif (strtolower($value) === 'true') {
-                $tokens[] = ['type' => 'BOOL', 'value' => true];
-            } elseif (strtolower($value) === 'false') {
-                $tokens[] = ['type' => 'BOOL', 'value' => false];
-            } elseif (str_starts_with($value, 'param.')) {
-                $tokens[] = ['type' => 'PARAM', 'value' => substr($value, 6)];
-            } else {
-                $tokens[] = ['type' => 'IDENTIFIER', 'value' => $value];
+            if (!$matched) {
+                $expr = ltrim(substr($expr, 1));
             }
         }
         return $tokens;
     }
 
     /**
+     * Helper to construct type-casted tokens.
+     */
+    private function buildToken(string $type, string $val): array
+    {
+        if ($type === 'NUMBER') {
+            return ['type' => 'NUMBER', 'value' => str_contains($val, '.') ? (float)$val : (int)$val];
+        }
+        if ($type === 'BOOL') {
+            return ['type' => 'BOOL', 'value' => strtolower($val) === 'true'];
+        }
+        return ['type' => $type, 'value' => $val];
+    }
+
+    /**
      * Parses tokens recursively to produce a structured array AST node.
      *
-     * @param array $tokens List of parsed tokens.
-     * @param int $index Current token pointer.
      * @return array Parsed expression node.
      */
-    private function parseExpression(array $tokens, int &$index): array
+    private function parseExpression(): array
     {
-        if (!isset($tokens[$index])) {
+        if (!isset($this->tokens[$this->tokenIndex])) {
             return ['type' => 'const', 'value' => null];
         }
-        $token = $tokens[$index];
+        $token = $this->tokens[$this->tokenIndex];
         if ($token['type'] === 'STRING' || $token['type'] === 'NUMBER' || $token['type'] === 'BOOL') {
-            $index++;
+            $this->tokenIndex++;
             return ['type' => 'const', 'value' => $token['value']];
         }
         if ($token['type'] === 'PARAM') {
-            $index++;
+            $this->tokenIndex++;
             return ['type' => 'param', 'key' => $token['value']];
         }
         
         // Function or operator call notation: OP(arg1, arg2)
-        if (($token['type'] === 'OP' || $token['type'] === 'IDENTIFIER') && isset($tokens[$index + 1]) && $tokens[$index + 1]['type'] === 'LPAREN') {
-            return $this->parseFunctionCall($tokens, $index, $token['value']);
+        if (($token['type'] === 'OP' || $token['type'] === 'IDENTIFIER') 
+            && isset($this->tokens[$this->tokenIndex + 1]) 
+            && $this->tokens[$this->tokenIndex + 1]['type'] === 'LPAREN'
+        ) {
+            return $this->parseFunctionCall($token['value']);
         }
 
         if ($token['type'] === 'IDENTIFIER') {
-            $index++;
+            $this->tokenIndex++;
             return ['type' => 'var', 'name' => $token['value']];
         }
 
-        $index++;
+        $this->tokenIndex++;
         return ['type' => 'const', 'value' => $token['value']];
     }
 
     /**
      * Parses a function/operator call, extracting arguments and skipping parentheses.
      */
-    private function parseFunctionCall(array $tokens, int &$index, string $op): array
+    private function parseFunctionCall(string $op): array
     {
-        $index += 2; // Skip OP/IDENTIFIER and LPAREN
+        $this->tokenIndex += 2; // Skip OP/IDENTIFIER and LPAREN
         
         $args = [];
-        while (isset($tokens[$index]) && $tokens[$index]['type'] !== 'RPAREN') {
-            $args[] = $this->parseExpression($tokens, $index);
-            if (isset($tokens[$index]) && $tokens[$index]['type'] === 'COMMA') {
-                $index++; // Skip COMMA
+        while (isset($this->tokens[$this->tokenIndex]) && $this->tokens[$this->tokenIndex]['type'] !== 'RPAREN') {
+            $args[] = $this->parseExpression();
+            if (isset($this->tokens[$this->tokenIndex]) && $this->tokens[$this->tokenIndex]['type'] === 'COMMA') {
+                $this->tokenIndex++; // Skip COMMA
             }
         }
-        if (isset($tokens[$index]) && $tokens[$index]['type'] === 'RPAREN') {
-            $index++;
+        if (isset($this->tokens[$this->tokenIndex]) && $this->tokens[$this->tokenIndex]['type'] === 'RPAREN') {
+            $this->tokenIndex++;
         }
         return ['type' => 'op', 'op' => $op, 'args' => $args];
     }
