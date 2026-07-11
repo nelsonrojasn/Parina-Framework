@@ -27,4 +27,17 @@ class SessionTest extends TestCase
         Session::clear();
         $this->assertTrue(true); // Validar que se completó sin errores
     }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function test_session_start_when_inactive()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+        $this->assertEquals(PHP_SESSION_NONE, session_status());
+        Session::start();
+        $this->assertEquals(PHP_SESSION_ACTIVE, session_status());
+    }
 }

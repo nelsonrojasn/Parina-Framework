@@ -42,4 +42,30 @@ class CsvSeederTest extends TestCase
 
         unlink($csvPath);
     }
+
+    public function test_throws_exception_when_file_not_found(): void
+    {
+        $seeder = new CsvSeeder($this->adapter, new SqlGenerator());
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("CSV file not found");
+        $seeder->seedFromCsv('people', '/non-existent-file.csv');
+    }
+
+    public function test_throws_exception_when_empty_csv(): void
+    {
+        $csvPath = sys_get_temp_dir() . '/parina-csv-seeder-empty-' . uniqid('', true) . '.csv';
+        file_put_contents($csvPath, "");
+
+        $seeder = new CsvSeeder($this->adapter, new SqlGenerator());
+
+        try {
+            $this->expectException(\RuntimeException::class);
+            $this->expectExceptionMessage("CSV file is empty");
+            $seeder->seedFromCsv('people', $csvPath);
+        } finally {
+            if (file_exists($csvPath)) {
+                unlink($csvPath);
+            }
+        }
+    }
 }

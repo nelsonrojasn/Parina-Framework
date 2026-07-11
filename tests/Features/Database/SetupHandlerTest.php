@@ -48,4 +48,23 @@ class SetupHandlerTest extends TestCase
         $this->assertNotNull($response);
         $this->assertEquals(403, $response->getStatus());
     }
+
+    public function test_handler_returns_error_response_when_exception_thrown()
+    {
+        $configMock = $this->createMock(ConfigInterface::class);
+        $configMock->method('allowSetup')->willReturn(true);
+
+        $setupServiceMock = $this->createMock(DatabaseSetupServiceInterface::class);
+        $setupServiceMock->method('setupDatabase')->willThrowException(new \Exception("Connection failed"));
+
+        $handler = new SetupHandler($configMock, $setupServiceMock);
+        $request = new Request([], [], [], [], []);
+        
+        $response = $handler->handle($request);
+        
+        $this->assertNotNull($response);
+        $this->assertInstanceOf(\Parina\Core\Responses\ErrorResponse::class, $response);
+        $this->assertEquals(500, $response->getStatus());
+        $this->assertStringContainsString("Connection failed", $response->getContent());
+    }
 }

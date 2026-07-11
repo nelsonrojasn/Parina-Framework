@@ -27,4 +27,24 @@ class RouterTest extends TestCase
         $this->assertEquals('InstHandler', $match['route']['handler']);
         $this->assertEquals(['hash' => 'abc123'], $match['params']);
     }
+
+    public function testRouteNoMatch()
+    {
+        $router = new Router();
+        $router->add('GET', '/home', 'HomeHandler');
+
+        $match = $router->match('GET', '/about');
+
+        $this->assertNull($match);
+    }
+
+    public function testRouteMethodMismatch()
+    {
+        $router = new Router();
+        $router->add('POST', '/submit', 'SubmitHandler');
+
+        $match = $router->match('GET', '/submit');
+
+        $this->assertNull($match);
+    }
 }
