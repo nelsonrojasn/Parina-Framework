@@ -8,11 +8,23 @@ use ReflectionNamedType;
 
 class Container
 {
+    private static ?Container $instance = null;
+
     // Resolved singleton instances
     private array $instances = [];
 
     // Mappings of interfaces/abstracts to concrete class names or factory callables
     private array $bindings = [];
+
+    public function __construct()
+    {
+        self::$instance = $this;
+    }
+
+    public static function getInstance(): ?Container
+    {
+        return self::$instance;
+    }
 
     /**
      * Bind an interface or class name to a concrete implementation or a factory.

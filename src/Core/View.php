@@ -74,6 +74,43 @@ class View
             throw new \RuntimeException("View not found: '$path'.\nTried in:\n - $list");
         }
 
+        $container = Container::getInstance();
+        $auth = null;
+        $cipher = null;
+        $config = null;
+
+        if ($container) {
+            if ($container->has(\Parina\Shared\Services\AuthInterface::class)) {
+                $auth = $container->get(\Parina\Shared\Services\AuthInterface::class);
+            }
+            if ($container->has(\Parina\Shared\Security\CipherInterface::class)) {
+                $cipher = $container->get(\Parina\Shared\Security\CipherInterface::class);
+            }
+            if ($container->has(\Parina\Core\Interfaces\ConfigInterface::class)) {
+                $config = $container->get(\Parina\Core\Interfaces\ConfigInterface::class);
+            }
+        }
+
+        if (!$config) {
+            $config = new \Parina\Core\AppConfig();
+        }
+        if (!$auth) {
+            $auth = new \Parina\Shared\Services\SessionAuth();
+        }
+        if (!$cipher) {
+            $cipher = new \Parina\Shared\Security\AesCipherService($config);
+        }
+
+        if (!isset($data['auth'])) {
+            $data['auth'] = $auth;
+        }
+        if (!isset($data['cipher'])) {
+            $data['cipher'] = $cipher;
+        }
+        if (!isset($data['config'])) {
+            $data['config'] = $config;
+        }
+
         extract($data, EXTR_SKIP);
 
         ob_start();

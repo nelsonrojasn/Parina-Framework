@@ -3,28 +3,31 @@
 namespace Tests\Services;
 
 use PHPUnit\Framework\TestCase;
-use Parina\Shared\Services\Auth;
+use Parina\Shared\Services\SessionAuth;
 
 class AuthTest extends TestCase
 {
+    private SessionAuth $auth;
+
     protected function setUp(): void
     {
         $_SESSION = [];
+        $this->auth = new SessionAuth();
     }
 
     public function test_auth_lifecycle()
     {
-        Auth::init();
+        $this->auth->init();
         
-        $this->assertFalse(Auth::isLoggedIn());
+        $this->assertFalse($this->auth->isLoggedIn());
 
         $user = ['id' => 123, 'username' => 'nelson', 'company_id' => 1];
-        Auth::login($user);
+        $this->auth->login($user);
 
-        $this->assertTrue(Auth::isLoggedIn());
+        $this->assertTrue($this->auth->isLoggedIn());
         $this->assertEquals(123, $_SESSION['user_id']);
 
-        Auth::logout();
-        $this->assertFalse(Auth::isLoggedIn());
+        $this->auth->logout();
+        $this->assertFalse($this->auth->isLoggedIn());
     }
 }

@@ -1,7 +1,4 @@
 <?php
-use Parina\Shared\Services\Auth;
-use Parina\Shared\Security\Cipher;
-use Parina\Core\Config;
 use Parina\Core\View;
 ?>
 <!DOCTYPE html>
@@ -15,13 +12,13 @@ use Parina\Core\View;
 <header>
     <nav>
         <a href="/">Home</a>
-        <?php if (file_exists(Config::getDbPath()) && !Auth::isLoggedIn()) : ?>
+        <?php if (file_exists($config->getDbPath()) && !$auth->isLoggedIn()) : ?>
             <a href="/login">Login</a>
         <?php endif; ?>
-        <?php if (Auth::isLoggedIn()) : ?>
-            <a href="/admin/home/<?= Cipher::encryptUrl('admin/home');?>">Admin</a>
-            <a href="/admin/users/<?= Cipher::encryptUrl('admin/users');?>">Users</a>
-            <a href="/logout/<?= Cipher::encryptUrl('logout');?>">Logout</a>
+        <?php if ($auth->isLoggedIn()) : ?>
+            <a href="/admin/home/<?= $cipher->encryptUrl('admin/home');?>">Admin</a>
+            <a href="/admin/users/<?= $cipher->encryptUrl('admin/users');?>">Users</a>
+            <a href="/logout/<?= $cipher->encryptUrl('logout');?>">Logout</a>
         <?php endif; ?>
         <a href="/about">About</a>
     </nav>
