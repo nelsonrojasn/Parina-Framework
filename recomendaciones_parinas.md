@@ -84,7 +84,7 @@ use Parina\Core\Interfaces\Response;
 use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
-use Parina\Shared\Services\ProductQueryRepositoryInterface;
+use Parina\Features\ProductManagement\Queries\ProductQueryRepositoryInterface;
 
 class ProductListHandler implements Handler
 {
@@ -187,6 +187,8 @@ En lugar de crear estos archivos a mano, Parina provee una herramienta CLI para 
     php bin/scaffold.php routes.csv
     ```
 3.  **Resultado:** El script creará automáticamente el archivo del Handler con su estructura base bajo `src/Features/ProductManagement/`, registrará la ruta en `config/routes.php` y generará la plantilla de prueba unitaria en `tests/Features/ProductManagement/ProductListHandlerTest.php`.
+
+Para conocer en detalle todas las herramientas de consola disponibles para generar comandos, consultas y realizar análisis automáticos del código, consulta la guía de [Herramientas de Consola (docs/tools.md)](docs/tools.md).
 
 ---
 

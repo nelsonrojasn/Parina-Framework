@@ -156,7 +156,7 @@ use Parina\Core\Interfaces\Response;
 use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Responses\HtmlResponse;
 use Parina\Core\View;
-use Parina\Shared\Services\UserQueryRepositoryInterface;
+use Parina\Features\UserManagement\Queries\UserQueryRepositoryInterface;
 
 class UsersListHandler implements Handler
 {
@@ -242,6 +242,9 @@ For directory layout, permissions, and production tips, see [DEPLOY.md](DEPLOY.m
 
 ### Cleanup & Reset
 To remove all demo files and reset the framework to a fresh state, see [CLEANUP.md](CLEANUP.md).
+
+### CLI Tools & Console Guide
+For a detailed guide on generating commands, queries, scaffolding features, and managing active routes, see [docs/tools.md](docs/tools.md).
 
 ### Quick Start / Local Installation
 
