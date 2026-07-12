@@ -6,43 +6,72 @@
  * Usage: php bin/routes-list.php
  */
 
-$csvFile = dirname(__DIR__) . '/routes.csv';
+require_once dirname(__DIR__) . '/src/autoload.php';
 
-if (!file_exists($csvFile)) {
-    echo "\033[1;31mError: routes.csv not found at $csvFile\033[0m\n";
+$routesFile = dirname(__DIR__) . '/config/routes.php';
+
+if (!file_exists($routesFile)) {
+    echo "\033[1;31mError: routes config file not found at $routesFile\033[0m\n";
     exit(1);
 }
+
+$routes = require $routesFile;
 
 // 1. Initialize headers and baseline widths
 $headers = ['Method', 'Path', 'Feature', 'HandlerName', 'Middlewares', 'Description'];
 $widths = array_combine($headers, array_map('strlen', $headers));
 $rows = [];
 
-// 2. Read CSV and calculate dynamic widths
-if (($handle = fopen($csvFile, "r")) !== false) {
-    // Read and discard header row
-    $headerRow = fgetcsv($handle, 1000, ",");
-    
-    while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-        // Skip empty or malformed rows
-        if (empty($data) || count($data) < 2) {
-            continue;
-        }
+// 2. Process routes and calculate dynamic widths
+foreach ($routes as $route) {
+    $method = $route['method'] ?? 'GET';
+    $path = $route['path'] ?? '/';
+    $handlerClass = $route['handler'] ?? '';
+    $middlewareList = $route['middleware'] ?? [];
 
-        // Align data index to headers
-        if (count($data) < 6) {
-            $data = array_pad($data, 6, '');
+    // Extract Feature and HandlerName from handler FQCN
+    $feature = '-';
+    $handlerName = '';
+    if (!empty($handlerClass)) {
+        $parts = explode('\\', ltrim($handlerClass, '\\'));
+        if (count($parts) >= 3 && $parts[0] === 'Parina' && $parts[1] === 'Features') {
+            $feature = $parts[2];
         }
-        $row = array_slice($data, 0, 6);
-        $rows[] = $row;
+        $handlerName = end($parts);
+    }
 
-        // Dynamically compute the maximum column width
-        foreach ($row as $index => $value) {
-            $colName = $headers[$index];
-            $widths[$colName] = max($widths[$colName], strlen($value));
+    // Extract Middlewares short names
+    $shortMiddlewares = [];
+    foreach ($middlewareList as $mw) {
+        $mwParts = explode('\\', ltrim($mw, '\\'));
+        $shortMiddlewares[] = end($mwParts);
+    }
+    $middlewares = implode(', ', $shortMiddlewares);
+
+    // Extract Description using reflection
+    $description = '';
+    if (!empty($handlerClass) && class_exists($handlerClass)) {
+        try {
+            $reflector = new ReflectionClass($handlerClass);
+            $docComment = $reflector->getDocComment();
+            if ($docComment !== false) {
+                if (preg_match('/Description:\s*(.*)/i', $docComment, $matches)) {
+                    $description = trim($matches[1]);
+                }
+            }
+        } catch (Throwable $e) {
+            // ignore
         }
     }
-    fclose($handle);
+
+    $row = [$method, $path, $feature, $handlerName, $middlewares, $description];
+    $rows[] = $row;
+
+    // Dynamically compute the maximum column width
+    foreach ($row as $index => $value) {
+        $colName = $headers[$index];
+        $widths[$colName] = max($widths[$colName], strlen($value));
+    }
 }
 
 // 3. Render Table
