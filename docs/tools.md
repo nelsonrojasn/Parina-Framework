@@ -137,9 +137,37 @@ La herramienta **[cleanup.php](../bin/cleanup.php)** está diseñada para restab
 *   Elimina archivos de demostración aislados y sus pruebas en la feature `Marketing`.
 *   Borra la base de datos local SQLite si existiera.
 *   Restablece `config/routes.php` y `routes.csv` a su estado original (solo con la ruta raíz `/`).
+*   Restablece `config/dependencies.php` a su configuración de dependencias original.
 
 ### Uso
 ```bash
 php bin/cleanup.php
 ```
 *(Puedes añadir el parámetro `--force` para evitar la confirmación interactiva en terminal).*
+
+---
+
+## 7. Orquestador de Inicialización Completa: `bin/orchestrator.php`
+
+La herramienta **[orchestrator.php](../bin/orchestrator.php)** unifica y coordina todo el proceso de compilación y despliegue del proyecto en un solo comando de consola. Es la herramienta definitiva para levantar la arquitectura del proyecto en un solo paso.
+
+### ¿Qué hace? (Las 4 Fases de Construcción)
+1.  **Fase 1 (Limpieza):** Invoca a `bin/cleanup.php --force` para restablecer el entorno a un lienzo en blanco (con un respaldo preventivo de tu definición de rutas en memoria).
+2.  **Fase 2 (Andamiaje):** Ejecuta `bin/scaffold.php` usando el archivo de rutas (CSV) para reconstruir todos los Handlers, vistas, archivos de rutas y directorios base de las Features.
+3.  **Fase 3 (Base de Datos):** Levanta el contenedor de dependencias del framework y ejecuta el esquema de base de datos SQL (`database/schema.[driver].sql`) correspondiente al driver configurado (`sqlite`, `mysql` o `pgsql`).
+4.  **Fase 4 (Generación de CQS en lote):** Lee un archivo CSV de configuración de CQS (por defecto `cqs.csv`) y genera en lote todas las interfaces, repositorios de Comandos/Consultas y pruebas de integración directamente en las carpetas de las Features correspondientes.
+
+### Estructura de `cqs.csv`
+El archivo debe tener las columnas `Feature,Name,Table,Type` para indicarle al orquestador qué repositorios de datos construir:
+```csv
+Feature,Name,Table,Type
+UserManagement,User,usuario,both
+AutoPurchase,Auto,auto,both
+```
+*   `Type` puede ser `command`, `query` o `both` (para generar ambos repositorios de escritura y lectura).
+
+### Uso
+```bash
+php bin/orchestrator.php [routes_csv] [cqs_csv]
+```
+*(Si no se especifican argumentos, buscará de forma predeterminada los archivos `routes.csv` y `cqs.csv` en la raíz del del proyecto).*

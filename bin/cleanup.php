@@ -139,4 +139,73 @@ if (file_exists($routesCsvFile)) {
     echo "Reset: routes.csv\n";
 }
 
+// 7. Reset config/dependencies.php
+$dependenciesFile = $projectRoot . '/config/dependencies.php';
+$pristineDependencies = <<<'PHP'
+<?php
+
+// config/dependencies.php
+
+use Parina\Core\Interfaces\ConfigInterface;
+use Parina\Shared\Infrastructure\DatabaseAdapter;
+use Parina\Shared\Infrastructure\Adapters\MySqlAdapter;
+use Parina\Shared\Infrastructure\Adapters\PostgreSqlAdapter;
+use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
+
+return [
+    // Bindings (Transient: new instance resolved every time)
+    'bindings' => [
+        \Parina\Shared\Services\DatabaseSetupServiceInterface::class => \Parina\Shared\Services\DatabaseSetupService::class,
+    ],
+
+    // Singletons (Shared: resolved once and cached)
+    'singletons' => [
+        // Config interface resolves to the AppConfig implementation
+        ConfigInterface::class => \Parina\Core\AppConfig::class,
+
+        // Security / Auth / Log Services
+        \Parina\Shared\Services\Fsp\FspEngineInterface::class => \Parina\Shared\Services\Fsp\FspEngine::class,
+        \Parina\Shared\Services\AclInterface::class => \Parina\Shared\Services\Acl::class,
+        \Parina\Shared\Services\AuthInterface::class => \Parina\Shared\Services\SessionAuth::class,
+        \Parina\Core\Interfaces\Logger::class => \Parina\Core\FileLogger::class,
+        \Parina\Shared\Services\TokenServiceInterface::class => \Parina\Shared\Services\JwtTokenService::class,
+        \Parina\Shared\Security\CipherInterface::class => \Parina\Shared\Security\AesCipherService::class,
+        \Parina\Shared\Infrastructure\SqlGeneratorInterface::class => \Parina\Shared\Infrastructure\SqlGenerator::class,
+
+        // Repositories (CQS)
+        \Parina\Shared\Services\UserQueryRepositoryInterface::class => \Parina\Shared\Services\DbUserQueryRepository::class,
+        \Parina\Shared\Services\UserCommandRepositoryInterface::class => \Parina\Shared\Services\DbUserCommandRepository::class,
+
+        // Database drivers registered dynamically
+        'db.driver.mysql'  => fn($c) => new MySqlAdapter($c->get(ConfigInterface::class)->getDbConfig()),
+        'db.driver.pgsql'  => fn($c) => new PostgreSqlAdapter($c->get(ConfigInterface::class)->getDbConfig()),
+        'db.driver.sqlite' => fn($c) => new SqliteAdapter($c->get(ConfigInterface::class)->getDbConfig()),
+
+        // DatabaseAdapter resolves dynamically via factory closure (OCP compliant)
+        DatabaseAdapter::class => function (\Parina\Core\Container $container) {
+            $config = $container->get(ConfigInterface::class);
+            $dbConfig = $config->getDbConfig();
+            $driver = $dbConfig['driver'] ?? 'sqlite';
+
+            $driverMap = [
+                'postgres'   => 'pgsql',
+                'postgresql' => 'pgsql',
+                'default'    => 'sqlite',
+            ];
+            $driver = $driverMap[$driver] ?? $driver;
+
+            $serviceId = "db.driver.{$driver}";
+            if (!$container->has($serviceId)) {
+                throw new \InvalidArgumentException("Database driver not supported: {$driver}");
+            }
+
+            return $container->get($serviceId);
+        }
+    ],
+];
+PHP;
+
+file_put_contents($dependenciesFile, $pristineDependencies);
+echo "Reset: config/dependencies.php\n";
+
 echo "\n✨ Cleanup complete! Parina Framework is now a fresh, empty canvas.\n";
