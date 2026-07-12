@@ -19,10 +19,10 @@ $interfaceName = "{$name}QueryRepositoryInterface";
 $concreteName = "Db{$name}QueryRepository";
 $testName = "Db{$name}QueryRepositoryTest";
 
-// File Paths (Placed in Shared/Services to allow DatabaseAdapter injection under CQS rules)
-$interfacePath = "src/Shared/Services/{$feature}/Queries/{$interfaceName}.php";
-$concretePath = "src/Shared/Services/{$feature}/Queries/{$concreteName}.php";
-$testPath = "tests/Shared/Services/{$feature}/Queries/{$testName}.php";
+// File Paths (Placed in Features directory under strict FDA rules)
+$interfacePath = "src/Features/{$feature}/Queries/{$interfaceName}.php";
+$concretePath = "src/Features/{$feature}/Queries/{$concreteName}.php";
+$testPath = "tests/Features/{$feature}/Queries/{$testName}.php";
 
 // Create directories if they do not exist
 @mkdir(dirname($interfacePath), 0755, true);
@@ -32,7 +32,7 @@ $testPath = "tests/Shared/Services/{$feature}/Queries/{$testName}.php";
 if (!file_exists($interfacePath)) {
     $interfaceContent = <<<PHP
 <?php
-namespace Parina\Shared\Services\\{$feature}\Queries;
+namespace Parina\Features\\{$feature}\Queries;
 
 interface {$interfaceName}
 {
@@ -50,7 +50,7 @@ PHP;
 if (!file_exists($concretePath)) {
     $concreteContent = <<<PHP
 <?php
-namespace Parina\Shared\Services\\{$feature}\Queries;
+namespace Parina\Features\\{$feature}\Queries;
 
 use Parina\Shared\Infrastructure\DatabaseAdapter;
 use Parina\Shared\Infrastructure\SqlGeneratorInterface;
@@ -91,10 +91,10 @@ PHP;
 if (!file_exists($testPath)) {
     $testContent = <<<PHP
 <?php
-namespace Tests\Shared\Services\\{$feature}\Queries;
+namespace Tests\Features\\{$feature}\Queries;
 
 use PHPUnit\Framework\TestCase;
-use Parina\Shared\Services\\{$feature}\Queries\\{$concreteName};
+use Parina\Features\\{$feature}\Queries\\{$concreteName};
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 
 class {$testName} extends TestCase
@@ -138,7 +138,7 @@ PHP;
 $dependenciesPath = 'config/dependencies.php';
 if (file_exists($dependenciesPath)) {
     $dependenciesContent = file_get_contents($dependenciesPath);
-    $bindingLine = "        \\Parina\\Shared\\Services\\{$feature}\\Queries\\{$interfaceName}::class => \\Parina\\Shared\\Services\\{$feature}\\Queries\\{$concreteName}::class,";
+    $bindingLine = "        \\Parina\\Features\\{$feature}\\Queries\\{$interfaceName}::class => \\Parina\\Features\\{$feature}\\Queries\\{$concreteName}::class,";
     
     if (str_contains($dependenciesContent, $bindingLine)) {
         echo "  [Dependencies] Already registered.\n";

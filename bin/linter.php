@@ -394,7 +394,7 @@ foreach ($srcPhpFiles as $file) {
     }
 
     // Check if Handlers/Middlewares under src/Features/ directly inject DatabaseAdapter
-    if (str_contains($file, '/src/Features/')) {
+    if (str_contains($file, '/src/Features/') && !$isRepository) {
         try {
             $reflector = new ReflectionClass($fqn);
             if ($reflector->isInstantiable()) {

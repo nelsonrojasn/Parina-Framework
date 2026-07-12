@@ -48,6 +48,9 @@ foreach ($rows as $row) {
     $description = trim($row['description'] ?? '');
 
     $feature = trim($row['feature'] ?? $row['featurea'] ?? '');
+    if (!empty($feature)) {
+        preScaffoldDirectories($feature);
+    }
     $handlerName = trim($row['handlername'] ?? '');
 
     if (!empty($feature) && !empty($handlerName)) {
@@ -280,3 +283,43 @@ function writeRoutesConfig(array $routesArray): void
     file_put_contents($configPath, $content);
     echo "  [Config] Updated: $configPath\n";
 }
+
+$scaffoldedFeatures = [];
+
+/**
+ * Pre-scaffold the directory structure for a feature to align with strict FDA rules
+ */
+function preScaffoldDirectories(string $featureName): void
+{
+    global $scaffoldedFeatures;
+    
+    if (empty($featureName)) {
+        return;
+    }
+    
+    $featureName = ucfirst($featureName);
+    if (isset($scaffoldedFeatures[$featureName])) {
+        return;
+    }
+    
+    $dirs = [
+        "src/Features/{$featureName}/Handlers",
+        "src/Features/{$featureName}/Views",
+        "src/Features/{$featureName}/Commands",
+        "src/Features/{$featureName}/Queries",
+        "src/Features/{$featureName}/Services",
+        "src/Features/{$featureName}/Interfaces",
+        "tests/Features/{$featureName}/Handlers",
+        "tests/Features/{$featureName}/Commands",
+        "tests/Features/{$featureName}/Queries"
+    ];
+    
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+    }
+    
+    $scaffoldedFeatures[$featureName] = true;
+}
+

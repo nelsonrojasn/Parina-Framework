@@ -19,10 +19,10 @@ $interfaceName = "{$name}CommandRepositoryInterface";
 $concreteName = "Db{$name}CommandRepository";
 $testName = "Db{$name}CommandRepositoryTest";
 
-// File Paths (Placed in Shared/Services to allow DatabaseAdapter injection under CQS rules)
-$interfacePath = "src/Shared/Services/{$feature}/Commands/{$interfaceName}.php";
-$concretePath = "src/Shared/Services/{$feature}/Commands/{$concreteName}.php";
-$testPath = "tests/Shared/Services/{$feature}/Commands/{$testName}.php";
+// File Paths (Placed in Features directory under strict FDA rules)
+$interfacePath = "src/Features/{$feature}/Commands/{$interfaceName}.php";
+$concretePath = "src/Features/{$feature}/Commands/{$concreteName}.php";
+$testPath = "tests/Features/{$feature}/Commands/{$testName}.php";
 
 // Create directories if they do not exist
 @mkdir(dirname($interfacePath), 0755, true);
@@ -32,7 +32,7 @@ $testPath = "tests/Shared/Services/{$feature}/Commands/{$testName}.php";
 if (!file_exists($interfacePath)) {
     $interfaceContent = <<<PHP
 <?php
-namespace Parina\Shared\Services\\{$feature}\Commands;
+namespace Parina\Features\\{$feature}\Commands;
 
 interface {$interfaceName}
 {
@@ -50,7 +50,7 @@ PHP;
 if (!file_exists($concretePath)) {
     $concreteContent = <<<PHP
 <?php
-namespace Parina\Shared\Services\\{$feature}\Commands;
+namespace Parina\Features\\{$feature}\Commands;
 
 use Parina\Shared\Infrastructure\DatabaseAdapter;
 use Parina\Shared\Infrastructure\SqlGeneratorInterface;
@@ -104,10 +104,10 @@ PHP;
 if (!file_exists($testPath)) {
     $testContent = <<<PHP
 <?php
-namespace Tests\Shared\Services\\{$feature}\Commands;
+namespace Tests\Features\\{$feature}\Commands;
 
 use PHPUnit\Framework\TestCase;
-use Parina\Shared\Services\\{$feature}\Commands\\{$concreteName};
+use Parina\Features\\{$feature}\Commands\\{$concreteName};
 use Parina\Shared\Infrastructure\Adapters\SqliteAdapter;
 
 class {$testName} extends TestCase
@@ -154,7 +154,7 @@ PHP;
 $dependenciesPath = 'config/dependencies.php';
 if (file_exists($dependenciesPath)) {
     $dependenciesContent = file_get_contents($dependenciesPath);
-    $bindingLine = "        \\Parina\\Shared\\Services\\{$feature}\\Commands\\{$interfaceName}::class => \\Parina\\Shared\\Services\\{$feature}\\Commands\\{$concreteName}::class,";
+    $bindingLine = "        \\Parina\\Features\\{$feature}\\Commands\\{$interfaceName}::class => \\Parina\\Features\\{$feature}\\Commands\\{$concreteName}::class,";
     
     if (str_contains($dependenciesContent, $bindingLine)) {
         echo "  [Dependencies] Already registered.\n";

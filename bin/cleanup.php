@@ -82,42 +82,27 @@ foreach ($marketingDemoFiles as $file) {
     }
 }
 
-// 3. Delete demo tests from tests/Features/
-$demoTests = [
-    '/tests/Features/Marketing/AboutHandlerTest.php',
-    '/tests/Features/Authentication/LoginFormHandlerTest.php',
-    '/tests/Features/Authentication/LoginCheckHandlerTest.php',
-    '/tests/Features/Authentication/LogoutHandlerTest.php',
-    '/tests/Features/Dashboard/AdminHandlerTest.php',
-    '/tests/Features/UserManagement/UsersListHandlerTest.php',
-    '/tests/Features/AutoPurchase/AutoPurchaseHandlerTest.php',
-    '/tests/Features/Database/SetupHandlerTest.php',
-];
-foreach ($demoTests as $file) {
-    $filePath = $projectRoot . $file;
-    if (file_exists($filePath)) {
-        unlink($filePath);
-        echo "Deleted: " . substr($file, 1) . "\n";
-    }
-}
-
-// Also delete empty feature test subdirectories if they exist
-$featureTestDirs = [
-    '/tests/Features/Marketing',
+// 3. Delete demo tests from tests/Features/ (recursively deleting entire folders)
+$demoTestDirs = [
     '/tests/Features/Authentication',
     '/tests/Features/Dashboard',
     '/tests/Features/UserManagement',
     '/tests/Features/AutoPurchase',
     '/tests/Features/Database',
 ];
-foreach ($featureTestDirs as $dir) {
+foreach ($demoTestDirs as $dir) {
     $dirPath = $projectRoot . $dir;
     if (is_dir($dirPath)) {
-        $files = array_diff(scandir($dirPath), ['.', '..']);
-        if (count($files) === 0) {
-            rmdir($dirPath);
-        }
+        deleteDirectory($dirPath);
+        echo "Deleted: " . substr($dir, 1) . "/\n";
     }
+}
+
+// Also clean up specifically the Marketing demo test
+$marketingDemoTest = $projectRoot . '/tests/Features/Marketing/AboutHandlerTest.php';
+if (file_exists($marketingDemoTest)) {
+    unlink($marketingDemoTest);
+    echo "Deleted: tests/Features/Marketing/AboutHandlerTest.php\n";
 }
 
 // 4. Delete DB
