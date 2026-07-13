@@ -52,6 +52,7 @@ foreach ($rows as $row) {
         preScaffoldDirectories($feature);
     }
     $handlerName = trim($row['handlername'] ?? '');
+    $format = strtolower(trim($row['format'] ?? 'html'));
 
     if (!empty($feature) && !empty($handlerName)) {
         if (str_ends_with(strtolower($handlerName), 'handler')) {
@@ -98,7 +99,7 @@ foreach ($rows as $row) {
     ];
 
     // Scaffold Handler File
-    scaffoldHandler($handlerClass, $description);
+    scaffoldHandler($handlerClass, $description, $format);
 
     // Scaffold Test File
     scaffoldTest($handlerClass);
@@ -126,7 +127,7 @@ function classToPath(string $className): string
 /**
  * Scaffold the handler if it does not exist
  */
-function scaffoldHandler(string $handlerClass, string $description): void
+function scaffoldHandler(string $handlerClass, string $description, string $format = 'html'): void
 {
     $filePath = classToPath($handlerClass);
     
@@ -150,6 +151,14 @@ function scaffoldHandler(string $handlerClass, string $description): void
         $className = $handlerClass;
     }
 
+    if ($format === 'json') {
+        $responseUse = "use Parina\\Core\\Responses\\JsonResponse;";
+        $responseReturn = "return new JsonResponse(json_encode([\"message\" => \"$description\"]));";
+    } else {
+        $responseUse = "use Parina\\Core\\Responses\\HtmlResponse;";
+        $responseReturn = "return new HtmlResponse(\"<h1>$description</h1>\");";
+    }
+
     $stub = <<<PHP
 <?php
 
@@ -158,7 +167,7 @@ namespace $namespace;
 use Parina\Core\Interfaces\Handler;
 use Parina\Core\Interfaces\RequestInterface;
 use Parina\Core\Interfaces\Response;
-use Parina\Core\Responses\HtmlResponse;
+$responseUse
 
 /**
  * Description: $description
@@ -167,7 +176,7 @@ class $className implements Handler
 {
     public function handle(RequestInterface \$request): Response
     {
-        return new HtmlResponse("<h1>$description</h1>");
+        $responseReturn
     }
 }
 PHP;
