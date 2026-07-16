@@ -3,7 +3,7 @@
 
 By Nelson Rojas Nuñez
 
-🇺🇸 **English** | 🇪🇸 [Español](docs/THE-NAPKIN-REVOLUTION.es.md) | 🇫🇷 [Français](docs/THE-NAPKIN-REVOLUTION.fr.md) | 🇵🇹 [Português](docs/THE-NAPKIN-REVOLUTION.pt.md) | 🇮🇹 [Italiano](docs/THE-NAPKIN-REVOLUTION.it.md) | 🇩🇪 [Deutsch](docs/THE-NAPKIN-REVOLUTION.de.md) | 🇨🇳 [简体中文](docs/THE-NAPKIN-REVOLUTION.zh.md) | 🇯🇵 [日本語](docs/THE-NAPKIN-REVOLUTION.ja.md)
+🇺🇸 **English** | 🇪🇸 [Español](docs/THE-NAPKIN-REVOLUTION.es.md)
 
 ---
 

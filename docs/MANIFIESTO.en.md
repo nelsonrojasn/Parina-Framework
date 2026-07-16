@@ -1,7 +1,7 @@
 # Parina Framework Manifesto  
 ## *Altiplano Edition — Where less is more*
 
-🇺🇸 **English** | 🇪🇸 [Español](MANIFIESTO.es.md) | 🇫🇷 [Français](MANIFIESTO.fr.md) | 🇵🇹 [Português](MANIFIESTO.pt.md) | 🇮🇹 [Italiano](MANIFIESTO.it.md) | 🇩🇪 [Deutsch](MANIFIESTO.de.md) | 🇨🇳 [简体中文](MANIFIESTO.zh.md) | 🇯🇵 [日本語](MANIFIESTO.ja.md)
+🇺🇸 **English** | 🇪🇸 [Español](MANIFIESTO.es.md)
 
 Parina is not a full-stack framework.  
 It doesn't want to be.  
