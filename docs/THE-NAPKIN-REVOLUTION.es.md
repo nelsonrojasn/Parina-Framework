@@ -7,11 +7,11 @@ Por Nelson Rojas Nuñez
 
 ---
 
-Primero que todo, me disculpo. No querré sonar ofensivo, no espero hacerte sentir aludido, porque como dijo la gran sabia Veronica, tus herramientas están bien.
+Primero que todo, me disculpo. No querré sonar ofensivo, no espero hacerte sentir aludido, porque como dijo la gran sabia Verónica, tus herramientas están bien.
 
 Durante mucho tiempo estuve detrás del teclado escribiendo código. Apenas salí a producir al mundo laboral, me propuse abrazar las mejores prácticas, no cometer los 10 errores clásicos del lenguaje de turno, y así estuve durante un buen tiempo.
 
-De pronto me dio por entrar en el desarrollo web, pero me aburria bastante de seguir dándole martillazos al teclado, usando las mismas teorias, y repitiendo lo mismo que hacia en la oficina. Quería algo nuevo, algo que fuera fácil de seguir.
+De pronto me dio por entrar en el desarrollo web, pero me aburría bastante de seguir dándole martillazos al teclado, usando las mismas teorías, y repitiendo lo mismo que hacía en la oficina. Quería algo nuevo, algo que fuera fácil de seguir.
 
 Ahora, como el que pide recibe, me encontré con muchas herramientas milagrosas, con generadores de código que hacían que el proceso fuera divertido, que hubiera una cierta sintonía, chispa.
 
@@ -19,9 +19,9 @@ Decidí entonces volver a la academia para contarle a la nueva generación que h
 
 Acto seguido me uní a una comunidad en español, y grabé algunos videos que subí a Youtube, y dediqué parte de mi tiempo a explicarle cosas a los más nuevos, a los que entraron en la programación por el gusto, por inquietos y como buscadores de soluciones para sus propios problemas. 
 
-Escribí varios artículos para esta comunidad, pero yo seguía teniendo ese anhelo del que enseña, quería contarle a las nuevas generaciones como se hacen las ruedas, como se diseñan, que hay dentro de ellas.
+Escribí varios artículos para esta comunidad, pero yo seguía teniendo ese anhelo del que enseña, quería contarle a las nuevas generaciones cómo se hacen las ruedas, cómo se diseñan, qué hay dentro de ellas.
 
-Como no llegamos a coincidir, decidí ir por mi cuenta, cree varias ruedas parecidas a la que tenía en la comunidad que tanto cariño me había entregado, y trate de crear una copia, pero no era tan buena. Más que mal, ellos me llevaban años de ventaja.
+Como no llegamos a coincidir, decidí ir por mi cuenta, creé varias ruedas parecidas a la que tenía en la comunidad que tanto cariño me había entregado, y traté de crear una copia, pero no era tan buena. Más que mal, ellos me llevaban años de ventaja.
 
 Haciendo una pausa en el camino, un día compré un curso sobre PHP moderno y el patrón SOLID, y luego leí algunos libros sobre arquitectura y el patron CQRS, y luego código mantenible.
 
@@ -53,25 +53,25 @@ Uno de los principios de SOLID tiene relación con usar Interfaces, que no son n
 
 ¿Y qué permite una interfaz? ¡Forzar la extensibilidad y la estandarización!
 
-Ahora, hay algunas piezas que son básicas. Necesitamos algo que se encargue de definir las rutas a las que pueden golpear nuestros usuarios (entiéndase por un Router). Necesitamos algo que se encargue de despachar lo que llega como petición según la lista de rutas o gatillar mensajes de error (entiéndase por un despachador) que en mi caso decidi llamar Kernel.
+Ahora, hay algunas piezas que son básicas. Necesitamos algo que se encargue de definir las rutas a las que pueden golpear nuestros usuarios (entiéndase por un Router). Necesitamos algo que se encargue de despachar lo que llega como petición según la lista de rutas o gatillar mensajes de error (entiéndase por un despachador) que en mi caso decidí llamar Kernel.
 
 Si alguna vez has trabajado con .NET, Java o JSP, asumirás que existe una cosa llamada Request y otra llamada Response, que traducidos son "la petición del cliente" y "la respuesta que le enviamos de regreso".
 
 Ejemplos de petición:
-Un link simple
-Un link con parámetros
-Un formulario con textos
-Uno con adjunto
+- Un link simple.
+- Un link con parámetros.
+- Un formulario con textos.
+- Uno con adjunto.
 
-Ejemplos de respuesta
-Un código de estado
-Un texto plano
-Html
-Json
-Xml
-Adjuntos
-Una Redirección
-etc, etc, etc.
+Ejemplos de respuesta:
+- Un código de estado.
+- Un texto plano.
+- Html.
+- Json.
+- Xml.
+- Adjuntos.
+- Una Redirección.
+- etc, etc, etc.
 
 ¿Y la seguridad?
 Un día me di cuenta que si una petición va a entrar, una lista de condiciones deben decidir si llega a procesarse o no. Es la guardia del palacio o en lenguaje de ingeniería, un Middleware (es como la hamburguesa del sandwich) no puedes llegar al otro lado del pan sin pasar por ella.
@@ -80,11 +80,11 @@ Y qué hace un middleware, revisa la petición, hace validaciones, modifica o li
 
 Pero las peticiones pueden tener una lista de guardianes en el medio intentando detenerla, o ninguno, todo de pende de lo complejo o simple que sea la solicitud y el lugar al que espera llegar para que le respondan.
 
-En consecuencia, cada vez que defino una ruta le digo: Mira, si alguien trae una solicitud con la dirección de la la puerta A, y viene por el camino amarillo (GET), y esa puerta no necesita ningun guardia, entonces no pongo trabas y le doy un mapa para llegar a la puerta (el handler que recibirá y procesará la petición)
+En consecuencia, cada vez que defino una ruta le digo: Mira, si alguien trae una solicitud con la dirección de la la puerta A, y viene por el camino amarillo (GET), y esa puerta no necesita ningún guardia, entonces no pongo trabas y le doy un mapa para llegar a la puerta (el handler que recibirá y procesará la petición)
 
-Si por el contrario, alguien trae una solicitud con la dirección de la puerta B, y esta puerta requiere que tengas una invitación dorada con la frase Wonka, entonces pongo un portero que pregunta y revisa tu invitación dorada (un middleware). Si el portero decide que puedes pasar, entonces le entrego el mapa para llegar a la puerta B (el handler que hara el proces y te devolverá algo)
+Si por el contrario, alguien trae una solicitud con la dirección de la puerta B, y esta puerta requiere que tengas una invitación dorada con la frase Wonka, entonces pongo un portero que pregunta y revisa tu invitación dorada (un middleware). Si el portero decide que puedes pasar, entonces le entrego el mapa para llegar a la puerta B (el handler que hará el proceso y te devolverá algo)
 
-Cada handler recibirá la solicitud, con los detalles necesarios y procesará de acuerdo a lo que le corresponda hacer, pero siempre, siempre, siempre, enviará un tipo de respuesta que deriva de otra Interfaz: Response.
+Cada handler recibirá la solicitud, con los detalles necesarios y procesará de acuerdo a lo que le corresponda hacer, pero siempre, siempre, siempre, enviará un tipo de respuesta que deriva de otra interfaz: Response.
 
 Ahora las respuestas son extensibles, puedes crear el sabor de respuesta que necesites siempre que cumplas con el contrato (los métodos de la intefaz Response).
 
@@ -98,7 +98,7 @@ Y entonces, y aquí cierro con la explicación en la servilleta, estos son los p
 4. Despachador (Kernel) que usa la lista de rutas para hacerla coincidir con la petición. Si existen middlewares los ejecuta en forma secuencial. Si todos le dan permiso continúa, y si uno no está de acuerdo, corta el circuito en el acto. 
 5. Salida (Response)
 
-Esto es Parina Framework, es un sistema lineal, estricto, extensible, altamente testeable y tremendamente amable con quien vendrá después a mantenerlo, porque cada petición solo puede ser respondida por un handler que tiene un único método: handle.
+Esto es Parina Framework, es un sistema lineal, estricto, extensible, altamente testeable y tremendamente amable con quien vendrá después a mantenerlo, porque cada petición sólo puede ser respondida por un handler que tiene un único método: handle.
 
 Por eso cabe en una servilleta. Es mentalmente sencillo de digerir y cada vez que sientas que necesitas mejorar algo, seguro que tu cabeza se acostumbrará con la misma conclusión siempre: agreguemos otro middleware, porque ellos son los encargados del flujo, de detener entradas peligrosas, de cortar el exceso de peticiones por segundo, de redirigir a usuarios no autorizados, o sin permisos.
 
